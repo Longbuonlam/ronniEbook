@@ -6,6 +6,7 @@ import com.ronniebook.web.domain.User;
 import com.ronniebook.web.repository.AuthorityRepository;
 import com.ronniebook.web.repository.UserRepository;
 import com.ronniebook.web.repository.search.UserSearchRepository;
+import com.ronniebook.web.security.AuthoritiesConstants;
 import com.ronniebook.web.security.SecurityUtils;
 import com.ronniebook.web.service.dto.AdminUserDTO;
 import com.ronniebook.web.service.dto.UserDTO;
@@ -14,6 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +40,9 @@ public class UserService {
     private final AuthorityRepository authorityRepository;
 
     private final CacheManager cacheManager;
+
+    @Value("${spring.security.oauth2.client.registration.oidc.client-id}")
+    private String clientId;
 
     public UserService(
         UserRepository userRepository,
@@ -238,5 +243,9 @@ public class UserService {
         if (user.getEmail() != null) {
             Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE)).evict(user.getEmail());
         }
+    }
+
+    public boolean isAdmin() {
+        return SecurityUtils.hasCurrentUserAnyOfAuthorities(clientId, AuthoritiesConstants.ADMIN);
     }
 }
