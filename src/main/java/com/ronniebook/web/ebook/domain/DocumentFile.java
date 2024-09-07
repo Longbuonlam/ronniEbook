@@ -16,6 +16,8 @@ public class DocumentFile {
 
     private String createdBy;
 
+    private Integer fileVersion;
+
     public String getFilePath() {
         return filePath;
     }
@@ -46,6 +48,19 @@ public class DocumentFile {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public Integer getFileVersion() {
+        return fileVersion;
+    }
+
+    public void setFileVersion(Integer fileVersion) {
+        this.fileVersion = fileVersion;
+    }
+
+    public DocumentFile fileVersion(int fileVersion) {
+        this.fileVersion = fileVersion;
+        return this;
     }
 
     private String extractFileNameFromPath(String filePath) {

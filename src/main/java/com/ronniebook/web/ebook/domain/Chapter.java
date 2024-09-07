@@ -3,6 +3,7 @@ package com.ronniebook.web.ebook.domain;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,6 +24,8 @@ public class Chapter extends BaseEntity implements Serializable {
     @NotNull
     private String chapterName;
 
+    private LanguageCode language;
+
     private Instant createDate;
 
     private String createBy;
@@ -37,6 +40,19 @@ public class Chapter extends BaseEntity implements Serializable {
     private boolean isDeleted;
 
     public Chapter() {}
+
+    public Chapter language(LanguageCode language) {
+        this.setLanguage(language);
+        return this;
+    }
+
+    public LanguageCode getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(LanguageCode language) {
+        this.language = language;
+    }
 
     public Integer getNumber() {
         return number;
@@ -84,6 +100,13 @@ public class Chapter extends BaseEntity implements Serializable {
 
     public void setDocumentFiles(List<DocumentFile> documentFiles) {
         this.documentFiles = documentFiles;
+    }
+
+    public void addDocumentFile(DocumentFile docFile) {
+        if (documentFiles == null) {
+            documentFiles = new ArrayList<DocumentFile>();
+        }
+        documentFiles.add(docFile);
     }
 
     public String getBookId() {
