@@ -65,10 +65,12 @@ public class BookService {
         Page<Book> bookPage;
         // Add SortPage
         if (pageable != null && pageable.getSort().isEmpty()) {
-            Sort sort = Sort.by(Sort.Direction.ASC, "sortBy");
+            Sort sort = Sort.by(Sort.Direction.ASC, "book_name");
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         }
-
+        if (pageable == null) {
+            throw new BadRequestAlertException("", "", "Pageable is null");
+        }
         if (searchText == null) {
             bookPage = bookRepository.findAll(pageable);
         } else {
