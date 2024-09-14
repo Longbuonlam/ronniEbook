@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface FavouriteBookRepository extends MongoRepository<FavouriteBook, String> {
+
     @Query("{'$or':[" + "{ 'book_name' : { $regex: ?0, $options: 'i' } }, " + "{ 'author' : { $regex: ?0, $options: 'i' } }," + "]}")
     Page<FavouriteBook> findByText(Pageable pageable, String text);
 }

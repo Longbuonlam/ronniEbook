@@ -2,8 +2,6 @@ package com.ronniebook.web.ebook.service;
 
 import com.ronniebook.web.ebook.domain.Book;
 import com.ronniebook.web.ebook.repository.BookRepository;
-import com.ronniebook.web.repository.UserRepository;
-import com.ronniebook.web.security.SecurityUtils;
 import com.ronniebook.web.service.UserService;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
 import java.util.Optional;
@@ -27,14 +25,12 @@ public class BookService {
     public static final String BOOK_CACHE_NAME = "books";
     private final Logger log = LoggerFactory.getLogger(BookService.class);
     private final UserService userService;
-    private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private static final String ENTITY_NAME = "book";
     private final MongoTemplate mongoTemplate;
 
-    public BookService(UserService userService, UserRepository userRepository, BookRepository bookRepository, MongoTemplate mongoTemplate) {
+    public BookService(UserService userService, BookRepository bookRepository, MongoTemplate mongoTemplate) {
         this.userService = userService;
-        this.userRepository = userRepository;
         this.bookRepository = bookRepository;
         this.mongoTemplate = mongoTemplate;
     }
@@ -47,9 +43,6 @@ public class BookService {
      */
     public Book save(Book book) {
         log.debug("Request to save Book : {}", book);
-        String loginId = SecurityUtils.getCurrentUserLogin().orElseThrow();
-        String userId = userRepository.findOneByLogin(loginId).orElseThrow().getId();
-        book.setCreateBy(userId);
         return bookRepository.save(book);
     }
 

@@ -4,7 +4,6 @@ import com.ronniebook.web.ebook.domain.Book;
 import com.ronniebook.web.ebook.domain.FavouriteBook;
 import com.ronniebook.web.ebook.repository.FavouriteBookRepository;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
-import java.time.Instant;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +38,6 @@ public class FavouriteBookService {
         Book book = bookService.findOne(bookId);
         FavouriteBook favouriteBook = new FavouriteBook();
         favouriteBook.setBookId(bookId);
-        favouriteBook.setAddDate(Instant.now());
         favouriteBook.setBookName(book.getBookName());
         favouriteBook.setAuthor(book.getAuthor());
         return favouriteBookRepository.save(favouriteBook);

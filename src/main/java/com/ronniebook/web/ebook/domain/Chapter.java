@@ -26,10 +26,6 @@ public class Chapter extends BaseEntity implements Serializable {
 
     private LanguageCode language;
 
-    private Instant createDate;
-
-    private String createBy;
-
     private ChapterStatus chapterStatus;
 
     private List<DocumentFile> documentFiles;
@@ -68,22 +64,6 @@ public class Chapter extends BaseEntity implements Serializable {
 
     public void setChapterName(String chapterName) {
         this.chapterName = chapterName;
-    }
-
-    public Instant getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Instant createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
     }
 
     public ChapterStatus getChapterStatus() {
@@ -160,11 +140,6 @@ public class Chapter extends BaseEntity implements Serializable {
             number +
             ", chapterName='" +
             chapterName +
-            '\'' +
-            ", createDate=" +
-            createDate +
-            ", createBy='" +
-            createBy +
             '\'' +
             ", chapterStatus=" +
             chapterStatus +

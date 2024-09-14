@@ -36,10 +36,6 @@ public class Book extends BaseEntity implements Serializable {
     @NotNull
     private LanguageCode language;
 
-    private String createBy;
-
-    private Instant createDate;
-
     private BookStatus bookStatus;
 
     private BookSetting bookSetting;
@@ -109,14 +105,6 @@ public class Book extends BaseEntity implements Serializable {
         this.language = language;
     }
 
-    public Instant getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Instant createDate) {
-        this.createDate = createDate;
-    }
-
     public BookStatus getBookStatus() {
         return bookStatus;
     }
@@ -159,14 +147,6 @@ public class Book extends BaseEntity implements Serializable {
         return this;
     }
 
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -207,11 +187,6 @@ public class Book extends BaseEntity implements Serializable {
             chapterCount +
             ", language=" +
             language +
-            ", createBy='" +
-            createBy +
-            '\'' +
-            ", createDate=" +
-            createDate +
             '}'
         );
     }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ChapterRepository extends MongoRepository<Chapter, String> {
+
     @Query("{'bookId': ?0, 'isDeleted': { '$ne': true }}")
     Page<Chapter> findByBookId(Pageable pageable, String bookId);
 
@@ -28,4 +29,5 @@ public interface ChapterRepository extends MongoRepository<Chapter, String> {
 
     @Query("{'bookId': ?0, 'chapterName': {'$in': ?1}, 'isDeleted': { '$ne': true }}")
     List<Chapter> findAllByBookIdAndChapterNameIn(String bookId, List<String> chapterName);
+
 }

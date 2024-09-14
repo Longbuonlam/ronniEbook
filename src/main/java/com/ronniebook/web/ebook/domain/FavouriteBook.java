@@ -2,7 +2,6 @@ package com.ronniebook.web.ebook.domain;
 
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.time.Instant;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -12,8 +11,6 @@ public class FavouriteBook extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String bookId;
-
-    private Instant addDate;
 
     @NotNull
     @Field("book_name")
@@ -29,14 +26,6 @@ public class FavouriteBook extends BaseEntity implements Serializable {
 
     public void setBookId(String bookId) {
         this.bookId = bookId;
-    }
-
-    public Instant getAddDate() {
-        return addDate;
-    }
-
-    public void setAddDate(Instant addDate) {
-        this.addDate = addDate;
     }
 
     public String getBookName() {

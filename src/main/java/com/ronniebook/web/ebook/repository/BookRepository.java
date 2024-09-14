@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface BookRepository extends MongoRepository<Book, String> {
+
     @Query("{'isDeleted' : {'$ne' : true}}")
     Page<Book> findAll(Pageable pageable);
 
@@ -26,4 +27,5 @@ public interface BookRepository extends MongoRepository<Book, String> {
         "{'isDeleted': { '$ne': true }}]}"
     )
     Page<Book> findByText(Pageable pageable, String text);
+
 }

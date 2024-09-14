@@ -2,7 +2,6 @@ package com.ronniebook.web.ebook.service;
 
 import com.ronniebook.web.ebook.domain.*;
 import com.ronniebook.web.ebook.repository.ChapterRepository;
-import com.ronniebook.web.repository.UserRepository;
 import com.ronniebook.web.security.SecurityUtils;
 import com.ronniebook.web.service.UserService;
 import com.ronniebook.web.util.Utils;
@@ -24,13 +23,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class ChapterService {
 
     private final Logger log = LoggerFactory.getLogger(ChapterService.class);
-    private final UserRepository userRepository;
     private final ChapterRepository chapterRepository;
-
     private final UserService userService;
 
-    public ChapterService(UserRepository userRepository, ChapterRepository chapterRepository, UserService userService) {
-        this.userRepository = userRepository;
+    public ChapterService(ChapterRepository chapterRepository, UserService userService) {
         this.chapterRepository = chapterRepository;
         this.userService = userService;
     }
@@ -43,9 +39,6 @@ public class ChapterService {
      */
     public Chapter save(Chapter chapter) {
         log.debug("Request to save chapter : {}", chapter);
-        String loginId = SecurityUtils.getCurrentUserLogin().orElseThrow();
-        String userId = userRepository.findOneByLogin(loginId).orElseThrow().getId();
-        chapter.setCreateBy(userId);
         return chapterRepository.save(chapter);
     }
 
