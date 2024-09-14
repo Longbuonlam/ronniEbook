@@ -1,9 +1,12 @@
 package com.ronniebook.web.ebook.domain;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import java.io.Serializable;
 
 @Document(collection = "book_view")
-public class BookView extends BaseEntity {
+public class BookView extends BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String bookId;
 

@@ -3,7 +3,6 @@ package com.ronniebook.web.ebook.domain;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.time.Instant;
 import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;

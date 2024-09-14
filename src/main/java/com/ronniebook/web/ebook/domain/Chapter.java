@@ -2,7 +2,6 @@ package com.ronniebook.web.ebook.domain;
 
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import net.minidev.json.annotate.JsonIgnore;
