@@ -41,4 +41,10 @@ public class ReadBookService {
         }
         return page;
     }
+
+    public void delete(String id) {
+        log.debug("request to delete read-book, id: {}", id);
+        ReadBook readBook = readBookRepository.findById(id).orElseThrow();
+        readBookRepository.delete(readBook);
+    }
 }
