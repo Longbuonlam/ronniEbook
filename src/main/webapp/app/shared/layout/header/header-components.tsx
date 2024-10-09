@@ -26,3 +26,30 @@ export const Home = () => (
     </NavLink>
   </NavItem>
 );
+
+export const Book = () => (
+  <NavItem>
+    <NavLink tag={Link} to="/" className="d-flex align-items-center">
+      <FontAwesomeIcon icon="book" />
+      <span>Book</span>
+    </NavLink>
+  </NavItem>
+);
+
+export const Favourite = () => (
+  <NavItem>
+    <NavLink tag={Link} to="/" className="d-flex align-items-center">
+      <FontAwesomeIcon icon="heart" />
+      <span>Favourite</span>
+    </NavLink>
+  </NavItem>
+);
+
+export const History = () => (
+  <NavItem>
+    <NavLink tag={Link} to="/" className="d-flex align-items-center">
+      <FontAwesomeIcon icon="clock" />
+      <span>History</span>
+    </NavLink>
+  </NavItem>
+);
