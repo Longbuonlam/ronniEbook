@@ -7,15 +7,16 @@ import { Card } from 'reactstrap';
 import { BrowserRouter } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 
-import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { getSession } from 'app/shared/reducers/authentication';
-import { getProfile } from 'app/shared/reducers/application-profile';
-import Header from 'app/shared/layout/header/header';
-import Footer from 'app/shared/layout/footer/footer';
-import { hasAnyAuthority } from 'app/shared/auth/private-route';
-import ErrorBoundary from 'app/shared/error/error-boundary';
-import { AUTHORITIES } from 'app/config/constants';
-import AppRoutes from 'app/routes';
+import { useAppDispatch, useAppSelector } from './config/store';
+import { getSession } from './shared/reducers/authentication';
+import { getProfile } from './shared/reducers/application-profile';
+import Header from './shared/layout/header/header';
+import RonnieHeader from './shared/layout/ronniebook-header/header';
+import Footer from './shared/layout/footer/footer';
+import { hasAnyAuthority } from './shared/auth/private-route';
+import ErrorBoundary from './shared/error/error-boundary';
+import { AUTHORITIES } from './config/constants';
+import AppRoutes from './routes';
 
 const baseHref = document.querySelector('base').getAttribute('href').replace(/\/$/, '');
 
