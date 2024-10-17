@@ -1,5 +1,5 @@
 import 'react-toastify/dist/ReactToastify.css';
-import './app.scss';
+// import './app.scss';
 import 'app/config/dayjs';
 
 import React, { useEffect } from 'react';
@@ -12,7 +12,7 @@ import { getSession } from './shared/reducers/authentication';
 import { getProfile } from './shared/reducers/application-profile';
 import Header from './shared/layout/header/header';
 import RonnieHeader from './shared/layout/ronniebook-header/header';
-import Footer from './shared/layout/footer/footer';
+import Footer from './shared/layout/ronniebook-footer/footer-components';
 import { hasAnyAuthority } from './shared/auth/private-route';
 import ErrorBoundary from './shared/error/error-boundary';
 import { AUTHORITIES } from './config/constants';
