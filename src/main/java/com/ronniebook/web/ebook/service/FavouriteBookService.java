@@ -38,8 +38,6 @@ public class FavouriteBookService {
         Book book = bookService.findOne(bookId);
         FavouriteBook favouriteBook = new FavouriteBook();
         favouriteBook.setBookId(bookId);
-        favouriteBook.setBookName(book.getBookName());
-        favouriteBook.setAuthor(book.getAuthor());
         return favouriteBookRepository.save(favouriteBook);
     }
 

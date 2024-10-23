@@ -1,4 +1,6 @@
 import React from 'react';
+import { getLoginUrl } from '../../util/url-utils';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export const BrandIcon = props => (
   <div {...props} className="brand-icon">
@@ -41,9 +43,22 @@ export const Items = () => (
   </ul>
 );
 
-export const SignButton = () => (
-  <div className="nav__btns">
-    <button className="btn sign__up">Sign Up</button>
-    <button className="btn sign__in">Sign In</button>
-  </div>
-);
+export const SignButton = () => {
+  const pageLocation = useLocation();
+  const navigate = useNavigate();
+  return (
+    <div className="nav__btns">
+      <button className="btn sign__up">Sign Up</button>
+      <button
+        className="btn sign__in"
+        onClick={() =>
+          navigate(getLoginUrl(), {
+            state: { from: pageLocation },
+          })
+        }
+      >
+        Sign In
+      </button>
+    </div>
+  );
+};

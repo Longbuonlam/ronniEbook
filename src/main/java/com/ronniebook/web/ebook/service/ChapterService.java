@@ -119,36 +119,4 @@ public class ChapterService {
         chapter.setDeleted(true);
         chapterRepository.save(chapter);
     }
-
-    public Chapter uploadChapter(String fileVersion, LanguageCode bookLanguage, Book book, MultipartFile file) throws IOException {
-        String bookId = book.getId();
-
-        Chapter chapter = new Chapter();
-
-        String fileName = java.util.UUID.randomUUID().toString();
-        String fileExt = Utils.getFileExtension(file.getOriginalFilename());
-        if (fileExt != null) {
-            fileName = fileName + "." + fileExt;
-        }
-
-        chapter
-            .chapterName(file.getOriginalFilename())
-            .language(bookLanguage == null ? book.getLanguage() : bookLanguage)
-            .setChapterStatus(ChapterStatus.NEW);
-
-        chapter.setBookId(bookId);
-
-        //        String filePath = fileStorage.storeFile(file.getInputStream(), Utils.joinPath(bookId, fileName));
-
-        chapter.addDocumentFile(
-            new DocumentFile()
-                //                .filePath(filePath)
-                .fileVersion(1)
-                .fileType(ChapterStatus.UPLOAD_FINISH)
-                .createdDate(Instant.now())
-                .createdBy(SecurityUtils.getCurrentUserLogin().orElseThrow())
-        );
-
-        return save(chapter);
-    }
 }

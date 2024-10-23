@@ -104,9 +104,9 @@ public class ChapterResource {
             throw new BadRequestAlertException(message, "Chapter", message);
         }
 
-        for (MultipartFile file : files) {
-            chaps.add(chapterService.uploadChapter(fileVersion, sourceLanguage, book, file));
-        }
+        //        for (MultipartFile file : files) {
+        //            chaps.add(chapterService.uploadChapter(fileVersion, sourceLanguage, book, file));
+        //        }
         return ResponseEntity.created(new URI("/api/chapters/" + chaps.get(0).getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, chaps.get(0).getId()))
             .body(chaps);
