@@ -52,6 +52,9 @@ export const DefaultItems = () => (
       <a>Book</a>
     </li>
     <li>
+      <a>PDF Book</a>
+    </li>
+    <li>
       <a>About Us</a>
     </li>
   </ul>
@@ -66,7 +69,13 @@ export const UserItems = () => (
       <a>Book</a>
     </li>
     <li>
+      <a>PDF Book</a>
+    </li>
+    <li>
       <a>Favourite</a>
+    </li>
+    <li>
+      <a>Progress</a>
     </li>
     <li>
       <a>History</a>
@@ -84,6 +93,9 @@ export const AdminItems = () => (
     </li>
     <li>
       <a>Book</a>
+    </li>
+    <li>
+      <a>PDF Book</a>
     </li>
     <li>
       <a>User Managerment</a>
