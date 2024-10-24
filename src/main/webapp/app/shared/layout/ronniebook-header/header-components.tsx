@@ -43,6 +43,54 @@ export const Items = () => (
   </ul>
 );
 
+export const DefaultItems = () => (
+  <ul className="nav__links" id="nav-links">
+    <li>
+      <a href="#">Home</a>
+    </li>
+    <li>
+      <a>Book</a>
+    </li>
+    <li>
+      <a>About Us</a>
+    </li>
+  </ul>
+);
+
+export const UserItems = () => (
+  <ul className="nav__links" id="nav-links">
+    <li>
+      <a>Home</a>
+    </li>
+    <li>
+      <a>Book</a>
+    </li>
+    <li>
+      <a>Favourite</a>
+    </li>
+    <li>
+      <a>History</a>
+    </li>
+    <li>
+      <a>About Us</a>
+    </li>
+  </ul>
+);
+
+export const AdminItems = () => (
+  <ul className="nav__links" id="nav-links">
+    <li>
+      <a>Home</a>
+    </li>
+    <li>
+      <a>Book</a>
+    </li>
+    <li>
+      <a>User Managerment</a>
+    </li>
+  </ul>
+);
+
 export const SignButton = () => {
   const pageLocation = useLocation();
   const navigate = useNavigate();

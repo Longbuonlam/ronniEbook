@@ -1,6 +1,7 @@
 import './header.scss';
 import React, { useState } from 'react';
-import { Brand, SignButton, Items } from './header-components';
+import { Brand, SignButton, DefaultItems, UserItems, AdminItems } from './header-components';
+import { AccountMenu } from '../menus';
 
 export interface IHeaderProps {
   isAuthenticated: boolean;
@@ -16,8 +17,8 @@ const RonnieHeader = (props: IHeaderProps) => {
   return (
     <nav>
       <Brand />
-      <Items />
-      <SignButton />
+      {props.isAuthenticated ? <>{props.isAdmin ? <AdminItems /> : <UserItems />}</> : <DefaultItems />}
+      {props.isAuthenticated ? <AccountMenu isAuthenticated={props.isAuthenticated} /> : <SignButton />}
     </nav>
   );
 };
