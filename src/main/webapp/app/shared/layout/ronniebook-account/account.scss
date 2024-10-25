@@ -20,6 +20,13 @@
     .dropdown__username {
       font-weight: bold;
     }
+
+    .dropdown__avatar {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
   }
 
   &__menu {
