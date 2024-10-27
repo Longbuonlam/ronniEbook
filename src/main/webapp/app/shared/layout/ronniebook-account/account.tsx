@@ -25,6 +25,7 @@ const AccountDropdown = () => {
       </button>
       {isOpen && (
         <ul className="dropdown__menu">
+          <li className="dropdown__item">Profile</li>
           <li className="dropdown__item">Announcements</li>
           <li className="dropdown__item">Help</li>
           <li className="dropdown__item" onClick={handleLogout}>

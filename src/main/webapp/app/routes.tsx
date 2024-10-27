@@ -11,6 +11,7 @@ import PrivateRoute from 'app/shared/auth/private-route';
 import ErrorBoundaryRoutes from 'app/shared/error/error-boundary-routes';
 import PageNotFound from 'app/shared/error/page-not-found';
 import { AUTHORITIES } from 'app/config/constants';
+import BookList from './modules/ronniebook-home/home';
 
 const loading = <div>loading ...</div>;
 
@@ -42,6 +43,7 @@ const AppRoutes = () => {
           }
         />
         <Route path="*" element={<PageNotFound />} />
+        <Route path="books" element={<BookList />} />
       </ErrorBoundaryRoutes>
     </div>
   );
