@@ -5,35 +5,62 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';
 
-function BookList() {
-  const [books, setBooks] = useState<Book[]>([]);
-  const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
+function Home() {
+  const [releaseBooks, setReleaseBooks] = useState<Book[]>([]);
+  const [unreleaseBooks, setUnReleaseBooks] = useState<Book[]>([]);
+  const [releasePage, setReleasePage] = useState(0);
+  const [unreleasePage, setUnReleasePage] = useState(0);
+  const [totalReleasePages, setTotalReleasePages] = useState(1);
+  const [totalUnreleasePages, setTotalUnreleasePages] = useState(1);
 
-  const fetchBooks = (pageNumber = 0) => {
-    fetch(`http://localhost:9000/api/books?page=${pageNumber}`)
+  const fetchReleaseBooks = (pageNumber = 0) => {
+    fetch(`http://localhost:9000/api/release-books?page=${pageNumber}&size=8`)
       .then(response => response.json())
       .then(data => {
-        setBooks(data.content);
-        setPage(data.number);
-        setTotalPages(data.totalPages);
+        setReleaseBooks(data.content);
+        setReleasePage(data.number);
+        setTotalReleasePages(data.totalPages);
+      })
+      .catch(error => console.error('Error fetching books:', error));
+  };
+
+  const fetchUnRealeseBooks = (pageNumber = 0) => {
+    fetch(`http://localhost:9000/api/unrelease-books?page=${pageNumber}&size=8`)
+      .then(response => response.json())
+      .then(data => {
+        setUnReleaseBooks(data.content);
+        setUnReleasePage(data.number);
+        setTotalUnreleasePages(data.totalPages);
       })
       .catch(error => console.error('Error fetching books:', error));
   };
 
   useEffect(() => {
-    fetchBooks();
+    fetchReleaseBooks();
+    fetchUnRealeseBooks();
   }, []);
 
-  const goToNextPage = () => {
-    if (page < totalPages - 1) {
-      fetchBooks(page + 1);
+  const goToNextReleasePage = () => {
+    if (releasePage < totalReleasePages - 1) {
+      fetchReleaseBooks(releasePage + 1);
     }
   };
 
-  const goToPreviousPage = () => {
-    if (page > 0) {
-      fetchBooks(page - 1);
+  const goToPreviousReleasePage = () => {
+    if (releasePage > 0) {
+      fetchReleaseBooks(releasePage - 1);
+    }
+  };
+
+  const gotoNextUnreleasePage = () => {
+    if (unreleasePage < totalUnreleasePages - 1) {
+      fetchUnRealeseBooks(unreleasePage + 1);
+    }
+  };
+
+  const gotoPreviousUnreleasePage = () => {
+    if (unreleasePage > 0) {
+      fetchUnRealeseBooks(unreleasePage - 1);
     }
   };
 
@@ -41,7 +68,7 @@ function BookList() {
     <div className="book-container">
       <h2>On Deck</h2>
       <div className="book-row">
-        {books.map(book => (
+        {releaseBooks.map(book => (
           <div key={book.id} className="book-card">
             <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
             <h3>{book.title}</h3>
@@ -53,22 +80,58 @@ function BookList() {
 
       <div className="pagination">
         <span
-          onClick={goToPreviousPage}
+          onClick={goToPreviousReleasePage}
           style={{
-            cursor: page === 0 ? 'not-allowed' : 'pointer',
-            opacity: page === 0 ? 0.5 : 1,
+            cursor: releasePage === 0 ? 'not-allowed' : 'pointer',
+            opacity: releasePage === 0 ? 0.5 : 1,
           }}
         >
           <FontAwesomeIcon icon={faCircleChevronLeft} />
         </span>
         <span>
-          Page {page + 1} / {totalPages}
+          Page {releasePage + 1} / {totalReleasePages}
         </span>
         <span
-          onClick={goToNextPage}
+          onClick={goToNextReleasePage}
           style={{
-            cursor: page === totalPages - 1 ? 'not-allowed' : 'pointer',
-            opacity: page === totalPages - 1 ? 0.5 : 1,
+            cursor: releasePage === totalReleasePages - 1 ? 'not-allowed' : 'pointer',
+            opacity: releasePage === totalReleasePages - 1 ? 0.5 : 1,
+          }}
+        >
+          <FontAwesomeIcon icon={faCircleChevronRight} />
+        </span>
+      </div>
+
+      <h2>Release Soon</h2>
+      <div className="book-row">
+        {unreleaseBooks.map(book => (
+          <div key={book.id} className="book-card">
+            <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
+            <h3>{book.title}</h3>
+            <p>{book.author}</p>
+            <p className="book-description">{book.description}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="pagination">
+        <span
+          onClick={gotoPreviousUnreleasePage}
+          style={{
+            cursor: unreleasePage === 0 ? 'not-allowed' : 'pointer',
+            opacity: unreleasePage === 0 ? 0.5 : 1,
+          }}
+        >
+          <FontAwesomeIcon icon={faCircleChevronLeft} />
+        </span>
+        <span>
+          Page {unreleasePage + 1} / {totalUnreleasePages}
+        </span>
+        <span
+          onClick={gotoNextUnreleasePage}
+          style={{
+            cursor: unreleasePage === totalUnreleasePages - 1 ? 'not-allowed' : 'pointer',
+            opacity: unreleasePage === totalUnreleasePages - 1 ? 0.5 : 1,
           }}
         >
           <FontAwesomeIcon icon={faCircleChevronRight} />
@@ -78,4 +141,4 @@ function BookList() {
   );
 }
 
-export default BookList;
+export default Home;

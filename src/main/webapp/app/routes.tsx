@@ -1,17 +1,16 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Navigate, Route } from 'react-router-dom';
 import Loadable from 'react-loadable';
 
 import LoginRedirect from 'app/modules/login/login-redirect';
 import Logout from 'app/modules/login/logout';
-import Home from 'app/modules/home/home';
 import LandingPage from './modules/ronniebook-landingpage/landingpage';
 import EntitiesRoutes from 'app/entities/routes';
 import PrivateRoute from 'app/shared/auth/private-route';
 import ErrorBoundaryRoutes from 'app/shared/error/error-boundary-routes';
 import PageNotFound from 'app/shared/error/page-not-found';
 import { AUTHORITIES } from 'app/config/constants';
-import BookList from './modules/ronniebook-home/home';
+import Home from './modules/ronniebook-home/home';
 
 const loading = <div>loading ...</div>;
 
@@ -19,11 +18,26 @@ const Admin = Loadable({
   loader: () => import(/* webpackChunkName: "administration" */ 'app/modules/administration'),
   loading: () => loading,
 });
-const AppRoutes = () => {
+
+export interface RouteProps {
+  isAuthenticated: boolean;
+  isAdmin: boolean;
+}
+
+const AppRoutes = (props: RouteProps) => {
   return (
     <div className="view-routes">
       <ErrorBoundaryRoutes>
-        <Route index element={<LandingPage />} />
+        <Route
+          index
+          element={
+            props.isAuthenticated ? (
+              <>{props.isAdmin ? <Navigate to="/admin/user-managerment" /> : <Navigate to="/app/home" />}</>
+            ) : (
+              <LandingPage />
+            )
+          }
+        />
         <Route path="logout" element={<Logout />} />
         <Route
           path="admin/*"
@@ -43,7 +57,7 @@ const AppRoutes = () => {
           }
         />
         <Route path="*" element={<PageNotFound />} />
-        <Route path="books" element={<BookList />} />
+        <Route path="app/home" element={<Home />} />
       </ErrorBoundaryRoutes>
     </div>
   );

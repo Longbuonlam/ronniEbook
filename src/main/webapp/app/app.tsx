@@ -10,7 +10,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from './config/store';
 import { getSession } from './shared/reducers/authentication';
 import { getProfile } from './shared/reducers/application-profile';
-import Header from './shared/layout/header/header';
 import RonnieHeader from './shared/layout/ronniebook-header/header';
 import Footer from './shared/layout/ronniebook-footer/footer-components';
 import { hasAnyAuthority } from './shared/auth/private-route';
@@ -49,7 +48,7 @@ export const App = () => {
         <div className="container-fluid view-container" id="app-view-container">
           <Card className="jh-card">
             <ErrorBoundary>
-              <AppRoutes />
+              <AppRoutes isAuthenticated={isAuthenticated} isAdmin={isAdmin} />
             </ErrorBoundary>
           </Card>
           <Footer />
