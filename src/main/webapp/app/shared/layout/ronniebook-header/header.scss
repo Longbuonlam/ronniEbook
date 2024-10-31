@@ -88,6 +88,11 @@ nav {
   color: var(--text-dark);
 }
 
+.nav__links a.active {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
 .nav__btns {
   display: none;
 }

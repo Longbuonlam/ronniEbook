@@ -23,25 +23,31 @@ export const Brand = () => (
   </div>
 );
 
-export const Items = () => (
-  <ul className="nav__links" id="nav-links">
-    <li>
-      <a href="#">Home</a>
-    </li>
-    <li>
-      <a href="#">Book</a>
-    </li>
-    <li>
-      <a href="#">Favourite</a>
-    </li>
-    <li>
-      <a href="#">History</a>
-    </li>
-    <li>
-      <a href="#">About Us</a>
-    </li>
-  </ul>
-);
+export const Items = () => {
+  const location = useLocation();
+  const isHomeActive = location.pathname === '/app/home';
+  return (
+    <ul className="nav__links" id="nav-links">
+      <li>
+        <a href="/app/home" className={isHomeActive ? 'active' : ''}>
+          Home
+        </a>
+      </li>
+      <li>
+        <a href="#">Book</a>
+      </li>
+      <li>
+        <a href="#">Favourite</a>
+      </li>
+      <li>
+        <a href="#">History</a>
+      </li>
+      <li>
+        <a href="#">About Us</a>
+      </li>
+    </ul>
+  );
+};
 
 export const DefaultItems = () => (
   <ul className="nav__links" id="nav-links">
@@ -52,56 +58,54 @@ export const DefaultItems = () => (
       <a>Book</a>
     </li>
     <li>
-      <a>PDF Book</a>
-    </li>
-    <li>
       <a>About Us</a>
     </li>
   </ul>
 );
 
-export const UserItems = () => (
-  <ul className="nav__links" id="nav-links">
-    <li>
-      <a>Home</a>
-    </li>
-    <li>
-      <a>Book</a>
-    </li>
-    <li>
-      <a>PDF Book</a>
-    </li>
-    <li>
-      <a>Favourite</a>
-    </li>
-    <li>
-      <a>Progress</a>
-    </li>
-    <li>
-      <a>History</a>
-    </li>
-    <li>
-      <a>About Us</a>
-    </li>
-  </ul>
-);
+export const UserItems = () => {
+  const location = useLocation();
+  const isHomeActive = location.pathname === '/app/home';
+  return (
+    <ul className="nav__links" id="nav-links">
+      <li>
+        <a href="/app/home" className={isHomeActive ? 'active' : ''}>
+          Home
+        </a>
+      </li>
+      <li>
+        <a>Book</a>
+      </li>
+      <li>
+        <a>Favourite</a>
+      </li>
+      <li>
+        <a>History</a>
+      </li>
+      <li>
+        <a>About Us</a>
+      </li>
+    </ul>
+  );
+};
 
-export const AdminItems = () => (
-  <ul className="nav__links" id="nav-links">
-    <li>
-      <a>Home</a>
-    </li>
-    <li>
-      <a>Book</a>
-    </li>
-    <li>
-      <a>PDF Book</a>
-    </li>
-    <li>
-      <a>User Managerment</a>
-    </li>
-  </ul>
-);
+export const AdminItems = () => {
+  const location = useLocation();
+  const isUserManagermentActive = location.pathname === '/admin/user-managerment';
+  return (
+    <ul className="nav__links" id="nav-links">
+      <li>
+        <a>Home</a>
+      </li>
+      <li>
+        <a>Book Managerment</a>
+      </li>
+      <li>
+        <a className={isUserManagermentActive ? 'active' : ''}>User Managerment</a>
+      </li>
+    </ul>
+  );
+};
 
 export const SignButton = () => {
   const pageLocation = useLocation();

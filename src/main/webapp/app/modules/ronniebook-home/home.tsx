@@ -14,7 +14,7 @@ function Home() {
   const [totalUnreleasePages, setTotalUnreleasePages] = useState(1);
 
   const fetchReleaseBooks = (pageNumber = 0) => {
-    fetch(`http://localhost:9000/api/release-books?page=${pageNumber}&size=8`)
+    fetch(`http://localhost:9000/api/release-books?page=${pageNumber}&size=6`)
       .then(response => response.json())
       .then(data => {
         setReleaseBooks(data.content);
@@ -25,7 +25,7 @@ function Home() {
   };
 
   const fetchUnRealeseBooks = (pageNumber = 0) => {
-    fetch(`http://localhost:9000/api/unrelease-books?page=${pageNumber}&size=8`)
+    fetch(`http://localhost:9000/api/unrelease-books?page=${pageNumber}&size=6`)
       .then(response => response.json())
       .then(data => {
         setUnReleaseBooks(data.content);
