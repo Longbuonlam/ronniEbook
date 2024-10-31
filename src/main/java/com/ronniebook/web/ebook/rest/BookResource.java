@@ -1,6 +1,7 @@
 package com.ronniebook.web.ebook.rest;
 
 import com.ronniebook.web.ebook.domain.Book;
+import com.ronniebook.web.ebook.domain.BookStatus;
 import com.ronniebook.web.ebook.repository.BookRepository;
 import com.ronniebook.web.ebook.service.BookService;
 import com.ronniebook.web.security.AuthoritiesConstants;
@@ -129,5 +130,17 @@ public class BookResource {
         Optional<Book> result = bookService.update(existingBook, book);
 
         return ResponseUtil.wrapOrNotFound(result, HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, book.getId()));
+    }
+
+    @GetMapping("/release-books")
+    public Page<Book> getReleaseBooks(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+        log.debug("REST request to get a page of Release Books");
+        return bookService.findBookByStatus(pageable, BookStatus.DONE);
+    }
+
+    @GetMapping("/unrelease-books")
+    public Page<Book> getUnReleaseBooks(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+        log.debug("REST request to get a page of UnRelease Books");
+        return bookService.findBookByStatus(pageable, BookStatus.IN_PROGRESS);
     }
 }

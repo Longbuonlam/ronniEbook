@@ -1,6 +1,7 @@
 package com.ronniebook.web.ebook.service;
 
 import com.ronniebook.web.ebook.domain.Book;
+import com.ronniebook.web.ebook.domain.BookStatus;
 import com.ronniebook.web.ebook.repository.BookRepository;
 import com.ronniebook.web.service.UserService;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
@@ -131,5 +132,21 @@ public class BookService {
             throw new BadRequestAlertException("Id invalid", ENTITY_NAME, "BookId not found");
         }
         return book;
+    }
+
+    public Page<Book> findBookByStatus(Pageable pageable, BookStatus bookStatus) {
+        log.debug("Request to get release books and unrelease books");
+        // Add SortPage
+        if (pageable != null && pageable.getSort().isEmpty()) {
+            Sort sort = Sort.by(Sort.Direction.ASC, "book_name");
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        }
+        if (pageable == null) {
+            throw new BadRequestAlertException("", "", "Pageable is null");
+        }
+        if (bookStatus == BookStatus.DONE) {
+            return bookRepository.findByBookStatusAndNotDeleted(pageable, BookStatus.DONE);
+        }
+        return bookRepository.findByBookStatusAndNotDeleted(pageable, BookStatus.IN_PROGRESS);
     }
 }
