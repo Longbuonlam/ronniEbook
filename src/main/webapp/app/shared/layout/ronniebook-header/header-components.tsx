@@ -8,20 +8,23 @@ export const BrandIcon = props => (
   </div>
 );
 
-export const Brand = () => (
-  <div className="nav__header">
-    <div className="nav__logo">
-      <a href="#">
-        Ronni<span>Ebook</span>
-      </a>
+export const Brand = () => {
+  const navigate = useNavigate();
+  return (
+    <div className="nav__header">
+      <div className="nav__logo">
+        <a onClick={() => navigate('/')}>
+          Ronni<span>Ebook</span>
+        </a>
+      </div>
+      <div className="nav__menu__btn" id="menu-btn">
+        <span>
+          <i className="ri-menu-line"></i>
+        </span>
+      </div>
     </div>
-    <div className="nav__menu__btn" id="menu-btn">
-      <span>
-        <i className="ri-menu-line"></i>
-      </span>
-    </div>
-  </div>
-);
+  );
+};
 
 export const Items = () => {
   const location = useLocation();
@@ -49,41 +52,61 @@ export const Items = () => {
   );
 };
 
-export const DefaultItems = () => (
-  <ul className="nav__links" id="nav-links">
-    <li>
-      <a href="#">Home</a>
-    </li>
-    <li>
-      <a>Book</a>
-    </li>
-    <li>
-      <a>About Us</a>
-    </li>
-  </ul>
-);
-
-export const UserItems = () => {
+export const DefaultItems = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isHomeActive = location.pathname === '/app/home';
+  const isAboutUsActive = location.pathname === '/app/about-us';
   return (
     <ul className="nav__links" id="nav-links">
       <li>
-        <a href="/app/home" className={isHomeActive ? 'active' : ''}>
+        <a onClick={() => navigate('/app/home')} className={isHomeActive ? 'active' : ''}>
           Home
         </a>
       </li>
       <li>
-        <a>Book</a>
+        <a onClick={() => navigate('/app/about-us')} className={isAboutUsActive ? 'active' : ''}>
+          About Us
+        </a>
+      </li>
+    </ul>
+  );
+};
+
+export const UserItems = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isHomeActive = location.pathname === '/app/home';
+  const isBookActive = location.pathname === '/app/book';
+  const isFavouriteActive = location.pathname === '/app/favourite';
+  const isHistoryActive = location.pathname === '/app/history';
+  const isAboutUsActive = location.pathname === '/app/about-us';
+  return (
+    <ul className="nav__links" id="nav-links">
+      <li>
+        <a onClick={() => navigate('/app/home')} className={isHomeActive ? 'active' : ''}>
+          Home
+        </a>
       </li>
       <li>
-        <a>Favourite</a>
+        <a onClick={() => navigate('/app/book')} className={isBookActive ? 'active' : ''}>
+          Book
+        </a>
       </li>
       <li>
-        <a>History</a>
+        <a onClick={() => navigate('/app/favourite')} className={isFavouriteActive ? 'active' : ''}>
+          Favourite
+        </a>
       </li>
       <li>
-        <a>About Us</a>
+        <a onClick={() => navigate('/app/history')} className={isHistoryActive ? 'active' : ''}>
+          History
+        </a>
+      </li>
+      <li>
+        <a onClick={() => navigate('/app/about-us')} className={isAboutUsActive ? 'active' : ''}>
+          About Us
+        </a>
       </li>
     </ul>
   );
@@ -92,16 +115,43 @@ export const UserItems = () => {
 export const AdminItems = () => {
   const location = useLocation();
   const isUserManagermentActive = location.pathname === '/admin/user-managerment';
+  const isHomeActive = location.pathname === '/app/home';
+  const isBookActive = location.pathname === '/app/book';
+  const isFavouriteActive = location.pathname === '/app/favourite';
+  const isHistoryActive = location.pathname === '/app/history';
+  const isBookManagermentActive = location.pathname === '/app/book-managerment';
+  const navigate = useNavigate();
   return (
     <ul className="nav__links" id="nav-links">
       <li>
-        <a>Home</a>
+        <a onClick={() => navigate('/app/home')} className={isHomeActive ? 'active' : ''}>
+          Home
+        </a>
       </li>
       <li>
-        <a>Book Managerment</a>
+        <a onClick={() => navigate('/app/book')} className={isBookActive ? 'active' : ''}>
+          Book
+        </a>
       </li>
       <li>
-        <a className={isUserManagermentActive ? 'active' : ''}>User Managerment</a>
+        <a onClick={() => navigate('/app/favourite')} className={isFavouriteActive ? 'active' : ''}>
+          Favourite
+        </a>
+      </li>
+      <li>
+        <a onClick={() => navigate('/app/history')} className={isHistoryActive ? 'active' : ''}>
+          History
+        </a>
+      </li>
+      <li>
+        <a onClick={() => navigate('/app/book-managerment')} className={isBookManagermentActive ? 'active' : ''}>
+          Book Managerment
+        </a>
+      </li>
+      <li>
+        <a onClick={() => navigate('/app/user-managerment')} className={isUserManagermentActive ? 'active' : ''}>
+          User Managerment
+        </a>
       </li>
     </ul>
   );

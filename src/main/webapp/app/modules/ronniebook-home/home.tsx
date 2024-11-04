@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Book } from '../../shared/model/book.model';
 import './home.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faCircleChevronRight, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';
 
 function Home() {
@@ -66,6 +66,10 @@ function Home() {
 
   return (
     <div className="book-container">
+      <div className="search-bar-container">
+        <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
+        <input type="text" placeholder="Search Book..." className="search-input" />
+      </div>
       <h2>On Deck</h2>
       <div className="book-row">
         {releaseBooks.map(book => (
