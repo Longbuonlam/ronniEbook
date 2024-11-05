@@ -12,9 +12,11 @@ function Home() {
   const [unreleasePage, setUnReleasePage] = useState(0);
   const [totalReleasePages, setTotalReleasePages] = useState(1);
   const [totalUnreleasePages, setTotalUnreleasePages] = useState(1);
+  const [searchText, setSearchText] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchReleaseBooks = (pageNumber = 0) => {
-    fetch(`http://localhost:9000/api/release-books?page=${pageNumber}&size=6`)
+  const fetchReleaseBooks = (pageNumber = 0, search = '') => {
+    fetch(`http://localhost:9000/api/release-books?page=${pageNumber}&size=6&searchText=${search}`)
       .then(response => response.json())
       .then(data => {
         setReleaseBooks(data.content);
@@ -24,8 +26,8 @@ function Home() {
       .catch(error => console.error('Error fetching books:', error));
   };
 
-  const fetchUnRealeseBooks = (pageNumber = 0) => {
-    fetch(`http://localhost:9000/api/unrelease-books?page=${pageNumber}&size=6`)
+  const fetchUnRealeseBooks = (pageNumber = 0, search = '') => {
+    fetch(`http://localhost:9000/api/unrelease-books?page=${pageNumber}&size=6&searchText=${search}`)
       .then(response => response.json())
       .then(data => {
         setUnReleaseBooks(data.content);
@@ -36,9 +38,9 @@ function Home() {
   };
 
   useEffect(() => {
-    fetchReleaseBooks();
-    fetchUnRealeseBooks();
-  }, []);
+    fetchReleaseBooks(0, searchQuery);
+    fetchUnRealeseBooks(0, searchQuery);
+  }, [searchQuery]);
 
   const goToNextReleasePage = () => {
     if (releasePage < totalReleasePages - 1) {
@@ -64,11 +66,28 @@ function Home() {
     }
   };
 
+  const handleSearchChange = event => {
+    setSearchText(event.target.value);
+  };
+
+  const handleSearchKeyPress = event => {
+    if (event.key === 'Enter') {
+      setSearchQuery(searchText);
+    }
+  };
+
   return (
     <div className="book-container">
       <div className="search-bar-container">
         <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
-        <input type="text" placeholder="Search Book..." className="search-input" />
+        <input
+          type="text"
+          placeholder="Search Book..."
+          className="search-input"
+          value={searchText}
+          onChange={handleSearchChange}
+          onKeyPress={handleSearchKeyPress}
+        />
       </div>
       <h2>On Deck</h2>
       <div className="book-row">

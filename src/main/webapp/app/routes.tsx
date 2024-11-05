@@ -32,7 +32,7 @@ const AppRoutes = (props: RouteProps) => {
           index
           element={
             props.isAuthenticated ? (
-              <>{props.isAdmin ? <Navigate to="/admin/user-managerment" /> : <Navigate to="/app/home" />}</>
+              <>{props.isAdmin ? <Navigate to="/app/admin/user-managerment" /> : <Navigate to="/app/home" />}</>
             ) : (
               <LandingPage />
             )
