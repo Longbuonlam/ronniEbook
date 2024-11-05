@@ -123,7 +123,7 @@ public class BookService {
         bookRepository.save(book);
     }
 
-    @Cacheable(BOOK_CACHE_NAME)
+    //    @Cacheable(BOOK_CACHE_NAME)
     public Book findOne(String id) {
         log.debug("Request to get Book : {}", id);
         Query query = new Query(Criteria.where("_id").is(id).and("isDeleted").ne(true));

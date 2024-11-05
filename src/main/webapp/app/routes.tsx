@@ -11,6 +11,7 @@ import ErrorBoundaryRoutes from 'app/shared/error/error-boundary-routes';
 import PageNotFound from 'app/shared/error/page-not-found';
 import { AUTHORITIES } from 'app/config/constants';
 import Home from './modules/ronniebook-home/home';
+import BookDetail from './modules/ronniebook-book-detail/book-detail';
 
 const loading = <div>loading ...</div>;
 
@@ -58,6 +59,7 @@ const AppRoutes = (props: RouteProps) => {
         />
         <Route path="*" element={<PageNotFound />} />
         <Route path="app/home" element={<Home />} />
+        <Route path="app/book/:bookId" element={<BookDetail />} />
       </ErrorBoundaryRoutes>
     </div>
   );
