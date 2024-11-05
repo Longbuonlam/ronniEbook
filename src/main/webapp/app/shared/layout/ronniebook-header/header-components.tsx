@@ -114,12 +114,12 @@ export const UserItems = () => {
 
 export const AdminItems = () => {
   const location = useLocation();
-  const isUserManagermentActive = location.pathname === '/admin/user-managerment';
+  const isUserManagermentActive = location.pathname === '/app/admin/user-managerment';
   const isHomeActive = location.pathname === '/app/home';
   const isBookActive = location.pathname === '/app/book';
   const isFavouriteActive = location.pathname === '/app/favourite';
   const isHistoryActive = location.pathname === '/app/history';
-  const isBookManagermentActive = location.pathname === '/app/book-managerment';
+  const isBookManagermentActive = location.pathname === '/app/admin/book-managerment';
   const navigate = useNavigate();
   return (
     <ul className="nav__links" id="nav-links">
@@ -144,12 +144,12 @@ export const AdminItems = () => {
         </a>
       </li>
       <li>
-        <a onClick={() => navigate('/app/book-managerment')} className={isBookManagermentActive ? 'active' : ''}>
+        <a onClick={() => navigate('/app/admin/book-managerment')} className={isBookManagermentActive ? 'active' : ''}>
           Book Managerment
         </a>
       </li>
       <li>
-        <a onClick={() => navigate('/app/user-managerment')} className={isUserManagermentActive ? 'active' : ''}>
+        <a onClick={() => navigate('/app/admin/user-managerment')} className={isUserManagermentActive ? 'active' : ''}>
           User Managerment
         </a>
       </li>

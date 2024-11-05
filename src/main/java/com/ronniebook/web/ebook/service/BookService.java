@@ -134,7 +134,7 @@ public class BookService {
         return book;
     }
 
-    public Page<Book> findBookByStatus(Pageable pageable, BookStatus bookStatus) {
+    public Page<Book> findBookByStatus(Pageable pageable, BookStatus bookStatus, String searchText) {
         log.debug("Request to get release books and unrelease books");
         // Add SortPage
         if (pageable != null && pageable.getSort().isEmpty()) {
@@ -144,9 +144,17 @@ public class BookService {
         if (pageable == null) {
             throw new BadRequestAlertException("", "", "Pageable is null");
         }
-        if (bookStatus == BookStatus.DONE) {
-            return bookRepository.findByBookStatusAndNotDeleted(pageable, BookStatus.DONE);
+
+        if (searchText == null) {
+            if (bookStatus == BookStatus.DONE) {
+                return bookRepository.findByBookStatusAndNotDeleted(pageable, BookStatus.DONE);
+            }
+            return bookRepository.findByBookStatusAndNotDeleted(pageable, BookStatus.IN_PROGRESS);
         }
-        return bookRepository.findByBookStatusAndNotDeleted(pageable, BookStatus.IN_PROGRESS);
+
+        if (bookStatus == BookStatus.DONE) {
+            return bookRepository.findByBookStatusAndSearchText(pageable, searchText, BookStatus.DONE);
+        }
+        return bookRepository.findByBookStatusAndSearchText(pageable, searchText, BookStatus.IN_PROGRESS);
     }
 }

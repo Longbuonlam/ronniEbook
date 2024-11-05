@@ -30,4 +30,16 @@ public interface BookRepository extends MongoRepository<Book, String> {
 
     @Query("{'bookStatus': ?0, 'isDeleted': false}")
     Page<Book> findByBookStatusAndNotDeleted(Pageable pageable, BookStatus bookStatus);
+
+    @Query(
+        "{'$and' : [{'$or':[" +
+        "{ 'book_name' : { $regex: ?0, $options: 'i' } }, " +
+        "{ 'title' : { $regex: ?0, $options: 'i' } }," +
+        "{ 'author' : { $regex: ?0, $options: 'i' } }," +
+        "{ 'description' : { $regex: ?0, $options: 'i' } }" +
+        "{ 'category' : { $regex: ?0, $options: 'i' } }" +
+        "]}, " +
+        "{'bookStatus': ?1, 'isDeleted': { '$ne': true }}]}"
+    )
+    Page<Book> findByBookStatusAndSearchText(Pageable pageable, String searchText, BookStatus bookStatus);
 }

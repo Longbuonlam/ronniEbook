@@ -133,14 +133,20 @@ public class BookResource {
     }
 
     @GetMapping("/release-books")
-    public Page<Book> getReleaseBooks(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+    public Page<Book> getReleaseBooks(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false) String searchText
+    ) {
         log.debug("REST request to get a page of Release Books");
-        return bookService.findBookByStatus(pageable, BookStatus.DONE);
+        return bookService.findBookByStatus(pageable, BookStatus.DONE, searchText);
     }
 
     @GetMapping("/unrelease-books")
-    public Page<Book> getUnReleaseBooks(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+    public Page<Book> getUnReleaseBooks(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false) String searchText
+    ) {
         log.debug("REST request to get a page of UnRelease Books");
-        return bookService.findBookByStatus(pageable, BookStatus.IN_PROGRESS);
+        return bookService.findBookByStatus(pageable, BookStatus.IN_PROGRESS, searchText);
     }
 }
