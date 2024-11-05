@@ -4,6 +4,7 @@ import './home.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleChevronRight, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
   const [releaseBooks, setReleaseBooks] = useState<Book[]>([]);
@@ -14,6 +15,7 @@ function Home() {
   const [totalUnreleasePages, setTotalUnreleasePages] = useState(1);
   const [searchText, setSearchText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   const fetchReleaseBooks = (pageNumber = 0, search = '') => {
     fetch(`http://localhost:9000/api/release-books?page=${pageNumber}&size=6&searchText=${search}`)
@@ -76,6 +78,10 @@ function Home() {
     }
   };
 
+  const handleBookClick = bookId => {
+    navigate(`/app/book/${bookId}`);
+  };
+
   return (
     <div className="book-container">
       <div className="search-bar-container">
@@ -92,7 +98,7 @@ function Home() {
       <h2>On Deck</h2>
       <div className="book-row">
         {releaseBooks.map(book => (
-          <div key={book.id} className="book-card">
+          <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
             <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
             <h3>{book.title}</h3>
             <p>{book.author}</p>
@@ -128,7 +134,7 @@ function Home() {
       <h2>Release Soon</h2>
       <div className="book-row">
         {unreleaseBooks.map(book => (
-          <div key={book.id} className="book-card">
+          <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
             <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
             <h3>{book.title}</h3>
             <p>{book.author}</p>
