@@ -3,7 +3,7 @@ import { Book } from '../../shared/model/book.model';
 import { useNavigate, useParams } from 'react-router-dom';
 import './book-detail.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookOpen, faDownload, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faBookOpen, faStar } from '@fortawesome/free-solid-svg-icons';
 
 function BookDetail() {
   const { bookId } = useParams();
@@ -48,7 +48,7 @@ function BookDetail() {
                 <FontAwesomeIcon icon={faBookOpen} /> Continue
               </button>
               <FontAwesomeIcon icon={faStar} className="icon" />
-              <FontAwesomeIcon icon={faDownload} className="icon" />
+              {/* <FontAwesomeIcon icon={faDownload} className="icon" /> */}
             </div>
 
             <p className="book-description">{book.description}</p>
