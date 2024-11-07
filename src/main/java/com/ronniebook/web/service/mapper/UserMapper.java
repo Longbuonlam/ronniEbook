@@ -128,6 +128,8 @@ public class UserMapper {
         UserDTO userDto = new UserDTO();
         userDto.setId(user.getId());
         userDto.setLogin(user.getLogin());
+        userDto.setAuthorities(user.getAuthorities());
+        userDto.setActivated(user.isActivated());
         return userDto;
     }
 

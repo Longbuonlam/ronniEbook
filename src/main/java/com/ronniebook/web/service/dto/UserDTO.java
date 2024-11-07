@@ -1,8 +1,10 @@
 package com.ronniebook.web.service.dto;
 
+import com.ronniebook.web.domain.Authority;
 import com.ronniebook.web.domain.User;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A DTO representing a user, with only the public attributes.
@@ -15,6 +17,10 @@ public class UserDTO implements Serializable {
 
     private String login;
 
+    private Set<Authority> authorities;
+
+    private boolean activated;
+
     public UserDTO() {
         // Empty constructor needed for Jackson.
     }
@@ -23,6 +29,8 @@ public class UserDTO implements Serializable {
         this.id = user.getId();
         // Customize it here if you need, or not, firstName/lastName/etc
         this.login = user.getLogin();
+        this.authorities = user.getAuthorities();
+        this.activated = user.isActivated();
     }
 
     public String getId() {
@@ -39,6 +47,22 @@ public class UserDTO implements Serializable {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public Set<Authority> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(Set<Authority> authorities) {
+        this.authorities = authorities;
+    }
+
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
     }
 
     @Override

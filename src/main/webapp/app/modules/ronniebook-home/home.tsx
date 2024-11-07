@@ -109,10 +109,12 @@ function Home() {
 
       <div className="pagination">
         <span
+          className="left-chevron"
           onClick={goToPreviousReleasePage}
           style={{
             cursor: releasePage === 0 ? 'not-allowed' : 'pointer',
             opacity: releasePage === 0 ? 0.5 : 1,
+            marginRight: '10px',
           }}
         >
           <FontAwesomeIcon icon={faCircleChevronLeft} />
@@ -121,10 +123,12 @@ function Home() {
           Page {releasePage + 1} / {totalReleasePages}
         </span>
         <span
+          className="right-chevron"
           onClick={goToNextReleasePage}
           style={{
             cursor: releasePage === totalReleasePages - 1 ? 'not-allowed' : 'pointer',
             opacity: releasePage === totalReleasePages - 1 ? 0.5 : 1,
+            marginLeft: '10px',
           }}
         >
           <FontAwesomeIcon icon={faCircleChevronRight} />
@@ -145,10 +149,12 @@ function Home() {
 
       <div className="pagination">
         <span
+          className="left-chevron"
           onClick={gotoPreviousUnreleasePage}
           style={{
             cursor: unreleasePage === 0 ? 'not-allowed' : 'pointer',
             opacity: unreleasePage === 0 ? 0.5 : 1,
+            marginRight: '10px',
           }}
         >
           <FontAwesomeIcon icon={faCircleChevronLeft} />
@@ -157,10 +163,12 @@ function Home() {
           Page {unreleasePage + 1} / {totalUnreleasePages}
         </span>
         <span
+          className="right-chevron"
           onClick={gotoNextUnreleasePage}
           style={{
             cursor: unreleasePage === totalUnreleasePages - 1 ? 'not-allowed' : 'pointer',
             opacity: unreleasePage === totalUnreleasePages - 1 ? 0.5 : 1,
+            marginLeft: '10px',
           }}
         >
           <FontAwesomeIcon icon={faCircleChevronRight} />

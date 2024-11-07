@@ -12,6 +12,7 @@ import PageNotFound from 'app/shared/error/page-not-found';
 import { AUTHORITIES } from 'app/config/constants';
 import Home from './modules/ronniebook-home/home';
 import BookDetail from './modules/ronniebook-book-detail/book-detail';
+import UserManagerment from './modules/ronniebook-user-managerment/user-managerment';
 
 const loading = <div>loading ...</div>;
 
@@ -60,6 +61,14 @@ const AppRoutes = (props: RouteProps) => {
         <Route path="*" element={<PageNotFound />} />
         <Route path="app/home" element={<Home />} />
         <Route path="app/book/:bookId" element={<BookDetail />} />
+        <Route
+          path="/app/admin/user-managerment"
+          element={
+            <PrivateRoute hasAnyAuthorities={[AUTHORITIES.ADMIN]}>
+              <UserManagerment />
+            </PrivateRoute>
+          }
+        />
       </ErrorBoundaryRoutes>
     </div>
   );
