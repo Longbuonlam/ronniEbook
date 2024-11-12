@@ -29,6 +29,12 @@ function UserManagerment() {
     fetchUsers(0);
   }, []);
 
+  const handlePageChange = pageNumber => {
+    if (pageNumber >= 0 && pageNumber < totalPages) {
+      fetchUsers(pageNumber);
+    }
+  };
+
   return (
     <div className="container">
       <h2>Users</h2>
@@ -61,12 +67,21 @@ function UserManagerment() {
         </tbody>
       </table>
       <div className="pagination">
-        <span>Showing 1 of 1</span>
+        <span>
+          Showing page {Page + 1} of {totalPages}
+        </span>
         <div>
-          <button className="page-btn">Previous</button>
-          <button className="page-btn active">1</button>
-          <button className="page-btn">2</button>
-          <button className="page-btn">Next</button>
+          <button className="page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
+            Previous
+          </button>
+          {[...Array(totalPages)].map((_, index) => (
+            <button key={index} className={`page-btn ${Page === index ? 'active' : ''}`} onClick={() => handlePageChange(index)}>
+              {index + 1}
+            </button>
+          ))}
+          <button className="page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
+            Next
+          </button>
         </div>
       </div>
     </div>
