@@ -65,18 +65,6 @@ public class User extends AbstractAuditingEntity<String> implements Serializable
     @JsonIgnore
     private Set<Authority> authorities = new HashSet<>();
 
-    @JsonIgnore
-    private Set<FavouriteBook> favouriteBooks = new HashSet<>();
-
-    @JsonIgnore
-    private Set<History> histories = new HashSet<>();
-
-    @JsonIgnore
-    private Set<ReadingProgress> readingProgresses = new HashSet<>();
-
-    @JsonIgnore
-    private Set<BookView> bookViews = new HashSet<>();
-
     public String getId() {
         return id;
     }
@@ -148,38 +136,6 @@ public class User extends AbstractAuditingEntity<String> implements Serializable
 
     public void setAuthorities(Set<Authority> authorities) {
         this.authorities = authorities;
-    }
-
-    public Set<FavouriteBook> getFavouriteBooks() {
-        return favouriteBooks;
-    }
-
-    public void setFavouriteBooks(Set<FavouriteBook> favouriteBooks) {
-        this.favouriteBooks = favouriteBooks;
-    }
-
-    public Set<BookView> getBookViews() {
-        return bookViews;
-    }
-
-    public void setBookViews(Set<BookView> bookViews) {
-        this.bookViews = bookViews;
-    }
-
-    public Set<ReadingProgress> getReadingProgresses() {
-        return readingProgresses;
-    }
-
-    public void setReadingProgresses(Set<ReadingProgress> readingProgresses) {
-        this.readingProgresses = readingProgresses;
-    }
-
-    public Set<History> getHistories() {
-        return histories;
-    }
-
-    public void setHistories(Set<History> histories) {
-        this.histories = histories;
     }
 
     @Override

@@ -9,6 +9,8 @@ public class ReadingProgress extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String userId;
+
     private String bookId;
 
     private Integer currentChapter;
@@ -49,5 +51,13 @@ public class ReadingProgress extends BaseEntity implements Serializable {
 
     public void setStartDate(Instant startDate) {
         this.startDate = startDate;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

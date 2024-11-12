@@ -1,12 +1,14 @@
 package com.ronniebook.web.ebook.domain;
 
-import org.springframework.data.mongodb.core.mapping.Document;
 import java.io.Serializable;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "book_view")
 public class BookView extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private String userId;
 
     private String bookId;
 
@@ -28,5 +30,13 @@ public class BookView extends BaseEntity implements Serializable {
 
     public void setViewCount(int viewCount) {
         this.viewCount = viewCount;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

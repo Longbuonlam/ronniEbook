@@ -8,6 +8,8 @@ public class FavouriteBook extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String userId;
+
     private String bookId;
 
     public FavouriteBook() {}
@@ -18,5 +20,13 @@ public class FavouriteBook extends BaseEntity implements Serializable {
 
     public void setBookId(String bookId) {
         this.bookId = bookId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

@@ -19,7 +19,7 @@ public class HistoryResource {
         this.historyService = historyService;
     }
 
-    @GetMapping("/read-book")
+    @GetMapping("/history")
     public Page<History> getReadBook(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
         @RequestParam(required = false) String searchText
@@ -28,7 +28,7 @@ public class HistoryResource {
         return historyService.findAll(pageable, searchText);
     }
 
-    @DeleteMapping("/read-book")
+    @DeleteMapping("/history")
     public void deleteReadBook(@RequestParam String id) {
         log.debug("Rest request to delete read-book");
         historyService.delete(id);
