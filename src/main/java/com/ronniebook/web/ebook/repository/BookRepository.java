@@ -58,4 +58,19 @@ public interface BookRepository extends MongoRepository<Book, String> {
         "{'_id' : { '$in' : ?1 }, 'isDeleted': { '$ne': true }}]}"
     )
     Page<Book> findByTextWithBookIds(Pageable pageable, String text, List<String> bookIds);
+
+    @Query("{ 'isDeleted' : { '$ne' : true }, '_id' : { '$nin' : ?0 } }")
+    Page<Book> findAllExceptBookIds(Pageable pageable, List<String> bookIds);
+
+    @Query(
+        "{'$and' : [{'$or':[" +
+        "{ 'book_name' : { $regex: ?0, $options: 'i' } }, " +
+        "{ 'title' : { $regex: ?0, $options: 'i' } }," +
+        "{ 'author' : { $regex: ?0, $options: 'i' } }," +
+        "{ 'description' : { $regex: ?0, $options: 'i' } }" +
+        "{ 'category' : { $regex: ?0, $options: 'i' } }" +
+        "]}, " +
+        "{'_id' : { '$nin' : ?1 }, 'isDeleted': { '$ne': true }}]}"
+    )
+    Page<Book> findByTextExceptBookIds(Pageable pageable, String text, List<String> bookIds);
 }

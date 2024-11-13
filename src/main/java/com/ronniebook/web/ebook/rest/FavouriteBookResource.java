@@ -1,5 +1,6 @@
 package com.ronniebook.web.ebook.rest;
 
+import com.ronniebook.web.ebook.domain.Book;
 import com.ronniebook.web.ebook.domain.FavouriteBook;
 import com.ronniebook.web.ebook.service.FavouriteBookService;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
@@ -43,7 +44,7 @@ public class FavouriteBookResource {
         if (book.getId() != null) {
             throw new BadRequestAlertException("A new favourite book cannot already have an ID", ENTITY_NAME, "id exists");
         }
-        FavouriteBook result = favouriteBookService.save(book.getBookId());
+        FavouriteBook result = favouriteBookService.save(book);
         return ResponseEntity.created(new URI("/api/favourite-books/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId()))
             .body(result);
@@ -56,7 +57,7 @@ public class FavouriteBookResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of favourite books in body.
      */
     @GetMapping("/favourite-books")
-    public Page<FavouriteBook> getAllFavouriteBooks(
+    public Page<Book> getAllFavouriteBooks(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
         @RequestParam(required = false) String searchText
     ) {

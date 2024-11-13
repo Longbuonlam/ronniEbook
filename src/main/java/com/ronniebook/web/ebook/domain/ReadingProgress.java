@@ -17,8 +17,6 @@ public class ReadingProgress extends BaseEntity implements Serializable {
 
     private Integer totalChapter;
 
-    private Instant startDate;
-
     public ReadingProgress() {}
 
     public Integer getCurrentChapter() {
@@ -43,14 +41,6 @@ public class ReadingProgress extends BaseEntity implements Serializable {
 
     public void setTotalChapter(Integer totalChapter) {
         this.totalChapter = totalChapter;
-    }
-
-    public Instant getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Instant startDate) {
-        this.startDate = startDate;
     }
 
     public String getUserId() {

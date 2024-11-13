@@ -61,4 +61,36 @@ public class ReadingProgressService {
         }
         return bookPage;
     }
+
+    public void delete(String id) {
+        log.debug("Request to delete reading progress : {}", id);
+        ReadingProgress readingProgress = readingProgressRepository.findById(id).orElseThrow();
+        readingProgressRepository.delete(readingProgress);
+    }
+
+    public Page<Book> findOtherBookByUserId(Pageable pageable, String searchText) {
+        String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        List<ReadingProgress> readingProgressList = readingProgressRepository.findByUserId(userId);
+        List<String> listBookIds = new ArrayList<>();
+        for (ReadingProgress readingProgress : readingProgressList) {
+            listBookIds.add(readingProgress.getBookId());
+        }
+
+        Page<Book> bookPage;
+        if (pageable != null && pageable.getSort().isEmpty()) {
+            Sort sort = Sort.by(Sort.Direction.ASC, "book_name");
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        }
+        if (pageable == null) {
+            throw new BadRequestAlertException("", "", "Pageable is null");
+        }
+        if (searchText == null) {
+            bookPage = bookRepository.findAllExceptBookIds(pageable, listBookIds);
+        } else {
+            // Handle special characters
+            searchText = Pattern.quote(searchText);
+            bookPage = bookRepository.findByTextExceptBookIds(pageable, searchText, listBookIds);
+        }
+        return bookPage;
+    }
 }

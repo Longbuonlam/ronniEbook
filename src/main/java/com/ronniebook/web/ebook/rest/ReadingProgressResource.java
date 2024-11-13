@@ -51,4 +51,19 @@ public class ReadingProgressResource {
         log.debug("REST request to get a page of Books");
         return readingProgressService.findAllReadingProgressByUserId(pageable, searchText);
     }
+
+    @DeleteMapping("/reading-progress/{id}")
+    public ResponseEntity<Void> deleteReadingProgress(@PathVariable String id) {
+        log.debug("REST request to delete reading progress : {}", id);
+        readingProgressService.delete(id);
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id)).build();
+    }
+
+    @GetMapping("/other-books")
+    public Page<Book> getAllOtherBooks(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false) String searchText
+    ) {
+        return readingProgressService.findOtherBookByUserId(pageable, searchText);
+    }
 }
