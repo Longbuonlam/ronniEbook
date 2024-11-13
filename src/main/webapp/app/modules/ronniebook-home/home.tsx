@@ -15,28 +15,35 @@ function Home() {
   const [totalUnreleasePages, setTotalUnreleasePages] = useState(1);
   const [searchText, setSearchText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   const fetchReleaseBooks = (pageNumber = 0, search = '') => {
+    setIsLoading(true);
     fetch(`http://localhost:9000/api/release-books?page=${pageNumber}&size=6&searchText=${search}`)
       .then(response => response.json())
       .then(data => {
         setReleaseBooks(data.content);
         setReleasePage(data.number);
         setTotalReleasePages(data.totalPages);
+        setIsLoading(false);
       })
       .catch(error => console.error('Error fetching books:', error));
+    setIsLoading(false);
   };
 
   const fetchUnRealeseBooks = (pageNumber = 0, search = '') => {
+    setIsLoading(true);
     fetch(`http://localhost:9000/api/unrelease-books?page=${pageNumber}&size=6&searchText=${search}`)
       .then(response => response.json())
       .then(data => {
         setUnReleaseBooks(data.content);
         setUnReleasePage(data.number);
         setTotalUnreleasePages(data.totalPages);
+        setIsLoading(false);
       })
       .catch(error => console.error('Error fetching books:', error));
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -96,84 +103,100 @@ function Home() {
         />
       </div>
       <h2>On Deck</h2>
-      <div className="book-row">
-        {releaseBooks.map(book => (
-          <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
-            <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
-            <h3>{book.title}</h3>
-            <p>{book.author}</p>
-            <p className="book-description">{book.description}</p>
+
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : releaseBooks.length === 0 ? (
+        <p>No data is available</p>
+      ) : (
+        <>
+          <div className="book-row">
+            {releaseBooks.map(book => (
+              <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
+                <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
+                <h3>{book.title}</h3>
+                <p>{book.author}</p>
+                <p className="book-description">{book.description}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-
-      <div className="pagination">
-        <span
-          className="left-chevron"
-          onClick={goToPreviousReleasePage}
-          style={{
-            cursor: releasePage === 0 ? 'not-allowed' : 'pointer',
-            opacity: releasePage === 0 ? 0.5 : 1,
-            marginRight: '10px',
-          }}
-        >
-          <FontAwesomeIcon icon={faCircleChevronLeft} />
-        </span>
-        <span>
-          Page {releasePage + 1} / {totalReleasePages}
-        </span>
-        <span
-          className="right-chevron"
-          onClick={goToNextReleasePage}
-          style={{
-            cursor: releasePage === totalReleasePages - 1 ? 'not-allowed' : 'pointer',
-            opacity: releasePage === totalReleasePages - 1 ? 0.5 : 1,
-            marginLeft: '10px',
-          }}
-        >
-          <FontAwesomeIcon icon={faCircleChevronRight} />
-        </span>
-      </div>
-
-      <h2>Release Soon</h2>
-      <div className="book-row">
-        {unreleaseBooks.map(book => (
-          <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
-            <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
-            <h3>{book.title}</h3>
-            <p>{book.author}</p>
-            <p className="book-description">{book.description}</p>
+          <div className="pagination">
+            <span
+              className="left-chevron"
+              onClick={goToPreviousReleasePage}
+              style={{
+                cursor: releasePage === 0 ? 'not-allowed' : 'pointer',
+                opacity: releasePage === 0 ? 0.5 : 1,
+                marginRight: '10px',
+              }}
+            >
+              <FontAwesomeIcon icon={faCircleChevronLeft} />
+            </span>
+            <span>
+              Page {releasePage + 1} / {totalReleasePages}
+            </span>
+            <span
+              className="right-chevron"
+              onClick={goToNextReleasePage}
+              style={{
+                cursor: releasePage === totalReleasePages - 1 ? 'not-allowed' : 'pointer',
+                opacity: releasePage === totalReleasePages - 1 ? 0.5 : 1,
+                marginLeft: '10px',
+              }}
+            >
+              <FontAwesomeIcon icon={faCircleChevronRight} />
+            </span>
           </div>
-        ))}
-      </div>
+        </>
+      )}
 
-      <div className="pagination">
-        <span
-          className="left-chevron"
-          onClick={gotoPreviousUnreleasePage}
-          style={{
-            cursor: unreleasePage === 0 ? 'not-allowed' : 'pointer',
-            opacity: unreleasePage === 0 ? 0.5 : 1,
-            marginRight: '10px',
-          }}
-        >
-          <FontAwesomeIcon icon={faCircleChevronLeft} />
-        </span>
-        <span>
-          Page {unreleasePage + 1} / {totalUnreleasePages}
-        </span>
-        <span
-          className="right-chevron"
-          onClick={gotoNextUnreleasePage}
-          style={{
-            cursor: unreleasePage === totalUnreleasePages - 1 ? 'not-allowed' : 'pointer',
-            opacity: unreleasePage === totalUnreleasePages - 1 ? 0.5 : 1,
-            marginLeft: '10px',
-          }}
-        >
-          <FontAwesomeIcon icon={faCircleChevronRight} />
-        </span>
-      </div>
+      <h2>Others</h2>
+
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : unreleaseBooks.length === 0 ? (
+        <p>No data is available</p>
+      ) : (
+        <>
+          <div className="book-row">
+            {unreleaseBooks.map(book => (
+              <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
+                <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
+                <h3>{book.title}</h3>
+                <p>{book.author}</p>
+                <p className="book-description">{book.description}</p>
+              </div>
+            ))}
+          </div>
+          <div className="pagination">
+            <span
+              className="left-chevron"
+              onClick={gotoPreviousUnreleasePage}
+              style={{
+                cursor: unreleasePage === 0 ? 'not-allowed' : 'pointer',
+                opacity: unreleasePage === 0 ? 0.5 : 1,
+                marginRight: '10px',
+              }}
+            >
+              <FontAwesomeIcon icon={faCircleChevronLeft} />
+            </span>
+            <span>
+              Page {unreleasePage + 1} / {totalUnreleasePages}
+            </span>
+            <span
+              className="right-chevron"
+              onClick={gotoNextUnreleasePage}
+              style={{
+                cursor: unreleasePage === totalUnreleasePages - 1 ? 'not-allowed' : 'pointer',
+                opacity: unreleasePage === totalUnreleasePages - 1 ? 0.5 : 1,
+                marginLeft: '10px',
+              }}
+            >
+              <FontAwesomeIcon icon={faCircleChevronRight} />
+            </span>
+          </div>
+        </>
+      )}
     </div>
   );
 }

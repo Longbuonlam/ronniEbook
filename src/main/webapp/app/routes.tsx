@@ -15,6 +15,7 @@ import BookDetail from './modules/ronniebook-book-detail/book-detail';
 import UserManagerment from './modules/ronniebook-user-managerment/user-managerment';
 import MainBook from './modules/ronniebook-book/book';
 import FavouriteBook from './modules/ronniebook-favourite/favourite';
+import History from './modules/ronniebook-history/history';
 
 const loading = <div>loading ...</div>;
 
@@ -65,6 +66,7 @@ const AppRoutes = (props: RouteProps) => {
         <Route path="/app/book" element={<MainBook />} />
         <Route path="app/book/:bookId" element={<BookDetail />} />
         <Route path="/app/favourite" element={<FavouriteBook />} />
+        <Route path="/app/history" element={<History />} />
         <Route
           path="/app/admin/user-managerment"
           element={

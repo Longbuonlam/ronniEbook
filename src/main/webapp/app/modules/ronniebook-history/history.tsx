@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Book } from '../../shared/model/book.model';
-import './favourite.scss';
+import './history.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleChevronRight, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 
-function FavouriteBook() {
+function History() {
   const [favouriteBooks, setFavouriteBooks] = useState<Book[]>([]);
   const [favouritePage, setFavouritePage] = useState(0);
   const [totalFavouritePages, setTotalFavouritePages] = useState(1);
@@ -72,7 +72,7 @@ function FavouriteBook() {
           onKeyPress={handleSearchKeyPress}
         />
       </div>
-      <h2>Favourite</h2>
+      <h2>History</h2>
       {isLoading ? (
         <p>Loading...</p>
       ) : favouriteBooks.length === 0 ? (
@@ -123,4 +123,4 @@ function FavouriteBook() {
   );
 }
 
-export default FavouriteBook;
+export default History;

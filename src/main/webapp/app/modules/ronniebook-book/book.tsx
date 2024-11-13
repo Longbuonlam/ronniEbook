@@ -15,28 +15,35 @@ function MainBook() {
   const [totalOtherPages, setTotalOtherPages] = useState(1);
   const [searchText, setSearchText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   const fetchInProgressBooks = (pageNumber = 0, search = '') => {
-    fetch(`http://localhost:9000/api/release-books?page=${pageNumber}&size=6&searchText=${search}`)
+    setIsLoading(true);
+    fetch(`http://localhost:9000/api/reading-progress?page=${pageNumber}&size=6&searchText=${search}`)
       .then(response => response.json())
       .then(data => {
         setInProgressBooks(data.content);
         setInProgressPage(data.number);
         setTotalInProgressPages(data.totalPages);
+        setIsLoading(false);
       })
       .catch(error => console.error('Error fetching books:', error));
+    setIsLoading(false);
   };
 
   const fetchOtherBooks = (pageNumber = 0, search = '') => {
-    fetch(`http://localhost:9000/api/unrelease-books?page=${pageNumber}&size=6&searchText=${search}`)
+    setIsLoading(true);
+    fetch(`http://localhost:9000/api/other-books?page=${pageNumber}&size=6&searchText=${search}`)
       .then(response => response.json())
       .then(data => {
         setOtherBooks(data.content);
         setOtherPage(data.number);
         setTotalOtherPages(data.totalPages);
+        setIsLoading(false);
       })
       .catch(error => console.error('Error fetching books:', error));
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -96,84 +103,100 @@ function MainBook() {
         />
       </div>
       <h2>In Progress</h2>
-      <div className="book-row">
-        {inProgressBooks.map(book => (
-          <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
-            <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
-            <h3>{book.title}</h3>
-            <p>{book.author}</p>
-            <p className="book-description">{book.description}</p>
-          </div>
-        ))}
-      </div>
 
-      <div className="pagination">
-        <span
-          className="left-chevron"
-          onClick={goToPreviousInProgressPage}
-          style={{
-            cursor: inProgressPage === 0 ? 'not-allowed' : 'pointer',
-            opacity: inProgressPage === 0 ? 0.5 : 1,
-            marginRight: '10px',
-          }}
-        >
-          <FontAwesomeIcon icon={faCircleChevronLeft} />
-        </span>
-        <span>
-          Page {inProgressPage + 1} / {totalInProgressPages}
-        </span>
-        <span
-          className="right-chevron"
-          onClick={goToNextInProgressPage}
-          style={{
-            cursor: inProgressPage === totalInProgressPages - 1 ? 'not-allowed' : 'pointer',
-            opacity: inProgressPage === totalInProgressPages - 1 ? 0.5 : 1,
-            marginLeft: '10px',
-          }}
-        >
-          <FontAwesomeIcon icon={faCircleChevronRight} />
-        </span>
-      </div>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : inProgressBooks.length === 0 ? (
+        <p>No data is available</p>
+      ) : (
+        <>
+          <div className="book-row">
+            {inProgressBooks.map(book => (
+              <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
+                <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
+                <h3>{book.title}</h3>
+                <p>{book.author}</p>
+                <p className="book-description">{book.description}</p>
+              </div>
+            ))}
+          </div>
+          <div className="pagination">
+            <span
+              className="left-chevron"
+              onClick={goToPreviousInProgressPage}
+              style={{
+                cursor: inProgressPage === 0 ? 'not-allowed' : 'pointer',
+                opacity: inProgressPage === 0 ? 0.5 : 1,
+                marginRight: '10px',
+              }}
+            >
+              <FontAwesomeIcon icon={faCircleChevronLeft} />
+            </span>
+            <span>
+              Page {inProgressPage + 1} / {totalInProgressPages}
+            </span>
+            <span
+              className="right-chevron"
+              onClick={goToNextInProgressPage}
+              style={{
+                cursor: inProgressPage === totalInProgressPages - 1 ? 'not-allowed' : 'pointer',
+                opacity: inProgressPage === totalInProgressPages - 1 ? 0.5 : 1,
+                marginLeft: '10px',
+              }}
+            >
+              <FontAwesomeIcon icon={faCircleChevronRight} />
+            </span>
+          </div>
+        </>
+      )}
 
       <h2>Others</h2>
-      <div className="book-row">
-        {otherBooks.map(book => (
-          <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
-            <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
-            <h3>{book.title}</h3>
-            <p>{book.author}</p>
-            <p className="book-description">{book.description}</p>
-          </div>
-        ))}
-      </div>
 
-      <div className="pagination">
-        <span
-          className="left-chevron"
-          onClick={gotoPreviousOtherPage}
-          style={{
-            cursor: otherPage === 0 ? 'not-allowed' : 'pointer',
-            opacity: otherPage === 0 ? 0.5 : 1,
-            marginRight: '10px',
-          }}
-        >
-          <FontAwesomeIcon icon={faCircleChevronLeft} />
-        </span>
-        <span>
-          Page {otherPage + 1} / {totalOtherPages}
-        </span>
-        <span
-          className="right-chevron"
-          onClick={gotoNextOtherPage}
-          style={{
-            cursor: otherPage === totalOtherPages - 1 ? 'not-allowed' : 'pointer',
-            opacity: otherPage === totalOtherPages - 1 ? 0.5 : 1,
-            marginLeft: '10px',
-          }}
-        >
-          <FontAwesomeIcon icon={faCircleChevronRight} />
-        </span>
-      </div>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : otherBooks.length === 0 ? (
+        <p>No data is available</p>
+      ) : (
+        <>
+          <div className="book-row">
+            {otherBooks.map(book => (
+              <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
+                <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
+                <h3>{book.title}</h3>
+                <p>{book.author}</p>
+                <p className="book-description">{book.description}</p>
+              </div>
+            ))}
+          </div>
+          <div className="pagination">
+            <span
+              className="left-chevron"
+              onClick={gotoPreviousOtherPage}
+              style={{
+                cursor: otherPage === 0 ? 'not-allowed' : 'pointer',
+                opacity: otherPage === 0 ? 0.5 : 1,
+                marginRight: '10px',
+              }}
+            >
+              <FontAwesomeIcon icon={faCircleChevronLeft} />
+            </span>
+            <span>
+              Page {otherPage + 1} / {totalOtherPages}
+            </span>
+            <span
+              className="right-chevron"
+              onClick={gotoNextOtherPage}
+              style={{
+                cursor: otherPage === totalOtherPages - 1 ? 'not-allowed' : 'pointer',
+                opacity: otherPage === totalOtherPages - 1 ? 0.5 : 1,
+                marginLeft: '10px',
+              }}
+            >
+              <FontAwesomeIcon icon={faCircleChevronRight} />
+            </span>
+          </div>
+        </>
+      )}
     </div>
   );
 }
