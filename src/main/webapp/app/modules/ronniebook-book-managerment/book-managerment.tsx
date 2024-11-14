@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './book-managerment.scss';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { Book } from '../../shared/model/book.model';
 
 function BookManagerment() {
@@ -14,8 +14,8 @@ function BookManagerment() {
   const [Page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchBooks = (pageNumber = 0) => {
-    fetch(`http://localhost:9000/api/books?page=${pageNumber}&size=6`)
+  const fetchBooks = (pageNumber = 0, search = '') => {
+    fetch(`http://localhost:9000/api/books?page=${pageNumber}&size=6&searchText=${search}`)
       .then(response => response.json())
       .then(data => {
         setBooks(data.content);
@@ -26,8 +26,8 @@ function BookManagerment() {
   };
 
   useEffect(() => {
-    fetchBooks(0);
-  }, []);
+    fetchBooks(0, searchQuery);
+  }, [searchQuery]);
 
   const handlePageChange = pageNumber => {
     if (pageNumber >= 0 && pageNumber < totalPages) {
@@ -35,8 +35,34 @@ function BookManagerment() {
     }
   };
 
+  const handleSearchChange = event => {
+    setSearchText(event.target.value);
+  };
+
+  const handleSearchKeyPress = event => {
+    if (event.key === 'Enter') {
+      setSearchQuery(searchText);
+    }
+  };
+
   return (
     <div className="container">
+      <div className="action-buttons">
+        <button className="btn">+ Add Book</button>
+      </div>
+
+      <div className="search-bar-container">
+        <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
+        <input
+          type="text"
+          placeholder="Search Book..."
+          className="search-input"
+          value={searchText}
+          onChange={handleSearchChange}
+          onKeyPress={handleSearchKeyPress}
+        />
+      </div>
+
       <h2>Books</h2>
       <table className="book-table">
         <thead>
