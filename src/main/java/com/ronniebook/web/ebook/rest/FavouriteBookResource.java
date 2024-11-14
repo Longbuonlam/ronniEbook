@@ -39,8 +39,11 @@ public class FavouriteBookResource {
      */
     @PostMapping("/favourite-books")
     public ResponseEntity<FavouriteBook> createFavouriteBook(@RequestBody FavouriteBook book) throws URISyntaxException {
-        System.out.println("create new favourite book");
         log.debug("REST request to save favourite book : {}", book);
+        //Check if the book had been saved already
+        if (favouriteBookService.isExisted(book.getBookId())) {
+            throw new BadRequestAlertException("", "", "Book had already existed");
+        }
         if (book.getId() != null) {
             throw new BadRequestAlertException("A new favourite book cannot already have an ID", ENTITY_NAME, "id exists");
         }

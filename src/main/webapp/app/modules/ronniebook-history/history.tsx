@@ -17,7 +17,7 @@ function History() {
 
   const fetchFavouriteBooks = (pageNumber = 0, search = '') => {
     setIsLoading(true);
-    fetch(`http://localhost:9000/api/favourite-books?page=${pageNumber}&size=6&searchText=${search}`)
+    fetch(`http://localhost:9000/api/history?page=${pageNumber}&size=6&searchText=${search}`)
       .then(response => response.json())
       .then(data => {
         setFavouriteBooks(data.content);

@@ -84,4 +84,8 @@ public class FavouriteBookService {
         FavouriteBook favouriteBook = favouriteBookRepository.findById(id).orElseThrow();
         favouriteBookRepository.delete(favouriteBook);
     }
+
+    public boolean isExisted(String bookId) {
+        return favouriteBookRepository.findFavouriteById(bookId) != null;
+    }
 }

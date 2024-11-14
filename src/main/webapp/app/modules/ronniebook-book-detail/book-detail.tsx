@@ -19,6 +19,38 @@ function BookDetail() {
       .catch(error => console.error('Error fetching books:', error));
   };
 
+  const getXsrfToken = () => {
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    return match ? match[1] : null;
+  };
+
+  const addToFavorites = () => {
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      return;
+    }
+
+    fetch('http://localhost:9000/api/favourite-books', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+      body: JSON.stringify({ bookId }),
+    })
+      .then(response => {
+        if (response.ok) {
+          console.log('Book added to favorites');
+        } else {
+          console.error('Failed to add book to favorites');
+        }
+      })
+      .catch(error => console.error('Error adding book to favorites:', error));
+  };
+
   useEffect(() => {
     fetchBook();
   }, [bookId]);
@@ -47,7 +79,7 @@ function BookDetail() {
               <button className="continue-btn">
                 <FontAwesomeIcon icon={faBookOpen} /> Continue
               </button>
-              <FontAwesomeIcon icon={faStar} className="icon" />
+              <FontAwesomeIcon icon={faStar} className="icon" onClick={addToFavorites} />
               {/* <FontAwesomeIcon icon={faDownload} className="icon" /> */}
             </div>
 

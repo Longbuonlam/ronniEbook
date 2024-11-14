@@ -3,6 +3,7 @@ package com.ronniebook.web.ebook.repository;
 import com.ronniebook.web.ebook.domain.FavouriteBook;
 import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -11,4 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FavouriteBookRepository extends MongoRepository<FavouriteBook, String> {
     List<FavouriteBook> findByUserId(String userId);
+
+    @Query("{ 'bookId': ?0 }")
+    FavouriteBook findFavouriteById(String id);
 }
