@@ -1,0 +1,86 @@
+/* Container styling */
+.container {
+  padding: 20px;
+  background-color: #e9ecef;
+  font-family: Arial, sans-serif;
+}
+
+/* Table styling */
+.book-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+
+  th,
+  td {
+    padding: 12px;
+    border: 1px solid #22223b;
+    text-align: left;
+  }
+
+  th {
+    background-color: #22223b;
+    color: #fff;
+    text-transform: uppercase;
+  }
+
+  .badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 0.9rem;
+  }
+
+  .status {
+    background-color: #28a745;
+  }
+
+  .in-progress {
+    background-color: #007bff;
+  }
+}
+
+/* Action button styling */
+.action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #22223b;
+  font-size: 1.1rem;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #0056b3;
+  }
+}
+
+/* Pagination styling */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.page-btn {
+  padding: 5px 12px;
+  margin: 0 2px;
+  border: 1px solid #007bff;
+  background-color: #fff;
+  color: #007bff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+
+  &.active {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  &:hover {
+    background-color: #0056b3;
+    color: #fff;
+  }
+}

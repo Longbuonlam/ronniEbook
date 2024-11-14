@@ -16,6 +16,7 @@ import UserManagerment from './modules/ronniebook-user-managerment/user-managerm
 import MainBook from './modules/ronniebook-book/book';
 import FavouriteBook from './modules/ronniebook-favourite/favourite';
 import History from './modules/ronniebook-history/history';
+import BookManagerment from './modules/ronniebook-book-managerment/book-managerment';
 
 const loading = <div>loading ...</div>;
 
@@ -72,6 +73,14 @@ const AppRoutes = (props: RouteProps) => {
           element={
             <PrivateRoute hasAnyAuthorities={[AUTHORITIES.ADMIN]}>
               <UserManagerment />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/app/admin/book-managerment"
+          element={
+            <PrivateRoute hasAnyAuthorities={[AUTHORITIES.ADMIN]}>
+              <BookManagerment />
             </PrivateRoute>
           }
         />
