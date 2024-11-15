@@ -75,7 +75,7 @@ function BookDetail() {
               <span className="estimated-time">~1 Hour</span>
             </div>
 
-            <div className="action-buttons">
+            <div className="action-btn">
               <button className="continue-btn">
                 <FontAwesomeIcon icon={faBookOpen} /> Continue
               </button>

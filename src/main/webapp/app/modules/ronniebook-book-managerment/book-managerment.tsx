@@ -47,20 +47,22 @@ function BookManagerment() {
 
   return (
     <div className="container">
-      <div className="action-buttons">
-        <button className="btn">+ Add Book</button>
-      </div>
+      <div className="header-div">
+        <div className="action-buttons">
+          <button className="btn">+ Add Book</button>
+        </div>
 
-      <div className="search-bar-container">
-        <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
-        <input
-          type="text"
-          placeholder="Search Book..."
-          className="search-input"
-          value={searchText}
-          onChange={handleSearchChange}
-          onKeyPress={handleSearchKeyPress}
-        />
+        <div className="search-bar-container">
+          <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search Book..."
+            className="search-input"
+            value={searchText}
+            onChange={handleSearchChange}
+            onKeyPress={handleSearchKeyPress}
+          />
+        </div>
       </div>
 
       <h2>Books</h2>
@@ -85,9 +87,9 @@ function BookManagerment() {
               <td>{book.chapterCount}</td>
               <td>{book.language}</td>
               <td>
-                <span className={`badge status ${book.bookStatus !== 'DONE' ? 'in-progress' : ''}`}>
-                  {book.bookStatus === 'DONE' ? 'Done' : 'In Progress'}
-                </span>
+                <div className={`badge status ${book.bookStatus !== 'DONE' ? 'in-progress' : ''}`}>
+                  <span>{book.bookStatus === 'DONE' ? 'Done' : 'In Progress'}</span>
+                </div>
               </td>
               <td>
                 <button className="action-btn">

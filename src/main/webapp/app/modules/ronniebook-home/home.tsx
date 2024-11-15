@@ -150,7 +150,7 @@ function Home() {
         </>
       )}
 
-      <h2>Others</h2>
+      <h2>Release Soon</h2>
 
       {isLoading ? (
         <p>Loading...</p>

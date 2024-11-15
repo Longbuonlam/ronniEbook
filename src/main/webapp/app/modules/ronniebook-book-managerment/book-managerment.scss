@@ -86,6 +86,7 @@
 }
 
 .action-buttons {
+  order: 2;
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
@@ -117,6 +118,7 @@
 }
 
 .search-bar-container {
+  order: 1;
   display: flex;
   align-items: center;
   background-color: #f8f9fa;
@@ -124,6 +126,7 @@
   padding: 8px 16px;
   margin-right: 150px;
   margin-left: auto;
+  margin-bottom: 20px;
   width: 250px; /* Adjust width as needed */
 }
 
@@ -144,4 +147,8 @@
 
 .search-input::placeholder {
   color: #c0c4cc;
+}
+
+.header-div {
+  display: flex;
 }
