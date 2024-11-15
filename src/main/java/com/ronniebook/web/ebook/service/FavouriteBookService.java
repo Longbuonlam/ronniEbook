@@ -86,6 +86,7 @@ public class FavouriteBookService {
     }
 
     public boolean isExisted(String bookId) {
-        return favouriteBookRepository.findFavouriteById(bookId) != null;
+        String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        return favouriteBookRepository.findFavouriteById(bookId, userId) != null;
     }
 }

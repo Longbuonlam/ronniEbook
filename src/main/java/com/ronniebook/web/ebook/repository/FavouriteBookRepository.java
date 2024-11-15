@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface FavouriteBookRepository extends MongoRepository<FavouriteBook, String> {
     List<FavouriteBook> findByUserId(String userId);
 
-    @Query("{ 'bookId': ?0 }")
-    FavouriteBook findFavouriteById(String id);
+    @Query("{ 'bookId': ?0, 'userId': ?1 }")
+    FavouriteBook findFavouriteById(String bookId, String userId);
 }
