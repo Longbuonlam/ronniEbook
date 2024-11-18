@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './book-managerment.scss';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faEdit, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { Book } from '../../shared/model/book.model';
 
 function BookManagerment() {
@@ -13,6 +13,7 @@ function BookManagerment() {
   const [Books, setBooks] = useState<Book[]>([]);
   const [Page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchBooks = (pageNumber = 0, search = '') => {
     fetch(`http://localhost:9000/api/books?page=${pageNumber}&size=6&searchText=${search}`)
@@ -45,11 +46,22 @@ function BookManagerment() {
     }
   };
 
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+    if (!isModalOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+  };
+
   return (
     <div className="container">
       <div className="header-div">
         <div className="action-buttons">
-          <button className="btn">+ Add Book</button>
+          <button className="btn" onClick={toggleModal}>
+            + Add Book
+          </button>
         </div>
 
         <div className="search-bar-container">
@@ -118,6 +130,61 @@ function BookManagerment() {
           </button>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>New Book</h2>
+            <form>
+              <label>Book Name:</label>
+              <input id="bookName" type="text" placeholder="Enter book name" required />
+
+              <label>Author:</label>
+              <input id="author" type="text" placeholder="Enter author name" />
+
+              <label>Title:</label>
+              <input id="title" type="text" placeholder="Enter title" required />
+
+              <label>Category:</label>
+              <input id="category" type="text" placeholder="Enter category" />
+
+              <label htmlFor="language">Language:</label>
+              <select id="language" required>
+                <option value="" disabled selected>
+                  Select language
+                </option>
+                <option value="EN">English</option>
+                <option value="VN">Vietnamese</option>
+                <option value="JP">Japanese</option>
+              </select>
+
+              <label htmlFor="bookStatus">Book Status:</label>
+              <select id="bookStatus">
+                <option value="" disabled selected>
+                  Select status
+                </option>
+                <option value="DONE">Done</option>
+                <option value="IN_PROGRESS">In Progress</option>
+              </select>
+
+              <label htmlFor="imageUrl">Image URL:</label>
+              <input id="imageUrl" type="url" placeholder="Enter image URL" maxLength={2048} />
+
+              <label>Description:</label>
+              <textarea id="description" placeholder="Enter description"></textarea>
+
+              <div className="modal-actions">
+                <button type="button" className="btn-close" onClick={toggleModal}>
+                  <FontAwesomeIcon icon={faClose} />
+                </button>
+                <button type="submit" className="btn-save">
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
