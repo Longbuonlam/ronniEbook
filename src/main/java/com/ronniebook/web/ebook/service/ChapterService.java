@@ -63,27 +63,24 @@ public class ChapterService {
      * Get all the chapters.
      *
      * @param pageable   the pagination information.
-     * @param book       Book entity
+     * @param bookId       id of Book entity
      * @param searchText String
      * @return the list of entities.
      */
-    public Page<Chapter> findAll(Pageable pageable, Book book, String searchText) {
+    public Page<Chapter> findAll(Pageable pageable, String bookId, String searchText) {
         log.debug("Request to get all Chapters");
 
         // Modify pageable
         if (pageable.getSort().isEmpty()) {
-            Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
+            Sort sort = Sort.by(Sort.Direction.ASC, "number");
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         }
 
         // Find chapter
-        if (book == null) {
-            return chapterRepository.findAll(pageable);
-        }
         if (searchText == null) {
-            return chapterRepository.findByBookId(pageable, book.getId());
+            return chapterRepository.findByBookId(pageable, bookId);
         }
-        return chapterRepository.findByBookIdAndChapterNameContains(pageable, book.getId(), searchText);
+        return chapterRepository.findByBookIdAndChapterNameContains(pageable, bookId, searchText);
     }
 
     /**

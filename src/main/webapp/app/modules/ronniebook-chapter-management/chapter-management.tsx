@@ -1,38 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './book-managerment.scss';
+import { useNavigate, useParams } from 'react-router-dom';
+import './chapter-management.scss';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faEdit, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { Book } from '../../shared/model/book.model';
+import { Chapter } from '../../shared/model/chapter.model';
 
-function BookManagerment() {
+function ChapterManagerment() {
+  const { bookId } = useParams();
   const [searchText, setSearchText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
-  const [Books, setBooks] = useState<Book[]>([]);
+  const [Chapters, setChapters] = useState<Chapter[]>([]);
   const [Page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [chapterName, setChapterName] = useState('');
+  const [number, setNumber] = useState('');
+  const [language, setLanguage] = useState('');
+  const [chapterStatus, setChapterStatus] = useState('');
 
-  const fetchBooks = (pageNumber = 0, search = '') => {
-    fetch(`http://localhost:9000/api/books?page=${pageNumber}&size=6&searchText=${search}`)
+  const fetchChapters = (pageNumber = 0, search = '') => {
+    fetch(`http://localhost:9000/api/chapters?page=${pageNumber}&size=6&searchText=${search}&bookId=${bookId}`)
       .then(response => response.json())
       .then(data => {
-        setBooks(data.content);
+        setChapters(data.content);
         setPage(pageNumber);
         setTotalPages(data.totalPages);
       })
-      .catch(error => console.error('Error fetching users:', error));
+      .catch(error => console.error('Error fetching chapters:', error));
   };
 
   useEffect(() => {
-    fetchBooks(0, searchQuery);
+    fetchChapters(0, searchQuery);
   }, [searchQuery]);
 
   const handlePageChange = pageNumber => {
     if (pageNumber >= 0 && pageNumber < totalPages) {
-      fetchBooks(pageNumber);
+      fetchChapters(pageNumber);
     }
   };
 
@@ -55,8 +60,44 @@ function BookManagerment() {
     }
   };
 
-  const handleClick = bookId => {
-    navigate(`/app/admin/book-managerment/${bookId}`);
+  const getXsrfToken = () => {
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    return match ? match[1] : null;
+  };
+
+  const handleSaveChapter = event => {
+    event.preventDefault();
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      return;
+    }
+
+    const chapterData = {
+      number,
+      chapterName,
+      language,
+      chapterStatus,
+      deleted: false,
+    };
+
+    fetch(`http://localhost:9000/api/chapters?bookId=${bookId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+      body: JSON.stringify(chapterData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Chapter saved:', data);
+        toggleModal();
+        fetchChapters(Page, searchText);
+      })
+      .catch(error => console.error('Error saving chapter:', error));
   };
 
   return (
@@ -64,7 +105,7 @@ function BookManagerment() {
       <div className="header-div">
         <div className="action-buttons">
           <button className="btn" onClick={toggleModal}>
-            + Add Book
+            + Add Chapter
           </button>
         </div>
 
@@ -72,7 +113,7 @@ function BookManagerment() {
           <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
           <input
             type="text"
-            placeholder="Search Book..."
+            placeholder="Search Chapter..."
             className="search-input"
             value={searchText}
             onChange={handleSearchChange}
@@ -81,34 +122,26 @@ function BookManagerment() {
         </div>
       </div>
 
-      <h2>Books</h2>
+      <h2>Chapters</h2>
       <table className="book-table">
         <thead>
           <tr>
+            <th>No</th>
             <th>Name</th>
-            <th>Author</th>
-            <th>Category</th>
-            <th>Chapters</th>
             <th>Language</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {Books.map((book, index) => (
+          {Chapters.map((chapter, index) => (
             <tr key={index}>
+              <td>{chapter.number}</td>
+              <td>{chapter.chapterName}</td>
+              <td>{chapter.language}</td>
               <td>
-                <span onClick={() => handleClick(book.id)} className="clickable-book-name">
-                  {book.bookName}
-                </span>
-              </td>
-              <td>{book.author}</td>
-              <td>{book.category}</td>
-              <td>{book.chapterCount}</td>
-              <td>{book.language}</td>
-              <td>
-                <div className={`badge status ${book.bookStatus !== 'DONE' ? 'in-progress' : ''}`}>
-                  <span>{book.bookStatus === 'DONE' ? 'Done' : 'In Progress'}</span>
+                <div className={`badge status ${chapter.chapterStatus !== 'DONE' ? 'in-progress' : ''}`}>
+                  <span>{chapter.chapterStatus === 'DONE' ? 'Done' : 'In Progress'}</span>
                 </div>
               </td>
               <td>
@@ -142,22 +175,30 @@ function BookManagerment() {
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content">
-            <h2>New Book</h2>
-            <form>
-              <label>Book Name:</label>
-              <input id="bookName" type="text" placeholder="Enter book name" required />
+            <h2>New Chapter</h2>
+            <form onSubmit={handleSaveChapter}>
+              <label>Chapter Name:</label>
+              <input
+                id="chapterName"
+                type="text"
+                placeholder="Enter chapter name"
+                value={chapterName}
+                onChange={e => setChapterName(e.target.value)}
+                required
+              />
 
-              <label>Author:</label>
-              <input id="author" type="text" placeholder="Enter author name" />
-
-              <label>Title:</label>
-              <input id="title" type="text" placeholder="Enter title" required />
-
-              <label>Category:</label>
-              <input id="category" type="text" placeholder="Enter category" />
+              <label>Chapter Number:</label>
+              <input
+                id="number"
+                type="text"
+                placeholder="Enter chapter number"
+                value={number}
+                onChange={e => setNumber(e.target.value)}
+                required
+              />
 
               <label htmlFor="language">Language:</label>
-              <select id="language" required>
+              <select id="language" value={language} onChange={e => setLanguage(e.target.value)} required>
                 <option value="" disabled selected>
                   Select language
                 </option>
@@ -166,20 +207,14 @@ function BookManagerment() {
                 <option value="JAPANESE">Japanese</option>
               </select>
 
-              <label htmlFor="bookStatus">Book Status:</label>
-              <select id="bookStatus">
+              <label htmlFor="chapterStatus">Chapter Status:</label>
+              <select id="chapterStatus" value={chapterStatus} onChange={e => setChapterStatus(e.target.value)} required>
                 <option value="" disabled selected>
                   Select status
                 </option>
                 <option value="DONE">Done</option>
                 <option value="IN_PROGRESS">In Progress</option>
               </select>
-
-              <label htmlFor="imageUrl">Image URL:</label>
-              <input id="imageUrl" type="url" placeholder="Enter image URL" maxLength={2048} />
-
-              <label>Description:</label>
-              <textarea id="description" placeholder="Enter description"></textarea>
 
               <div className="modal-actions">
                 <button type="button" className="btn-close" onClick={toggleModal}>
@@ -197,4 +232,4 @@ function BookManagerment() {
   );
 }
 
-export default BookManagerment;
+export default ChapterManagerment;

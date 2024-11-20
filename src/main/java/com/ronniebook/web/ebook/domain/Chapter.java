@@ -27,8 +27,6 @@ public class Chapter extends BaseEntity implements Serializable {
 
     private ChapterStatus chapterStatus;
 
-    private List<DocumentFile> documentFiles;
-
     private String bookId;
 
     @JsonIgnore
@@ -71,21 +69,6 @@ public class Chapter extends BaseEntity implements Serializable {
 
     public void setChapterStatus(ChapterStatus chapterStatus) {
         this.chapterStatus = chapterStatus;
-    }
-
-    public List<DocumentFile> getDocumentFiles() {
-        return documentFiles;
-    }
-
-    public void setDocumentFiles(List<DocumentFile> documentFiles) {
-        this.documentFiles = documentFiles;
-    }
-
-    public void addDocumentFile(DocumentFile docFile) {
-        if (documentFiles == null) {
-            documentFiles = new ArrayList<DocumentFile>();
-        }
-        documentFiles.add(docFile);
     }
 
     public String getBookId() {

@@ -6,6 +6,7 @@ import com.ronniebook.web.ebook.domain.LanguageCode;
 import com.ronniebook.web.ebook.repository.ChapterRepository;
 import com.ronniebook.web.ebook.service.BookService;
 import com.ronniebook.web.ebook.service.ChapterService;
+import com.ronniebook.web.security.AuthoritiesConstants;
 import com.ronniebook.web.security.SecurityUtils;
 import com.ronniebook.web.service.UserService;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -70,46 +72,23 @@ public class ChapterResource {
         @RequestParam(required = false) String searchText
     ) {
         log.debug("REST request to get a page of Chapters");
-        Book book = bookService.findOne(bookId);
-        Page<Chapter> page = chapterService.findAll(pageable, book, searchText);
+        Page<Chapter> page = chapterService.findAll(pageable, bookId, searchText);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page);
     }
 
-    /**
-     * {@code POST  /chapters} : Create a new chapter.
-     *
-     * @param files MultipartFile[]
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new chapter, or with status {@code 400 (Bad Request)} if the chapter has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     * @throws IOException        IOException
-     */
     @PostMapping("/chapters")
-    public ResponseEntity<List<Chapter>> createChapter(
-        @RequestParam String bookId,
-        @RequestParam(required = false) String chapterName,
-        @RequestParam(required = false) String fileVersion,
-        @RequestParam(required = false) LanguageCode sourceLanguage,
-        @RequestParam("file") MultipartFile[] files
-    ) throws URISyntaxException, IOException {
-        Book book = bookService.findOne(bookId);
-
-        List<Chapter> chaps = new ArrayList<Chapter>();
-
-        // Validate file name
-        List<String> fileNames = Arrays.stream(files).map(MultipartFile::getOriginalFilename).toList();
-        List<Chapter> chapterList = chapterRepository.findAllByBookIdAndChapterNameIn(bookId, fileNames);
-        if (!chapterList.isEmpty()) {
-            String message = "File name: " + chapterList.get(0).getChapterName() + " already exists.";
-            throw new BadRequestAlertException(message, "Chapter", message);
+    @PreAuthorize("hasRole('" + AuthoritiesConstants.ADMIN + "')")
+    public ResponseEntity<Chapter> createChapter(@RequestBody Chapter chapter, @RequestParam String bookId) throws URISyntaxException {
+        log.debug("REST request to save chapter : {}", chapter);
+        if (chapter.getId() != null) {
+            throw new BadRequestAlertException("A new chapter cannot already have an ID", ENTITY_NAME, "id exists");
         }
-
-        //        for (MultipartFile file : files) {
-        //            chaps.add(chapterService.uploadChapter(fileVersion, sourceLanguage, book, file));
-        //        }
-        return ResponseEntity.created(new URI("/api/chapters/" + chaps.get(0).getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, chaps.get(0).getId()))
-            .body(chaps);
+        chapter.setBookId(bookId);
+        Chapter result = chapterService.save(chapter);
+        return ResponseEntity.created(new URI("/api/chapters/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId()))
+            .body(result);
     }
 
     /**
