@@ -14,6 +14,14 @@ function BookManagerment() {
   const [Page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [bookName, setBookName] = useState('');
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const [language, setLanguage] = useState('');
+  const [bookStatus, setBookStatus] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
 
   const fetchBooks = (pageNumber = 0, search = '') => {
     fetch(`http://localhost:9000/api/books?page=${pageNumber}&size=6&searchText=${search}`)
@@ -57,6 +65,51 @@ function BookManagerment() {
 
   const handleClick = bookId => {
     navigate(`/app/admin/book-managerment/${bookId}`);
+  };
+
+  const getXsrfToken = () => {
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    return match ? match[1] : null;
+  };
+
+  const handleSaveBook = event => {
+    event.preventDefault();
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      return;
+    }
+
+    const bookData = {
+      bookName,
+      title,
+      author,
+      description,
+      category,
+      chapterCount: 0,
+      language,
+      bookStatus,
+      imageUrl,
+      deleted: false,
+    };
+
+    fetch(`http://localhost:9000/api/books`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+      body: JSON.stringify(bookData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Book saved:', data);
+        toggleModal();
+        fetchBooks(Page, searchText);
+      })
+      .catch(error => console.error('Error saving book:', error));
   };
 
   return (
@@ -143,21 +196,42 @@ function BookManagerment() {
         <div className="modal">
           <div className="modal-content">
             <h2>New Book</h2>
-            <form>
+            <form onSubmit={handleSaveBook}>
               <label>Book Name:</label>
-              <input id="bookName" type="text" placeholder="Enter book name" required />
+              <input
+                id="bookName"
+                type="text"
+                placeholder="Enter book name"
+                value={bookName}
+                onChange={e => setBookName(e.target.value)}
+                required
+              />
 
               <label>Author:</label>
-              <input id="author" type="text" placeholder="Enter author name" />
+              <input
+                id="author"
+                type="text"
+                placeholder="Enter author name"
+                value={author}
+                onChange={e => setAuthor(e.target.value)}
+                required
+              />
 
               <label>Title:</label>
-              <input id="title" type="text" placeholder="Enter title" required />
+              <input id="title" type="text" placeholder="Enter title" value={title} onChange={e => setTitle(e.target.value)} required />
 
               <label>Category:</label>
-              <input id="category" type="text" placeholder="Enter category" />
+              <input
+                id="category"
+                type="text"
+                placeholder="Enter category"
+                value={category}
+                onChange={e => setCategory(e.target.value)}
+                required
+              />
 
               <label htmlFor="language">Language:</label>
-              <select id="language" required>
+              <select id="language" value={language} onChange={e => setLanguage(e.target.value)} required>
                 <option value="" disabled selected>
                   Select language
                 </option>
@@ -167,7 +241,7 @@ function BookManagerment() {
               </select>
 
               <label htmlFor="bookStatus">Book Status:</label>
-              <select id="bookStatus">
+              <select id="bookStatus" value={bookStatus} onChange={e => setBookStatus(e.target.value)} required>
                 <option value="" disabled selected>
                   Select status
                 </option>
@@ -176,10 +250,22 @@ function BookManagerment() {
               </select>
 
               <label htmlFor="imageUrl">Image URL:</label>
-              <input id="imageUrl" type="url" placeholder="Enter image URL" maxLength={2048} />
+              <input
+                id="imageUrl"
+                type="url"
+                placeholder="Enter image URL"
+                maxLength={2048}
+                value={imageUrl}
+                onChange={e => setImageUrl(e.target.value)}
+              />
 
               <label>Description:</label>
-              <textarea id="description" placeholder="Enter description"></textarea>
+              <textarea
+                id="description"
+                placeholder="Enter description"
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+              ></textarea>
 
               <div className="modal-actions">
                 <button type="button" className="btn-close" onClick={toggleModal}>
