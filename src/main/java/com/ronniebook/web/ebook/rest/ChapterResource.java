@@ -112,6 +112,12 @@ public class ChapterResource {
         String loginUser = SecurityUtils.getCurrentUserLogin().orElseThrow();
         if (loginUser.equals(chapter.getCreatedBy()) || userService.isAdmin()) {
             chapterService.delete(chapter);
+
+            int chapterCount = book.getChapterCount();
+            chapterCount--;
+            book.setChapterCount(chapterCount);
+            bookService.save(book);
+
             return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id)).build();
         }
         throw new BadRequestAlertException("", "", "You don't have permission to delete " + chapter.getChapterName());
