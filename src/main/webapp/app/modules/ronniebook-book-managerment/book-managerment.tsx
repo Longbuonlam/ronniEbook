@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './book-managerment.scss';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose, faEdit, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faEdit, faMagnifyingGlass, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Book } from '../../shared/model/book.model';
 
 function BookManagerment() {
@@ -112,6 +112,31 @@ function BookManagerment() {
       .catch(error => console.error('Error saving book:', error));
   };
 
+  const handleDeleteBook = bookId => {
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      return;
+    }
+
+    fetch(`http://localhost:9000/api/books/${bookId}`, {
+      method: 'DELETE',
+      headers: {
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+    })
+      .then(response => {
+        if (response.ok) {
+          setBooks(Books.filter(book => book.id !== bookId));
+        } else {
+          console.error('Error deleting book:', response.statusText);
+        }
+      })
+      .catch(error => console.error('Error deleting book:', error));
+  };
+
   return (
     <div className="container">
       <div className="header-div">
@@ -167,6 +192,9 @@ function BookManagerment() {
               <td>
                 <button className="action-btn">
                   <FontAwesomeIcon icon={faEdit} />
+                </button>
+                <button className="action-btn" style={{ marginLeft: '10px' }} onClick={() => handleDeleteBook(book.id)}>
+                  <FontAwesomeIcon icon={faTrash} />
                 </button>
               </td>
             </tr>

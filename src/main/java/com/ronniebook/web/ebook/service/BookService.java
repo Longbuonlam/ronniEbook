@@ -81,7 +81,7 @@ public class BookService {
      * @param newBook the entity to update partially.
      * @return the persisted entity.
      */
-    @CacheEvict(value = BOOK_CACHE_NAME, key = "#existingBook.id")
+    //    @CacheEvict(value = BOOK_CACHE_NAME, key = "#existingBook.id")
     public Optional<Book> update(Book existingBook, Book newBook) {
         log.debug("Request to partially update Book : {}", newBook);
         if (!userService.isAdmin()) {
@@ -102,6 +102,9 @@ public class BookService {
         if (newBook.getCategory() != null) {
             existingBook.setCategory(newBook.getCategory());
         }
+        if (newBook.getLanguage() != null) {
+            existingBook.setLanguage(newBook.getLanguage());
+        }
         bookRepository.save(existingBook);
         return Optional.of(existingBook);
     }
@@ -111,7 +114,7 @@ public class BookService {
      *
      * @param id the id of the entity.
      */
-    @CacheEvict(value = BOOK_CACHE_NAME)
+    //    @CacheEvict(value = BOOK_CACHE_NAME)
     public void delete(String id) {
         log.debug("Request to delete Book : {}", id);
         if (!userService.isAdmin()) {

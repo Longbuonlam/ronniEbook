@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './user-managerment.scss';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { User } from '../../shared/model/ronniebookuser.model';
 
 function UserManagerment() {
@@ -60,6 +60,9 @@ function UserManagerment() {
               <td>
                 <button className="action-btn">
                   <FontAwesomeIcon icon={faEdit} />
+                </button>
+                <button className="action-btn" style={{ marginLeft: '10px' }}>
+                  <FontAwesomeIcon icon={faTrash} />
                 </button>
               </td>
             </tr>

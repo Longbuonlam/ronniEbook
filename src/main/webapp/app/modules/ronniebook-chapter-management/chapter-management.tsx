@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './chapter-management.scss';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose, faEdit, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faEdit, faMagnifyingGlass, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Chapter } from '../../shared/model/chapter.model';
 
 function ChapterManagerment() {
@@ -100,6 +100,31 @@ function ChapterManagerment() {
       .catch(error => console.error('Error saving chapter:', error));
   };
 
+  const handleDeleteChapter = chapterId => {
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      return;
+    }
+
+    fetch(`http://localhost:9000/api/chapters/${chapterId}`, {
+      method: 'DELETE',
+      headers: {
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+    })
+      .then(response => {
+        if (response.ok) {
+          setChapters(Chapters.filter(chapter => chapter.id !== chapterId));
+        } else {
+          console.error('Error deleting chapter:', response.statusText);
+        }
+      })
+      .catch(error => console.error('Error deleting chapter:', error));
+  };
+
   return (
     <div className="container">
       <div className="header-div">
@@ -147,6 +172,9 @@ function ChapterManagerment() {
               <td>
                 <button className="action-btn">
                   <FontAwesomeIcon icon={faEdit} />
+                </button>
+                <button className="action-btn" style={{ marginLeft: '10px' }} onClick={() => handleDeleteChapter(chapter.id)}>
+                  <FontAwesomeIcon icon={faTrash} />
                 </button>
               </td>
             </tr>

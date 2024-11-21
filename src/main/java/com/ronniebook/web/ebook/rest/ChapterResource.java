@@ -86,6 +86,13 @@ public class ChapterResource {
         }
         chapter.setBookId(bookId);
         Chapter result = chapterService.save(chapter);
+
+        Book book = bookService.findOne(bookId);
+        int chapterCount = book.getChapterCount();
+        chapterCount++;
+        book.setChapterCount(chapterCount);
+        bookService.save(book);
+
         return ResponseEntity.created(new URI("/api/chapters/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId()))
             .body(result);
