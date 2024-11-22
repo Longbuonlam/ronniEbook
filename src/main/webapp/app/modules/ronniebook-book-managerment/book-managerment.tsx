@@ -14,6 +14,7 @@ function BookManagerment() {
   const [Page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [bookName, setBookName] = useState('');
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
@@ -31,7 +32,24 @@ function BookManagerment() {
         setPage(pageNumber);
         setTotalPages(data.totalPages);
       })
-      .catch(error => console.error('Error fetching users:', error));
+      .catch(error => console.error('Error fetching books:', error));
+  };
+
+  const fetchSelectedBook = bookId => {
+    fetch(`http://localhost:9000/api/books/${bookId}`)
+      .then(response => response.json())
+      .then(data => {
+        setBookName(data.bookName);
+        setTitle(data.title);
+        setAuthor(data.author);
+        setDescription(data.description);
+        setCategory(data.category);
+        setLanguage(data.language);
+        setBookStatus(data.bookStatus);
+        setImageUrl(data.imageUrl);
+        toggleModal();
+      })
+      .catch(error => console.error('Error fetching selected book:', error));
   };
 
   useEffect(() => {
@@ -59,6 +77,14 @@ function BookManagerment() {
     if (!isModalOpen) {
       document.body.classList.add('modal-open');
     } else {
+      setBookName('');
+      setTitle('');
+      setAuthor('');
+      setDescription('');
+      setCategory('');
+      setLanguage('');
+      setBookStatus('');
+      setImageUrl('');
       document.body.classList.remove('modal-open');
     }
   };
@@ -191,7 +217,7 @@ function BookManagerment() {
               </td>
               <td>
                 <button className="action-btn">
-                  <FontAwesomeIcon icon={faEdit} />
+                  <FontAwesomeIcon icon={faEdit} onClick={() => fetchSelectedBook(book.id)} />
                 </button>
                 <button className="action-btn" style={{ marginLeft: '10px' }} onClick={() => handleDeleteBook(book.id)}>
                   <FontAwesomeIcon icon={faTrash} />
