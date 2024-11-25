@@ -5,6 +5,7 @@ import './book-managerment.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faEdit, faMagnifyingGlass, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Book } from '../../shared/model/book.model';
+import ConfirmationModal from '../../shared/layout/confirmation/confirmation-modal';
 
 function BookManagerment() {
   const [searchText, setSearchText] = useState('');
@@ -14,7 +15,8 @@ function BookManagerment() {
   const [Page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [selectedBookId, setSelectedBookId] = useState(null);
   const [bookName, setBookName] = useState('');
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
@@ -163,6 +165,18 @@ function BookManagerment() {
       .catch(error => console.error('Error deleting book:', error));
   };
 
+  const handleDeleteClick = bookId => {
+    setSelectedBookId(bookId);
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedBookId) {
+      handleDeleteBook(selectedBookId);
+      setIsConfirmOpen(false);
+    }
+  };
+
   return (
     <div className="container">
       <div className="header-div">
@@ -219,7 +233,7 @@ function BookManagerment() {
                 <button className="action-btn">
                   <FontAwesomeIcon icon={faEdit} onClick={() => fetchSelectedBook(book.id)} />
                 </button>
-                <button className="action-btn" style={{ marginLeft: '10px' }} onClick={() => handleDeleteBook(book.id)}>
+                <button className="action-btn" style={{ marginLeft: '10px' }} onClick={() => handleDeleteClick(book.id)}>
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </td>
@@ -333,6 +347,13 @@ function BookManagerment() {
           </div>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message="All the information of this book will be deleted. Are you sure you want to continue delete it?"
+      />
     </div>
   );
 }
