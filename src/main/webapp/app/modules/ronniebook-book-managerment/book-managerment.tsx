@@ -16,6 +16,7 @@ function BookManagerment() {
   const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [selectedBookId, setSelectedBookId] = useState(null);
   const [bookName, setBookName] = useState('');
   const [title, setTitle] = useState('');
@@ -41,6 +42,7 @@ function BookManagerment() {
     fetch(`http://localhost:9000/api/books/${bookId}`)
       .then(response => response.json())
       .then(data => {
+        setSelectedBookId(data.id);
         setBookName(data.bookName);
         setTitle(data.title);
         setAuthor(data.author);
@@ -49,7 +51,7 @@ function BookManagerment() {
         setLanguage(data.language);
         setBookStatus(data.bookStatus);
         setImageUrl(data.imageUrl);
-        toggleModal();
+        toggleModal(true);
       })
       .catch(error => console.error('Error fetching selected book:', error));
   };
@@ -74,8 +76,9 @@ function BookManagerment() {
     }
   };
 
-  const toggleModal = () => {
+  const toggleModal = (editing = false) => {
     setIsModalOpen(!isModalOpen);
+    setIsEditing(editing);
     if (!isModalOpen) {
       document.body.classList.add('modal-open');
     } else {
@@ -140,6 +143,45 @@ function BookManagerment() {
       .catch(error => console.error('Error saving book:', error));
   };
 
+  const handleEditBook = event => {
+    event.preventDefault();
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      return;
+    }
+
+    const bookData = {
+      id: selectedBookId,
+      bookName,
+      title,
+      author,
+      description,
+      category,
+      language,
+      bookStatus,
+      imageUrl,
+    };
+
+    fetch(`http://localhost:9000/api/books/${selectedBookId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+      body: JSON.stringify(bookData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Book edited:', data);
+        toggleModal();
+        fetchBooks(Page, searchText);
+      })
+      .catch(error => console.error('Error editing book:', error));
+  };
+
   const handleDeleteBook = bookId => {
     const token = getXsrfToken();
 
@@ -181,7 +223,7 @@ function BookManagerment() {
     <div className="container">
       <div className="header-div">
         <div className="action-buttons">
-          <button className="btn" onClick={toggleModal}>
+          <button className="btn" onClick={() => toggleModal(false)}>
             + Add Book
           </button>
         </div>
@@ -263,8 +305,8 @@ function BookManagerment() {
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content">
-            <h2>New Book</h2>
-            <form onSubmit={handleSaveBook}>
+            <h2>{isEditing ? 'Edit Book' : 'New Book'}</h2>
+            <form onSubmit={isEditing ? handleEditBook : handleSaveBook}>
               <label>Book Name:</label>
               <input
                 id="bookName"
@@ -336,7 +378,7 @@ function BookManagerment() {
               ></textarea>
 
               <div className="modal-actions">
-                <button type="button" className="btn-close" onClick={toggleModal}>
+                <button type="button" className="btn-close" onClick={() => toggleModal(true)}>
                   <FontAwesomeIcon icon={faClose} />
                 </button>
                 <button type="submit" className="btn-save">

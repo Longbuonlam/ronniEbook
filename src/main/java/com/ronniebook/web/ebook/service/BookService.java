@@ -105,6 +105,12 @@ public class BookService {
         if (newBook.getLanguage() != null) {
             existingBook.setLanguage(newBook.getLanguage());
         }
+        if (newBook.getBookStatus() != null) {
+            existingBook.setBookStatus(newBook.getBookStatus());
+        }
+        if (newBook.getImageUrl() != null) {
+            existingBook.setImageUrl(newBook.getImageUrl());
+        }
         bookRepository.save(existingBook);
         return Optional.of(existingBook);
     }
