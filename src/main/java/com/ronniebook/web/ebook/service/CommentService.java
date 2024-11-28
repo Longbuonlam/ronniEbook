@@ -2,6 +2,7 @@ package com.ronniebook.web.ebook.service;
 
 import com.ronniebook.web.ebook.domain.Comment;
 import com.ronniebook.web.ebook.repository.CommentRepository;
+import com.ronniebook.web.security.SecurityUtils;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,8 @@ public class CommentService {
 
     public Comment save(Comment comment) {
         log.debug("Request to save comment : {}", comment);
+        String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        comment.setUserId(userId);
         return commentRepository.save(comment);
     }
 

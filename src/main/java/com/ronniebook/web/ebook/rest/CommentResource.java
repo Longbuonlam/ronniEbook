@@ -60,7 +60,7 @@ public class CommentResource {
         comment.setBookId(bookId);
         Comment result = commentService.save(comment);
 
-        return ResponseEntity.created(new URI("/api/{bookId}/comments" + result.getId()))
+        return ResponseEntity.created(new URI("/api/comments/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId()))
             .body(result);
     }

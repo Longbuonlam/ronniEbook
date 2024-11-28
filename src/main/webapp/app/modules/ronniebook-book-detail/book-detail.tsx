@@ -4,10 +4,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './book-detail.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookOpen, faStar } from '@fortawesome/free-solid-svg-icons';
+import { Comment } from '../../shared/model/comment.model';
 
 function BookDetail() {
   const { bookId } = useParams();
   const [book, setBook] = useState<Book | null>(null);
+  const [reviews, setReviews] = useState<Comment[] | null>(null);
+  const [showReviews, setShowReviews] = useState(false);
   const navigate = useNavigate();
 
   const fetchBook = () => {
@@ -15,6 +18,15 @@ function BookDetail() {
       .then(response => response.json())
       .then(data => {
         setBook(data);
+      })
+      .catch(error => console.error('Error fetching books:', error));
+  };
+
+  const fetchReviews = () => {
+    fetch(`http://localhost:9000/api/${bookId}/comments?page=0&size=20`)
+      .then(response => response.json())
+      .then(data => {
+        setReviews(data.content);
       })
       .catch(error => console.error('Error fetching books:', error));
   };
@@ -51,6 +63,12 @@ function BookDetail() {
       .catch(error => console.error('Error adding book to favorites:', error));
   };
 
+  const toggleReviews = () => {
+    console.log('Toggling reviews');
+    setShowReviews(!showReviews);
+    if (!showReviews) fetchReviews();
+  };
+
   useEffect(() => {
     fetchBook();
   }, [bookId]);
@@ -67,7 +85,7 @@ function BookDetail() {
             </div>
           </div>
           <div className="book-info">
-            <h1>{book.title}</h1>
+            <h1 onClick={toggleReviews}>{book.title}</h1>
 
             <div className="book-meta">
               <span className="publisher"></span>
@@ -115,8 +133,21 @@ function BookDetail() {
 
           <div className="tab-navigation">
             <button onClick={() => navigate(`/app/book/${bookId}/related`)}>Related </button>
-            <button onClick={() => navigate(`/app/book/${bookId}/reviews`)}>Reviews </button>
+            <button onClick={toggleReviews}>Reviews </button>
           </div>
+          {showReviews && reviews && reviews.length > 0 && (
+            <div className="reviews-section">
+              <h2>Reviews</h2>
+              {reviews.map((review, index) => (
+                <div key={index} className="review">
+                  <p>{review.description}</p>
+                  <p>
+                    <strong>User:</strong> {review.userId}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </>
       ) : (
         <p>Loading...</p>
