@@ -114,25 +114,101 @@
       }
     }
   }
+}
 
-  .tab-navigation {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: auto;
-    margin-top: 50rem;
+.tab-navigation-div {
+  display: flex;
+  background-color: #e9ecef;
+}
 
-    button {
-      background-color: #22223b;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.9rem;
+.tab-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 10px 20px;
+  background-color: #e9ecef;
+}
 
-      &:hover {
-        background-color: #db6f35;
-      }
-    }
+.tab-link {
+  text-decoration: none;
+  font-size: 16px;
+  color: #aaa;
+  position: relative;
+  padding: 10px 5px;
+  transition: color 0.2s ease;
+}
+
+.tab-link:hover {
+  color: #22223b;
+}
+
+.tab-link.active {
+  color: #22223b;
+  font-weight: bold;
+}
+
+.tab-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #ff833e;
+  border-radius: 1px;
+}
+
+.tab-count {
+  font-size: 12px;
+  background-color: #666;
+  color: #fff;
+  border-radius: 50%;
+  padding: 2px 5px;
+  margin-left: 5px;
+}
+
+.reviews-section {
+  padding: 10px;
+  background-color: #e9ecef;
+  border-radius: 8px;
+}
+
+.reviews {
+  border-bottom: 2px solid #666;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+  color: #1e1e1e;
+  :hover {
+    cursor: pointer;
+    color: #db6f35;
   }
+}
+
+.review-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 15px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.review-description {
+  font-size: 16px;
+  color: #333;
+  margin: 0;
+}
+
+.review-user {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.review-user strong {
+  color: #333;
 }
