@@ -156,4 +156,10 @@ public class ChapterResource {
 
         return ResponseUtil.wrapOrNotFound(result, HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, chapter.getId()));
     }
+
+    @GetMapping("/chapters/{id}")
+    public Chapter getChapter(@PathVariable String id) {
+        log.debug("REST request to get Chapter : {}", id);
+        return chapterService.findOne(id).orElseThrow();
+    }
 }

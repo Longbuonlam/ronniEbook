@@ -56,6 +56,15 @@ public class ChapterService {
         if (newChapter.getChapterName() != null) {
             existingChapter.setChapterName(newChapter.getChapterName());
         }
+        if (newChapter.getChapterStatus() != null) {
+            existingChapter.setChapterStatus(newChapter.getChapterStatus());
+        }
+        if (newChapter.getLanguage() != null) {
+            existingChapter.setLanguage(newChapter.getLanguage());
+        }
+        if (newChapter.getNumber() != null) {
+            existingChapter.setNumber(newChapter.getNumber());
+        }
         return Optional.of(chapterRepository.save(existingChapter));
     }
 
@@ -90,7 +99,7 @@ public class ChapterService {
      * @return the entity.
      */
     public Optional<Chapter> findOne(String id) {
-        log.debug("Request to get N0Document : {}", id);
+        log.debug("Request to get Chapter : {}", id);
         return chapterRepository.findByChapterId(id);
     }
 

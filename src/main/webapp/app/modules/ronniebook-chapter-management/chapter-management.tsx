@@ -5,6 +5,7 @@ import './chapter-management.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faEdit, faMagnifyingGlass, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Chapter } from '../../shared/model/chapter.model';
+import ConfirmationModal from '../../shared/layout/confirmation/confirmation-modal';
 
 function ChapterManagerment() {
   const { bookId } = useParams();
@@ -15,6 +16,9 @@ function ChapterManagerment() {
   const [Page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedChapterId, setSelectedChapterId] = useState(null);
   const [chapterName, setChapterName] = useState('');
   const [number, setNumber] = useState('');
   const [language, setLanguage] = useState('');
@@ -29,6 +33,20 @@ function ChapterManagerment() {
         setTotalPages(data.totalPages);
       })
       .catch(error => console.error('Error fetching chapters:', error));
+  };
+
+  const fetchSelectedChapter = chapterId => {
+    fetch(`http://localhost:9000/api/chapters/${chapterId}`)
+      .then(response => response.json())
+      .then(data => {
+        setSelectedChapterId(data.id);
+        setChapterName(data.chapterName);
+        setNumber(data.number);
+        setLanguage(data.language);
+        setChapterStatus(data.chapterStatus);
+        toggleModal(true);
+      })
+      .catch(error => console.error('Error fetching selected book:', error));
   };
 
   useEffect(() => {
@@ -51,11 +69,16 @@ function ChapterManagerment() {
     }
   };
 
-  const toggleModal = () => {
+  const toggleModal = (editing = false) => {
     setIsModalOpen(!isModalOpen);
+    setIsEditing(editing);
     if (!isModalOpen) {
       document.body.classList.add('modal-open');
     } else {
+      setChapterName('');
+      setNumber('');
+      setLanguage('');
+      setChapterStatus('');
       document.body.classList.remove('modal-open');
     }
   };
@@ -63,6 +86,41 @@ function ChapterManagerment() {
   const getXsrfToken = () => {
     const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
     return match ? match[1] : null;
+  };
+
+  const handleEditChapter = event => {
+    event.preventDefault();
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      return;
+    }
+
+    const chapterData = {
+      id: selectedChapterId,
+      chapterName,
+      number,
+      language,
+      chapterStatus,
+    };
+
+    fetch(`http://localhost:9000/api/chapters/${selectedChapterId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+      body: JSON.stringify(chapterData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Chapter edited:', data);
+        toggleModal();
+        fetchChapters(Page, searchText);
+      })
+      .catch(error => console.error('Error editing chapter:', error));
   };
 
   const handleSaveChapter = event => {
@@ -125,11 +183,23 @@ function ChapterManagerment() {
       .catch(error => console.error('Error deleting chapter:', error));
   };
 
+  const handleDeleteClick = chapterId => {
+    setSelectedChapterId(chapterId);
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedChapterId) {
+      handleDeleteChapter(selectedChapterId);
+      setIsConfirmOpen(false);
+    }
+  };
+
   return (
     <div className="container">
       <div className="header-div">
         <div className="action-buttons">
-          <button className="btn" onClick={toggleModal}>
+          <button className="btn" onClick={() => toggleModal(false)}>
             + Add Chapter
           </button>
         </div>
@@ -171,9 +241,9 @@ function ChapterManagerment() {
               </td>
               <td>
                 <button className="action-btn">
-                  <FontAwesomeIcon icon={faEdit} />
+                  <FontAwesomeIcon icon={faEdit} onClick={() => fetchSelectedChapter(chapter.id)} />
                 </button>
-                <button className="action-btn" style={{ marginLeft: '10px' }} onClick={() => handleDeleteChapter(chapter.id)}>
+                <button className="action-btn" style={{ marginLeft: '10px' }} onClick={() => handleDeleteClick(chapter.id)}>
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </td>
@@ -203,8 +273,8 @@ function ChapterManagerment() {
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content">
-            <h2>New Chapter</h2>
-            <form onSubmit={handleSaveChapter}>
+            <h2>{isEditing ? 'Edit Chapter' : 'New Chapter'}</h2>
+            <form onSubmit={isEditing ? handleEditChapter : handleSaveChapter}>
               <label>Chapter Name:</label>
               <input
                 id="chapterName"
@@ -245,7 +315,7 @@ function ChapterManagerment() {
               </select>
 
               <div className="modal-actions">
-                <button type="button" className="btn-close" onClick={toggleModal}>
+                <button type="button" className="btn-close" onClick={() => toggleModal(true)}>
                   <FontAwesomeIcon icon={faClose} />
                 </button>
                 <button type="submit" className="btn-save">
@@ -256,6 +326,13 @@ function ChapterManagerment() {
           </div>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message="All the information of this chapter will be deleted. Are you sure you want to continue delete it?"
+      />
     </div>
   );
 }
