@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faEdit, faMagnifyingGlass, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Chapter } from '../../shared/model/chapter.model';
 import ConfirmationModal from '../../shared/layout/confirmation/confirmation-modal';
+import toast, { Toaster } from 'react-hot-toast';
 
 function ChapterManagerment() {
   const { bookId } = useParams();
@@ -94,6 +95,7 @@ function ChapterManagerment() {
 
     if (!token) {
       console.error('XSRF token is missing');
+      toast.error('Failed to edit chapter: XSRF token is missing');
       return;
     }
 
@@ -119,8 +121,12 @@ function ChapterManagerment() {
         console.log('Chapter edited:', data);
         toggleModal();
         fetchChapters(Page, searchText);
+        toast.success('Chapter edited successfully');
       })
-      .catch(error => console.error('Error editing chapter:', error));
+      .catch(error => {
+        console.error('Error edit chapter:', error);
+        toast.error('Failed to edit chapter');
+      });
   };
 
   const handleSaveChapter = event => {
@@ -129,6 +135,7 @@ function ChapterManagerment() {
 
     if (!token) {
       console.error('XSRF token is missing');
+      toast.error('Failed to save chapter: XSRF token is missing');
       return;
     }
 
@@ -154,8 +161,12 @@ function ChapterManagerment() {
         console.log('Chapter saved:', data);
         toggleModal();
         fetchChapters(Page, searchText);
+        toast.success('Chapter saved successfully');
       })
-      .catch(error => console.error('Error saving chapter:', error));
+      .catch(error => {
+        console.error('Error saving chapter:', error);
+        toast.error('Failed to save chapter');
+      });
   };
 
   const handleDeleteChapter = chapterId => {
@@ -163,6 +174,7 @@ function ChapterManagerment() {
 
     if (!token) {
       console.error('XSRF token is missing');
+      toast.error('Failed to delete chapter: XSRF token is missing');
       return;
     }
 
@@ -176,11 +188,15 @@ function ChapterManagerment() {
       .then(response => {
         if (response.ok) {
           setChapters(Chapters.filter(chapter => chapter.id !== chapterId));
+          toast.success('Chapter deleted successfully');
         } else {
           console.error('Error deleting chapter:', response.statusText);
         }
       })
-      .catch(error => console.error('Error deleting chapter:', error));
+      .catch(error => {
+        console.error('Error deleting chapter:', error);
+        toast.error('Failed to delete chapter');
+      });
   };
 
   const handleDeleteClick = chapterId => {
@@ -333,6 +349,7 @@ function ChapterManagerment() {
         onConfirm={handleConfirmDelete}
         message="All the information of this chapter will be deleted. Are you sure you want to continue delete it?"
       />
+      <Toaster />
     </div>
   );
 }

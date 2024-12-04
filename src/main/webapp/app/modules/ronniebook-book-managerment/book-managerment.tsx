@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faEdit, faMagnifyingGlass, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Book } from '../../shared/model/book.model';
 import ConfirmationModal from '../../shared/layout/confirmation/confirmation-modal';
+import toast, { Toaster } from 'react-hot-toast';
 
 function BookManagerment() {
   const [searchText, setSearchText] = useState('');
@@ -109,6 +110,7 @@ function BookManagerment() {
 
     if (!token) {
       console.error('XSRF token is missing');
+      toast.error('Failed to save book: XSRF token is missing');
       return;
     }
 
@@ -139,8 +141,12 @@ function BookManagerment() {
         console.log('Book saved:', data);
         toggleModal();
         fetchBooks(Page, searchText);
+        toast.success('Book saved successfully');
       })
-      .catch(error => console.error('Error saving book:', error));
+      .catch(error => {
+        console.error('Error saving book:', error);
+        toast.error('Failed to save book');
+      });
   };
 
   const handleEditBook = event => {
@@ -149,6 +155,7 @@ function BookManagerment() {
 
     if (!token) {
       console.error('XSRF token is missing');
+      toast.error('Failed to edit book: XSRF token is missing');
       return;
     }
 
@@ -178,8 +185,12 @@ function BookManagerment() {
         console.log('Book edited:', data);
         toggleModal();
         fetchBooks(Page, searchText);
+        toast.success('Book edited successfully');
       })
-      .catch(error => console.error('Error editing book:', error));
+      .catch(error => {
+        console.error('Error editing book:', error);
+        toast.error('Failed to edit book');
+      });
   };
 
   const handleDeleteBook = bookId => {
@@ -187,6 +198,7 @@ function BookManagerment() {
 
     if (!token) {
       console.error('XSRF token is missing');
+      toast.error('Failed to delete book: XSRF token is missing');
       return;
     }
 
@@ -200,11 +212,15 @@ function BookManagerment() {
       .then(response => {
         if (response.ok) {
           setBooks(Books.filter(book => book.id !== bookId));
+          toast.success('Book deleted successfully');
         } else {
           console.error('Error deleting book:', response.statusText);
         }
       })
-      .catch(error => console.error('Error deleting book:', error));
+      .catch(error => {
+        console.error('Error deleting book:', error);
+        toast.error('Failed to delete book');
+      });
   };
 
   const handleDeleteClick = bookId => {
@@ -396,6 +412,7 @@ function BookManagerment() {
         onConfirm={handleConfirmDelete}
         message="All the information of this book will be deleted. Are you sure you want to continue delete it?"
       />
+      <Toaster />
     </div>
   );
 }

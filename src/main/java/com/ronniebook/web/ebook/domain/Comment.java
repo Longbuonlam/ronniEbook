@@ -14,6 +14,8 @@ public class Comment extends BaseEntity implements Serializable {
 
     private String description;
 
+    private int rating;
+
     public Comment() {}
 
     public String getUserId() {
@@ -38,5 +40,13 @@ public class Comment extends BaseEntity implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 }

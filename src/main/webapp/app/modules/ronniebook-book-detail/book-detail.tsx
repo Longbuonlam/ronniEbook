@@ -5,6 +5,7 @@ import './book-detail.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookOpen, faPen, faStar } from '@fortawesome/free-solid-svg-icons';
 import { Comment } from '../../shared/model/comment.model';
+import toast, { Toaster } from 'react-hot-toast';
 
 function BookDetail() {
   const { bookId } = useParams();
@@ -42,6 +43,7 @@ function BookDetail() {
 
     if (!token) {
       console.error('XSRF token is missing');
+      toast.error('Failed to add book to favourite: XSRF token is missing');
       return;
     }
 
@@ -57,11 +59,15 @@ function BookDetail() {
       .then(response => {
         if (response.ok) {
           console.log('Book added to favorites');
+          toast.success('Add to favorite successfully');
         } else {
           console.error('Failed to add book to favorites');
         }
       })
-      .catch(error => console.error('Error adding book to favorites:', error));
+      .catch(error => {
+        console.error('Error adding book to favourite:', error);
+        toast.error('Failed to add book to favorites');
+      });
   };
 
   const toggleReviews = () => {
@@ -182,6 +188,8 @@ function BookDetail() {
           ))}
         </div>
       )}
+
+      <Toaster />
     </div>
   );
 }
