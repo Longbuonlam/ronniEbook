@@ -84,6 +84,41 @@ function BookDetail() {
     }
   };
 
+  //function to calculate time from the review created date
+  const timeAgo = date => {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - new Date(date).getTime()) / 1000);
+
+    const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+    if (diffInSeconds < 60) {
+      return rtf.format(-diffInSeconds, 'second');
+    }
+
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+      return rtf.format(-diffInMinutes, 'minute');
+    }
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+      return rtf.format(-diffInHours, 'hour');
+    }
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 30) {
+      return rtf.format(-diffInDays, 'day');
+    }
+
+    const diffInMonths = Math.floor(diffInDays / 30);
+    if (diffInMonths < 12) {
+      return rtf.format(-diffInMonths, 'month');
+    }
+
+    const diffInYears = Math.floor(diffInMonths / 12);
+    return rtf.format(-diffInYears, 'year');
+  };
+
   useEffect(() => {
     fetchBook();
   }, [bookId]);
@@ -180,10 +215,17 @@ function BookDetail() {
           </h2>
           {reviews.map((review, index) => (
             <div key={index} className="review-box">
+              <div className="review-user">
+                <img src="/path-to-avatar.jpg" alt={review.userId} className="review-avatar" />
+                <p className="review-username">{review.userId}</p>
+                <p className="review-date">{timeAgo(review.createdDate)}</p>
+              </div>
+              <div className="review-rating">
+                {[...Array(review.rating)].map((_, i) => (
+                  <FontAwesomeIcon key={i} icon={faStar} className="star-icon" />
+                ))}
+              </div>
               <p className="review-description">{review.description}</p>
-              <p className="review-user">
-                <strong>User:</strong> {review.userId}
-              </p>
             </div>
           ))}
         </div>
