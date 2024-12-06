@@ -141,6 +141,7 @@
 
 .tab-link:hover {
   color: #22223b;
+  cursor: pointer;
 }
 
 .tab-link.active {
@@ -245,4 +246,158 @@
   font-style: normal;
   margin-top: 2px;
   margin-left: 7px;
+}
+
+/*Comment modal styling */
+.comment-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent dark overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal content box */
+.comment-modal-content {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 450px;
+  max-width: 90%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* Modal header */
+.comment-modal-content h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: #000000; /* Dark text color */
+  margin-bottom: 15px;
+}
+
+/* Modal form */
+.comment-modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Form label */
+.comment-modal-content label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333333; /* Subtle dark color */
+}
+
+/* Input fields */
+.comment-modal-content input,
+.comment-modal-content select,
+.comment-modal-content textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+/* Input focus */
+.comment-modal-content input:focus,
+.comment-modal-content textarea:focus {
+  border-color: #3b82f6; /* Blue border on focus */
+  outline: none;
+}
+
+/* Button styling */
+.comment-modal-content .btn-save {
+  padding: 10px 15px;
+  background-color: #1d4ed8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  width: 100%;
+}
+
+.comment-modal-content .btn-save:hover {
+  background-color: #2563eb;
+}
+
+/* Close button */
+.comment-modal-content .btn-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #888888;
+  cursor: pointer;
+}
+.comment-modal-content .btn-close:hover {
+  color: #333333;
+}
+
+.stars-container {
+  display: flex;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.star-icon-form {
+  font-size: 24px;
+  color: #ccc; /* Màu ngôi sao chưa chọn */
+  transition: color 0.3s;
+}
+
+.star-icon-form.selected {
+  color: #ffd700; /* Màu vàng cho ngôi sao đã chọn */
+}
+
+.star-icon-form:hover {
+  color: #ffcc00; /* Màu khi hover */
+}
+
+.options-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.options-icon {
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: 18px;
+}
+
+.options-dropdown {
+  position: absolute;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  z-index: 10;
+  padding: 5px 0;
+}
+
+.options-dropdown button {
+  background: none;
+  border: none;
+  color: #333;
+  text-align: left;
+  padding: 5px 10px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.options-dropdown button:hover {
+  background-color: #f5f5f5;
 }

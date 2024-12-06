@@ -45,7 +45,7 @@ public class CommentService {
     public Page<Comment> findAllByBookId(Pageable pageable, String bookId) {
         log.debug("Request to get all Comment by BookId : {}", bookId);
         if (pageable.getSort().isEmpty()) {
-            Sort sort = Sort.by(Sort.Direction.ASC, "createdDate");
+            Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         }
         return commentRepository.findAllByBookId(pageable, bookId);

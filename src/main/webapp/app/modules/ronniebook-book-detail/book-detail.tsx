@@ -3,9 +3,10 @@ import { Book } from '../../shared/model/book.model';
 import { useNavigate, useParams } from 'react-router-dom';
 import './book-detail.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookOpen, faPen, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faBookOpen, faPen, faStar, faClose, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import { Comment } from '../../shared/model/comment.model';
 import toast, { Toaster } from 'react-hot-toast';
+import ConfirmationModal from '../../shared/layout/confirmation/confirmation-modal';
 
 function BookDetail() {
   const { bookId } = useParams();
@@ -13,6 +14,13 @@ function BookDetail() {
   const [reviews, setReviews] = useState<Comment[] | null>(null);
   const [showReviews, setShowReviews] = useState(false);
   const [activeTab, setActiveTab] = useState('related');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isCommentEditing, setCommentIsEditing] = useState(false);
+  const [selectedCommentId, setSelectedCommentId] = useState(null);
+  const [rating, setRating] = useState<number>(0);
+  const [description, setDescription] = useState('');
+  const [openMenuIndex, setOpenMenuIndex] = useState(null);
   const navigate = useNavigate();
 
   const fetchBook = () => {
@@ -119,6 +127,149 @@ function BookDetail() {
     return rtf.format(-diffInYears, 'year');
   };
 
+  const toggleOptionsMenu = index => {
+    setOpenMenuIndex(prev => (prev === index ? null : index));
+  };
+
+  const handleStarClick = index => {
+    setRating(index + 1);
+  };
+
+  const toggleCommentModal = (editing = false) => {
+    setIsModalOpen(!isModalOpen);
+    setCommentIsEditing(editing);
+    if (!isModalOpen) {
+      document.body.classList.add('comment-modal-open');
+    } else {
+      setDescription('');
+      setRating(0);
+      document.body.classList.remove('comment-modal-open');
+    }
+  };
+
+  const handleDeleteClick = commentId => {
+    setSelectedCommentId(commentId);
+    setIsConfirmOpen(true);
+    setOpenMenuIndex(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedCommentId) {
+      handleDeleteComment(selectedCommentId);
+      setIsConfirmOpen(false);
+    }
+  };
+
+  // Save comment
+  const handleSaveComment = event => {
+    event.preventDefault();
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      toast.error('Failed to save comment: XSRF token is missing');
+      return;
+    }
+
+    const commentData = {
+      description,
+      rating,
+    };
+
+    fetch(`http://localhost:9000/api/${bookId}/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+      body: JSON.stringify(commentData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Comment saved:', data);
+        toggleCommentModal();
+        fetchReviews();
+        toast.success('Comment saved successfully');
+      })
+      .catch(error => {
+        console.error('Error saving comment:', error);
+        toast.error('Failed to save comment');
+      });
+  };
+
+  // Edit comment
+  const handleEditComment = event => {
+    event.preventDefault();
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      toast.error('Failed to edit comment: XSRF token is missing');
+      return;
+    }
+
+    const commentData = {
+      id: selectedCommentId,
+      description,
+      rating,
+    };
+
+    fetch(`http://localhost:9000/api/comments/${selectedCommentId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+      body: JSON.stringify(commentData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Comment edited:', data);
+        toggleCommentModal();
+        fetchReviews();
+        toast.success('Comment edited successfully');
+      })
+      .catch(error => {
+        console.error('Error editing comment:', error);
+        toast.error('Failed to edit comment');
+      });
+  };
+
+  // Delete comment
+  const handleDeleteComment = commentId => {
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      toast.error('Failed to delete comment: XSRF token is missing');
+      return;
+    }
+
+    fetch(`http://localhost:9000/api/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: {
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+    })
+      .then(response => {
+        if (response.ok) {
+          if (reviews) {
+            setReviews(reviews.filter(review => review.id !== commentId));
+          }
+          toast.success('Comment deleted successfully');
+        } else {
+          console.error('Error deleting comment:', response.statusText);
+        }
+      })
+      .catch(error => {
+        console.error('Error deleting comment:', error);
+        toast.error('Failed to delete comment');
+      });
+  };
+
   useEffect(() => {
     fetchBook();
   }, [bookId]);
@@ -211,7 +362,7 @@ function BookDetail() {
       {showReviews && reviews && reviews.length > 0 && (
         <div className="reviews-section">
           <h2 className="reviews">
-            Reviews <FontAwesomeIcon icon={faPen} />
+            Reviews <FontAwesomeIcon icon={faPen} onClick={() => toggleCommentModal()} />
           </h2>
           <div className="review-box">
             {reviews.map((review, index) => (
@@ -220,6 +371,15 @@ function BookDetail() {
                   <img src="/path-to-avatar.jpg" alt={review.userId} className="review-avatar" />
                   <p className="review-username">{review.userId}</p>
                   <p className="review-date">{timeAgo(review.createdDate)}</p>
+                  <div className="options-menu">
+                    <FontAwesomeIcon icon={faEllipsisH} className="options-icon" onClick={() => toggleOptionsMenu(index)} />
+                    {openMenuIndex === index && (
+                      <div className="options-dropdown">
+                        <button onClick={() => handleEditComment(review.id)}>Edit</button>
+                        <button onClick={() => handleDeleteClick(review.id)}>Delete</button>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="review-rating">
                   {[...Array(review.rating)].map((_, i) => (
@@ -232,6 +392,51 @@ function BookDetail() {
           </div>
         </div>
       )}
+
+      {isModalOpen && (
+        <div className="comment-modal">
+          <div className="comment-modal-content">
+            <h2>{isCommentEditing ? 'Edit Comment' : 'New Comment'}</h2>
+            <form onSubmit={isCommentEditing ? handleEditComment : handleSaveComment}>
+              <label>Rating:</label>
+              <div className="stars-container">
+                {[...Array(5)].map((_, index) => (
+                  <FontAwesomeIcon
+                    key={index}
+                    icon={faStar}
+                    className={`star-icon-form ${index < rating ? 'selected' : ''}`}
+                    onClick={() => setRating(index + 1)}
+                  />
+                ))}
+              </div>
+
+              <label>Description:</label>
+              <textarea
+                id="description"
+                placeholder="Enter description"
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+              ></textarea>
+
+              <div className="modal-actions">
+                <button type="button" className="btn-close" onClick={() => toggleCommentModal(true)}>
+                  <FontAwesomeIcon icon={faClose} />
+                </button>
+                <button type="submit" className="btn-save">
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <ConfirmationModal
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message="Are you sure you want to delete this comment?"
+      />
 
       <Toaster />
     </div>
