@@ -213,21 +213,23 @@ function BookDetail() {
           <h2 className="reviews">
             Reviews <FontAwesomeIcon icon={faPen} />
           </h2>
-          {reviews.map((review, index) => (
-            <div key={index} className="review-box">
-              <div className="review-user">
-                <img src="/path-to-avatar.jpg" alt={review.userId} className="review-avatar" />
-                <p className="review-username">{review.userId}</p>
-                <p className="review-date">{timeAgo(review.createdDate)}</p>
+          <div className="review-box">
+            {reviews.map((review, index) => (
+              <div key={index} className="single-review">
+                <div className="review-user">
+                  <img src="/path-to-avatar.jpg" alt={review.userId} className="review-avatar" />
+                  <p className="review-username">{review.userId}</p>
+                  <p className="review-date">{timeAgo(review.createdDate)}</p>
+                </div>
+                <div className="review-rating">
+                  {[...Array(review.rating)].map((_, i) => (
+                    <FontAwesomeIcon key={i} icon={faStar} className="star-icon" />
+                  ))}
+                </div>
+                <p className="review-description">{review.description}</p>
               </div>
-              <div className="review-rating">
-                {[...Array(review.rating)].map((_, i) => (
-                  <FontAwesomeIcon key={i} icon={faStar} className="star-icon" />
-                ))}
-              </div>
-              <p className="review-description">{review.description}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
