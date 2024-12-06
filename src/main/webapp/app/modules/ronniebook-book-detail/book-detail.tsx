@@ -41,6 +41,19 @@ function BookDetail() {
       .catch(error => console.error('Error fetching books:', error));
   };
 
+  const fetchSelectedReview = commentId => {
+    fetch(`http://localhost:9000/api/comments/${commentId}`)
+      .then(response => response.json())
+      .then(data => {
+        setSelectedCommentId(data.id);
+        setDescription(data.description);
+        setRating(data.rating);
+        toggleCommentModal(true);
+      })
+      .catch(error => console.error('Error fetching selected book:', error));
+    setOpenMenuIndex(null);
+  };
+
   const getXsrfToken = () => {
     const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
     return match ? match[1] : null;
@@ -375,7 +388,7 @@ function BookDetail() {
                     <FontAwesomeIcon icon={faEllipsisH} className="options-icon" onClick={() => toggleOptionsMenu(index)} />
                     {openMenuIndex === index && (
                       <div className="options-dropdown">
-                        <button onClick={() => handleEditComment(review.id)}>Edit</button>
+                        <button onClick={() => fetchSelectedReview(review.id)}>Edit</button>
                         <button onClick={() => handleDeleteClick(review.id)}>Delete</button>
                       </div>
                     )}

@@ -96,4 +96,10 @@ public class CommentResource {
 
         return ResponseUtil.wrapOrNotFound(result, HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, comment.getId()));
     }
+
+    @GetMapping("/comments/{id}")
+    public Comment getComment(@PathVariable String id) {
+        log.debug("REST request to get Book : {}", id);
+        return commentService.findOne(id);
+    }
 }

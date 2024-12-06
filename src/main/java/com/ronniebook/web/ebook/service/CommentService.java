@@ -34,6 +34,9 @@ public class CommentService {
         if (newComment.getDescription() != null) {
             existingComment.setDescription(newComment.getDescription());
         }
+        if (newComment.getRating() != 0) {
+            existingComment.setRating(newComment.getRating());
+        }
         return Optional.of(commentRepository.save(existingComment));
     }
 
