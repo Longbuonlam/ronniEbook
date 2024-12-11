@@ -266,3 +266,21 @@
 .flex-row .flex-item {
   flex: 1;
 }
+
+.header-breadcrumbs {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  color: #333;
+  gap: 5px;
+}
+
+.header-breadcrumbs span {
+  font-weight: normal;
+  color: #333;
+}
+
+.header-breadcrumbs span:hover {
+  color: #2563eb;
+  cursor: pointer;
+}

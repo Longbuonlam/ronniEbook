@@ -24,6 +24,7 @@ function ChapterManagerment() {
   const [number, setNumber] = useState('');
   const [language, setLanguage] = useState('');
   const [chapterStatus, setChapterStatus] = useState('');
+  const [bookName, setBookName] = useState('');
 
   const fetchChapters = (pageNumber = 0, search = '') => {
     fetch(`http://localhost:9000/api/chapters?page=${pageNumber}&size=6&searchText=${search}&bookId=${bookId}`)
@@ -50,7 +51,17 @@ function ChapterManagerment() {
       .catch(error => console.error('Error fetching selected book:', error));
   };
 
+  const fetchBookName = () => {
+    fetch(`http://localhost:9000/api/books/${bookId}`)
+      .then(response => response.json())
+      .then(data => {
+        setBookName(data.bookName);
+      })
+      .catch(error => console.error('Error fetching book name:', error));
+  };
+
   useEffect(() => {
+    fetchBookName();
     fetchChapters(0, searchQuery);
   }, [searchQuery]);
 
@@ -214,6 +225,12 @@ function ChapterManagerment() {
   return (
     <div className="container">
       <div className="header-div">
+        <div className="header-breadcrumbs">
+          <span onClick={() => navigate('/app/admin/book-managerment')}>Book Management</span>
+          <span>&gt;</span>
+          <span>{bookName}</span>
+        </div>
+
         <div className="action-buttons">
           <button className="btn" onClick={() => toggleModal(false)}>
             + Add Chapter
