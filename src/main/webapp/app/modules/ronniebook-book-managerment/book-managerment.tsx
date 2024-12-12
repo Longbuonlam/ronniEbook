@@ -15,6 +15,7 @@ function BookManagerment() {
   const [Books, setBooks] = useState<Book[]>([]);
   const [Page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalBooks, setTotalBooks] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -35,6 +36,7 @@ function BookManagerment() {
         setBooks(data.content);
         setPage(pageNumber);
         setTotalPages(data.totalPages);
+        setTotalBooks(data.totalElements);
       })
       .catch(error => console.error('Error fetching books:', error));
   };
@@ -301,7 +303,7 @@ function BookManagerment() {
       </table>
       <div className="pagination">
         <span>
-          Showing page {Page + 1} of {totalPages}
+          Showing page {Page + 1} of {totalPages} - Total books: {totalBooks}
         </span>
         <div>
           <button className="page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
