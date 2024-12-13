@@ -140,6 +140,13 @@ function BookDetail() {
     return rtf.format(-diffInYears, 'year');
   };
 
+  const formatDate = date => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   const toggleOptionsMenu = index => {
     setOpenMenuIndex(prev => (prev === index ? null : index));
   };
@@ -383,7 +390,9 @@ function BookDetail() {
                 <div className="review-user">
                   <img src="/path-to-avatar.jpg" alt={review.userId} className="review-avatar" />
                   <p className="review-username">{review.userId}</p>
-                  <p className="review-date">{timeAgo(review.createdDate)}</p>
+                  <p className="review-date" title={formatDate(new Date(review.createdDate))}>
+                    {timeAgo(review.createdDate)}
+                  </p>
                   <div className="options-menu">
                     <FontAwesomeIcon icon={faEllipsisH} className="options-icon" onClick={() => toggleOptionsMenu(index)} />
                     {openMenuIndex === index && (
