@@ -2,8 +2,10 @@ package com.ronniebook.web.ebook.rest;
 
 import com.ronniebook.web.ebook.domain.Book;
 import com.ronniebook.web.ebook.domain.BookStatus;
+import com.ronniebook.web.ebook.domain.LanguageCode;
 import com.ronniebook.web.ebook.repository.BookRepository;
 import com.ronniebook.web.ebook.service.BookService;
+import com.ronniebook.web.ebook.service.CloudinaryService;
 import com.ronniebook.web.security.AuthoritiesConstants;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
@@ -15,9 +17,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
@@ -33,27 +37,59 @@ public class BookResource {
 
     private final BookService bookService;
     private final BookRepository bookRepository;
+    private final CloudinaryService cloudinaryService;
 
-    public BookResource(BookService bookService, BookRepository bookRepository) {
+    public BookResource(BookService bookService, BookRepository bookRepository, CloudinaryService cloudinaryService) {
         this.bookService = bookService;
         this.bookRepository = bookRepository;
+        this.cloudinaryService = cloudinaryService;
     }
 
     /**
      * {@code POST  /books} : Create a new Book.
      *
-     * @param book the book to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new book, or with status {@code 400 (Bad Request)} if the book has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/books")
     @PreAuthorize("hasRole('" + AuthoritiesConstants.ADMIN + "')")
-    public ResponseEntity<Book> createBook(@RequestBody Book book) throws URISyntaxException {
+    public ResponseEntity<Book> createBook(
+        @RequestParam String bookName,
+        @RequestParam String title,
+        @RequestParam String author,
+        @RequestParam String description,
+        @RequestParam String category,
+        @RequestParam LanguageCode language,
+        @RequestParam BookStatus bookStatus,
+        @RequestParam MultipartFile image
+    ) throws URISyntaxException {
         System.out.println("create new Book");
+        Book book = new Book(bookName, title, author, description, category, language, bookStatus);
         log.debug("REST request to save book : {}", book);
         if (book.getId() != null) {
             throw new BadRequestAlertException("A new book cannot already have an ID", ENTITY_NAME, "id exists");
         }
+
+        //Upload images to cloudinary
+        try {
+            if (image.getSize() > 20 * 1024 * 1024) {
+                throw new BadRequestAlertException("", ENTITY_NAME, "File size exceeds the maximum allowed size of 20MB.");
+            }
+
+            String contentType = image.getContentType();
+            if (!cloudinaryService.isImage(contentType)) {
+                throw new BadRequestAlertException("", ENTITY_NAME, "Invalid MIME type. Only image files are allowed!");
+            }
+
+            if (!cloudinaryService.hasImageExtension(image.getOriginalFilename())) {
+                throw new BadRequestAlertException("", ENTITY_NAME, "Invalid file extension. Only image files are allowed!");
+            }
+            String imageUrl = cloudinaryService.uploadImage(cloudinaryService.convertMultiPartToFile(image));
+            book.setImageUrl(imageUrl);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
         Book result = bookService.save(book);
         return ResponseEntity.created(new URI("/api/books/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId()))

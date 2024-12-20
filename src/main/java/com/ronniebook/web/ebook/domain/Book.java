@@ -46,7 +46,23 @@ public class Book extends BaseEntity implements Serializable {
     @JsonIgnore
     private boolean isDeleted;
 
-    public Book() {}
+    public Book(
+        String bookName,
+        String title,
+        String author,
+        String description,
+        String category,
+        LanguageCode language,
+        BookStatus bookStatus
+    ) {
+        this.bookName = bookName;
+        this.title = title;
+        this.author = author;
+        this.description = description;
+        this.category = category;
+        this.language = language;
+        this.bookStatus = bookStatus;
+    }
 
     public String getBookName() {
         return bookName;
