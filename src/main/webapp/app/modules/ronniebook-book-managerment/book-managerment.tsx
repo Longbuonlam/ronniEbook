@@ -28,6 +28,7 @@ function BookManagerment() {
   const [language, setLanguage] = useState('');
   const [bookStatus, setBookStatus] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const fetchBooks = (pageNumber = 0, search = '') => {
     fetch(`http://localhost:9000/api/books?page=${pageNumber}&size=6&searchText=${search}`)
@@ -116,27 +117,26 @@ function BookManagerment() {
       return;
     }
 
-    const bookData = {
-      bookName,
-      title,
-      author,
-      description,
-      category,
-      chapterCount: 0,
-      language,
-      bookStatus,
-      imageUrl,
-      deleted: false,
-    };
+    // Create FormData object to send multipart/form-data
+    const formData = new FormData();
+    formData.append('bookName', bookName);
+    formData.append('title', title);
+    formData.append('author', author);
+    formData.append('description', description);
+    formData.append('category', category);
+    formData.append('language', language);
+    formData.append('bookStatus', bookStatus);
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
 
     fetch(`http://localhost:9000/api/books`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         Accept: '*/*',
         'X-XSRF-TOKEN': token,
       },
-      body: JSON.stringify(bookData),
+      body: formData,
     })
       .then(response => response.json())
       .then(data => {
@@ -380,11 +380,13 @@ function BookManagerment() {
               <label htmlFor="imageUrl">Image URL:</label>
               <input
                 id="imageUrl"
-                type="url"
-                placeholder="Enter image URL"
-                maxLength={2048}
-                value={imageUrl}
-                onChange={e => setImageUrl(e.target.value)}
+                type="file"
+                placeholder="Upload image"
+                onChange={e => {
+                  if (e.target.files && e.target.files.length > 0) {
+                    setImageFile(e.target.files[0]);
+                  }
+                }}
               />
 
               <label>Description:</label>

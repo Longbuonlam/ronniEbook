@@ -30,7 +30,7 @@ public class Book extends BaseEntity implements Serializable {
     @NotNull
     private String category;
 
-    private Integer chapterCount;
+    private Integer chapterCount = 0;
 
     @NotNull
     private LanguageCode language;

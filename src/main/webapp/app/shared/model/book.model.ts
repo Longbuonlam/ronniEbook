@@ -10,5 +10,6 @@ export interface Book {
   bookStatus?: string;
   bookSetting?: string;
   imageUrl?: string;
+  imageFile?: File;
   isDeleted: boolean;
 }
