@@ -283,6 +283,11 @@
             <artifactId>cloudinary-core</artifactId>
             <version>1.32.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-drive</artifactId>
+            <version>v3-rev136-1.25.0</version>
+        </dependency>
     </dependencies>
 
     <build>
