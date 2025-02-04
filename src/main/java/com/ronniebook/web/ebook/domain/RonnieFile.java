@@ -3,14 +3,16 @@ package com.ronniebook.web.ebook.domain;
 import java.io.Serializable;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "file")
-public class File extends BaseEntity implements Serializable {
+@Document(collection = "ronnie-file")
+public class RonnieFile extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private String fileName;
 
     private String fileUrl;
+
+    private FileStore fileStore;
 
     private FileStatus fileStatus;
 
@@ -38,5 +40,13 @@ public class File extends BaseEntity implements Serializable {
         this.fileName = fileName;
     }
 
-    public File() {}
+    public FileStore getFileStore() {
+        return fileStore;
+    }
+
+    public void setFileStore(FileStore fileStore) {
+        this.fileStore = fileStore;
+    }
+
+    public RonnieFile() {}
 }
