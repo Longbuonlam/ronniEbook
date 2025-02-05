@@ -1,23 +1,13 @@
 package com.ronniebook.web.ebook.service;
 
 import com.ronniebook.web.ebook.domain.RonnieFile;
-import com.ronniebook.web.ebook.repository.RonnieFileRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import java.io.IOException;
+import org.springframework.web.multipart.MultipartFile;
 
-@Service
-public class RonnieFileService {
+public interface RonnieFileService {
+    RonnieFile uploadFile(String folderId, MultipartFile file) throws IOException;
 
-    private final Logger log = LoggerFactory.getLogger(RonnieFileService.class);
-    private final RonnieFileRepository ronnieFileRepository;
+    String createNewFolder(String folderName) throws IOException;
 
-    public RonnieFileService(RonnieFileRepository ronnieFileRepository) {
-        this.ronnieFileRepository = ronnieFileRepository;
-    }
-
-    public void saveFile(RonnieFile file) {
-        log.debug("Request to save file {}", file);
-        ronnieFileRepository.save(file);
-    }
+    void deleteFile(String fileId);
 }

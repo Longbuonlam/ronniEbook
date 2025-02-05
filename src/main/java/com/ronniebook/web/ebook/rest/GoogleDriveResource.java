@@ -30,7 +30,7 @@ public class GoogleDriveResource {
     @PostMapping("/google-drive/upload-file")
     public ResponseEntity<?> uploadFileToGGDrive(@RequestParam String folderId, @RequestParam MultipartFile file) throws IOException {
         log.debug("Request to upload file");
-        File file1 = googleDriveService.uploadFile(folderId, file.getOriginalFilename(), file);
+        googleDriveService.uploadFile(folderId, file);
         return ResponseEntity.ok("upload file successfully");
     }
 

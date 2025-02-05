@@ -5,4 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RonnieFileRepository extends MongoRepository<RonnieFile, String> {}
+public interface FileRepository extends MongoRepository<RonnieFile, String> {
+    RonnieFile findByStorageId(String storageId);
+}
