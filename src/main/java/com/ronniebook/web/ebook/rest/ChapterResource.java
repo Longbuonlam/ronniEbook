@@ -87,11 +87,9 @@ public class ChapterResource {
         chapter.setBookId(bookId);
         Chapter result = chapterService.save(chapter);
 
+        bookService.updateChapterCount(bookId, true);
         Book book = bookService.findOne(bookId);
-        int chapterCount = book.getChapterCount();
-        chapterCount++;
-        book.setChapterCount(chapterCount);
-        bookService.save(book);
+        chapterService.upsertChapter(result, book);
 
         return ResponseEntity.created(new URI("/api/chapters/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId()))
@@ -112,11 +110,7 @@ public class ChapterResource {
         String loginUser = SecurityUtils.getCurrentUserLogin().orElseThrow();
         if (loginUser.equals(chapter.getCreatedBy()) || userService.isAdmin()) {
             chapterService.delete(chapter);
-
-            int chapterCount = book.getChapterCount();
-            chapterCount--;
-            book.setChapterCount(chapterCount);
-            bookService.save(book);
+            bookService.updateChapterCount(book.getId(), false);
 
             return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id)).build();
         }

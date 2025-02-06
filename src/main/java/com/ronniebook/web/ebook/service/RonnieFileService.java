@@ -9,5 +9,7 @@ public interface RonnieFileService {
 
     String createNewFolder(String folderName) throws IOException;
 
+    String createSubFolder(String folderName, String parentId) throws IOException;
+
     void deleteFile(String fileId);
 }

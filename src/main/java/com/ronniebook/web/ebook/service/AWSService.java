@@ -19,6 +19,11 @@ public class AWSService implements RonnieFileService {
     }
 
     @Override
+    public String createSubFolder(String folderName, String parentId) {
+        return "";
+    }
+
+    @Override
     public void deleteFile(String fileId) {
         System.out.println("delete file from aws");
     }

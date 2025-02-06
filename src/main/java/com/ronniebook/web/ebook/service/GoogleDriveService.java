@@ -48,6 +48,19 @@ public class GoogleDriveService implements RonnieFileService {
     }
 
     @Override
+    public String createSubFolder(String folderName, String parentId) throws IOException {
+        log.debug("Request to create sub folder {}", folderName);
+        File fileMetadata = new File();
+        fileMetadata.setName(folderName);
+        fileMetadata.setMimeType("application/vnd.google-apps.folder");
+        fileMetadata.setParents(Collections.singletonList(parentId));
+
+        File file = googleDrive.files().create(fileMetadata).setFields("id").execute();
+        addPermissionToFolder(googleDrive, file.getId());
+        return file.getId();
+    }
+
+    @Override
     public RonnieFile uploadFile(String folderId, MultipartFile file) throws IOException {
         log.debug("Request to upload file {} to google drive", file.getOriginalFilename());
         File newGGDriveFile = new File();
