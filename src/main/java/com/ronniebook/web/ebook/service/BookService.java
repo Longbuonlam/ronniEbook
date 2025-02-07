@@ -5,6 +5,7 @@ import com.ronniebook.web.ebook.domain.BookStatus;
 import com.ronniebook.web.ebook.repository.BookRepository;
 import com.ronniebook.web.service.UserService;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
@@ -18,7 +19,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class BookService {
@@ -29,11 +32,21 @@ public class BookService {
     private final BookRepository bookRepository;
     private static final String ENTITY_NAME = "book";
     private final MongoTemplate mongoTemplate;
+    private final CloudinaryService cloudinaryService;
+    private final RonnieFileService ronnieFileService;
 
-    public BookService(UserService userService, BookRepository bookRepository, MongoTemplate mongoTemplate) {
+    public BookService(
+        UserService userService,
+        BookRepository bookRepository,
+        MongoTemplate mongoTemplate,
+        CloudinaryService cloudinaryService,
+        RonnieFileService ronnieFileService
+    ) {
         this.userService = userService;
         this.bookRepository = bookRepository;
         this.mongoTemplate = mongoTemplate;
+        this.cloudinaryService = cloudinaryService;
+        this.ronnieFileService = ronnieFileService;
     }
 
     /**
@@ -165,5 +178,69 @@ public class BookService {
             return bookRepository.findByBookStatusAndSearchText(pageable, searchText, BookStatus.DONE);
         }
         return bookRepository.findByBookStatusAndSearchText(pageable, searchText, BookStatus.IN_PROGRESS);
+    }
+
+    @Async
+    public void upsertBook(Book book, MultipartFile image) {
+        log.debug("Create new thread to upsert book {}", book);
+        try {
+            String imageUrl = uploadImage(image);
+            String storageId = createStorage(book.getBookName());
+            bookRepository
+                .findById(book.getId())
+                .ifPresent(b -> {
+                    b.setImageUrl(imageUrl);
+                    b.setStorageId(storageId);
+                    bookRepository.save(b);
+                });
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    @Async
+    public void updateChapterCount(String bookId, boolean increase) {
+        log.debug("New thread to update chapter count of book id {}", bookId);
+        Book book = findOne(bookId);
+        int chapterCount = book.getChapterCount();
+        if (increase) {
+            chapterCount++;
+        } else {
+            if (chapterCount == 0) {
+                throw new BadRequestAlertException("", "", "Chapter count must not less than 0");
+            }
+            chapterCount--;
+        }
+        book.setChapterCount(chapterCount);
+        save(book);
+    }
+
+    private String uploadImage(MultipartFile image) {
+        log.debug("Request to upload image to cloudinary");
+        try {
+            if (image.getSize() > 20 * 1024 * 1024) {
+                throw new BadRequestAlertException("", ENTITY_NAME, "File size exceeds the maximum allowed size of 20MB.");
+            }
+
+            String contentType = image.getContentType();
+            if (!cloudinaryService.isImage(contentType)) {
+                throw new BadRequestAlertException("", ENTITY_NAME, "Invalid MIME type. Only image files are allowed!");
+            }
+
+            if (!cloudinaryService.hasImageExtension(image.getOriginalFilename())) {
+                throw new BadRequestAlertException("", ENTITY_NAME, "Invalid file extension. Only image files are allowed!");
+            }
+            return cloudinaryService.uploadImage(cloudinaryService.convertMultiPartToFile(image));
+        } catch (Exception e) {
+            throw new BadRequestAlertException("", "", "Error when upload image to cloudinary");
+        }
+    }
+
+    private String createStorage(String bookName) {
+        try {
+            return ronnieFileService.createNewFolder(bookName);
+        } catch (IOException e) {
+            throw new BadRequestAlertException("", "", "Error in create storage for book");
+        }
     }
 }

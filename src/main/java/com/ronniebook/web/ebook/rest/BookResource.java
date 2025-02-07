@@ -37,12 +37,10 @@ public class BookResource {
 
     private final BookService bookService;
     private final BookRepository bookRepository;
-    private final CloudinaryService cloudinaryService;
 
-    public BookResource(BookService bookService, BookRepository bookRepository, CloudinaryService cloudinaryService) {
+    public BookResource(BookService bookService, BookRepository bookRepository) {
         this.bookService = bookService;
         this.bookRepository = bookRepository;
-        this.cloudinaryService = cloudinaryService;
     }
 
     /**
@@ -63,34 +61,14 @@ public class BookResource {
         @RequestParam BookStatus bookStatus,
         @RequestParam MultipartFile image
     ) throws URISyntaxException {
-        System.out.println("create new Book");
         Book book = new Book(bookName, title, author, description, category, language, bookStatus);
         log.debug("REST request to save book : {}", book);
         if (book.getId() != null) {
             throw new BadRequestAlertException("A new book cannot already have an ID", ENTITY_NAME, "id exists");
         }
-
-        //Upload images to cloudinary
-        try {
-            if (image.getSize() > 20 * 1024 * 1024) {
-                throw new BadRequestAlertException("", ENTITY_NAME, "File size exceeds the maximum allowed size of 20MB.");
-            }
-
-            String contentType = image.getContentType();
-            if (!cloudinaryService.isImage(contentType)) {
-                throw new BadRequestAlertException("", ENTITY_NAME, "Invalid MIME type. Only image files are allowed!");
-            }
-
-            if (!cloudinaryService.hasImageExtension(image.getOriginalFilename())) {
-                throw new BadRequestAlertException("", ENTITY_NAME, "Invalid file extension. Only image files are allowed!");
-            }
-            String imageUrl = cloudinaryService.uploadImage(cloudinaryService.convertMultiPartToFile(image));
-            book.setImageUrl(imageUrl);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-
         Book result = bookService.save(book);
+        bookService.upsertBook(result, image);
+
         return ResponseEntity.created(new URI("/api/books/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId()))
             .body(result);

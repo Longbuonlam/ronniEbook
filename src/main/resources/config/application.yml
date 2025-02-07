@@ -212,3 +212,9 @@ cloudinary:
   cloud-name: djoyvs0e3
   api-key: 884575746828596
   api-secret: TczKEJMYWwCQJpSt5r4fTG4TOFw
+
+#file-storage:
+file:
+  storage: google-drive
+#  storage: AWS-S3
+

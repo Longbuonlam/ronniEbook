@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,10 +26,12 @@ public class ChapterService {
     private final Logger log = LoggerFactory.getLogger(ChapterService.class);
     private final ChapterRepository chapterRepository;
     private final UserService userService;
+    private final RonnieFileService ronnieFileService;
 
-    public ChapterService(ChapterRepository chapterRepository, UserService userService) {
+    public ChapterService(ChapterRepository chapterRepository, UserService userService, RonnieFileService ronnieFileService) {
         this.chapterRepository = chapterRepository;
         this.userService = userService;
+        this.ronnieFileService = ronnieFileService;
     }
 
     /**
@@ -72,7 +75,7 @@ public class ChapterService {
      * Get all the chapters.
      *
      * @param pageable   the pagination information.
-     * @param bookId       id of Book entity
+     * @param bookId     id of Book entity
      * @param searchText String
      * @return the list of entities.
      */
@@ -124,5 +127,25 @@ public class ChapterService {
         //Soft delete
         chapter.setDeleted(true);
         chapterRepository.save(chapter);
+    }
+
+    @Async
+    public void upsertChapter(Chapter chapter, Book book) {
+        log.debug("Create new thread to upsert chapter {}", chapter);
+        String storageId = createStorage(chapter.getChapterName(), book.getStorageId());
+        chapterRepository
+            .findById(chapter.getId())
+            .ifPresent(c -> {
+                c.setStorageId(storageId);
+                chapterRepository.save(c);
+            });
+    }
+
+    private String createStorage(String chapterName, String bookStorageId) {
+        try {
+            return ronnieFileService.createSubFolder(chapterName, bookStorageId);
+        } catch (IOException e) {
+            throw new BadRequestAlertException("", "", "Error in create storage for chapter");
+        }
     }
 }

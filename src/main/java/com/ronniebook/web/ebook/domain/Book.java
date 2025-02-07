@@ -43,6 +43,8 @@ public class Book extends BaseEntity implements Serializable {
     @Field("image_url")
     private String imageUrl;
 
+    private String storageId;
+
     @JsonIgnore
     private boolean isDeleted;
 
@@ -150,6 +152,14 @@ public class Book extends BaseEntity implements Serializable {
 
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public String getStorageId() {
+        return storageId;
+    }
+
+    public void setStorageId(String storageId) {
+        this.storageId = storageId;
     }
 
     public Book id(String id) {

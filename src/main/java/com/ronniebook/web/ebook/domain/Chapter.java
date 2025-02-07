@@ -29,6 +29,8 @@ public class Chapter extends BaseEntity implements Serializable {
 
     private String bookId;
 
+    private String storageId;
+
     @JsonIgnore
     private boolean isDeleted;
 
@@ -85,6 +87,14 @@ public class Chapter extends BaseEntity implements Serializable {
 
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public String getStorageId() {
+        return storageId;
+    }
+
+    public void setStorageId(String storageId) {
+        this.storageId = storageId;
     }
 
     public Chapter id(String id) {
