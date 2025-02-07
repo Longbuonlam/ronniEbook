@@ -78,7 +78,8 @@ public class GoogleDriveService implements RonnieFileService {
             googleDriveFileUrl,
             FileStore.GOOGLE_DRIVE,
             FileStatus.UPLOAD_FINISH,
-            googleDriveFile.getId()
+            googleDriveFile.getId(),
+            folderId
         );
     }
 

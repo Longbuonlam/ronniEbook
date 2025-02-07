@@ -18,6 +18,10 @@ public class RonnieFile extends BaseEntity implements Serializable {
 
     private String storageId;
 
+    private String chapterStorageId;
+
+    private String content;
+
     public FileStatus getFileStatus() {
         return fileStatus;
     }
@@ -58,11 +62,35 @@ public class RonnieFile extends BaseEntity implements Serializable {
         this.storageId = storageId;
     }
 
-    public RonnieFile(String fileName, String fileUrl, FileStore fileStore, FileStatus fileStatus, String storageId) {
+    public String getChapterStorageId() {
+        return chapterStorageId;
+    }
+
+    public void setChapterStorageId(String chapterStorageId) {
+        this.chapterStorageId = chapterStorageId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public RonnieFile(
+        String fileName,
+        String fileUrl,
+        FileStore fileStore,
+        FileStatus fileStatus,
+        String storageId,
+        String chapterStorageId
+    ) {
         this.fileName = fileName;
         this.fileUrl = fileUrl;
         this.fileStore = fileStore;
         this.fileStatus = fileStatus;
         this.storageId = storageId;
+        this.chapterStorageId = chapterStorageId;
     }
 }
