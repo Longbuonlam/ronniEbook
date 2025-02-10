@@ -12,4 +12,5 @@ export interface Book {
   imageUrl?: string;
   imageFile?: File;
   isDeleted: boolean;
+  storageId: string;
 }

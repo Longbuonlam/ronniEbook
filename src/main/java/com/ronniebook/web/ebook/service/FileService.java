@@ -103,4 +103,9 @@ public class FileService {
                 )
         );
     }
+
+    public RonnieFile findOne(String fileId) {
+        log.debug("Request to get file {}", fileId);
+        return fileRepository.findById(fileId).orElseThrow();
+    }
 }

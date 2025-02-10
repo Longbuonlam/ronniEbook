@@ -1,5 +1,6 @@
 package com.ronniebook.web.ebook.rest;
 
+import com.ronniebook.web.ebook.domain.RonnieFile;
 import com.ronniebook.web.ebook.domain.dto.RonnieFileDTO;
 import com.ronniebook.web.ebook.service.FileService;
 import java.io.IOException;
@@ -49,5 +50,11 @@ public class FileResource {
         Page<RonnieFileDTO> page = fileService.findAll(pageable, chapterStorageId, searchText);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page);
+    }
+
+    @GetMapping("/files/{id}")
+    public RonnieFile getFileDetail(@PathVariable String id) {
+        log.debug("Rest request to get file {}", id);
+        return fileService.findOne(id);
     }
 }
