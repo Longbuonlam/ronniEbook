@@ -35,7 +35,7 @@ function UploadFileModal({ isOpen, onClose, onUpload, file }) {
             <label htmlFor="fileInput" className="upload-label">
               <FontAwesomeIcon icon={faUpload} />
               <p>Click to upload or drag and drop</p>
-              <p className="file-types">DOCX, TXT, XLSX, PPTX, XML</p>
+              <p className="file-types">DOCX</p>
             </label>
             {selectedFile && <p className="selected-file">Selected file: {selectedFile.name}</p>}
           </div>

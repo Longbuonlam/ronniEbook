@@ -7,5 +7,4 @@ export interface RonnieFile {
   storageId: string;
   chapterStorageId: string;
   content: string;
-  number: number;
 }

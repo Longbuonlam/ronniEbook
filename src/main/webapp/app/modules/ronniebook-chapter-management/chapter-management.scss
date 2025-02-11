@@ -284,3 +284,9 @@
   color: #2563eb;
   cursor: pointer;
 }
+
+.clickable-chapter-name {
+  cursor: pointer;
+  color: blue; /* or any other color to indicate it's clickable */
+  text-decoration: underline;
+}

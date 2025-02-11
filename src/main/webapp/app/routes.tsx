@@ -18,6 +18,7 @@ import FavouriteBook from './modules/ronniebook-favourite/favourite';
 import History from './modules/ronniebook-history/history';
 import BookManagerment from './modules/ronniebook-book-managerment/book-managerment';
 import ChapterManagerment from './modules/ronniebook-chapter-management/chapter-management';
+import FileManagerment from './modules/ronniebook-file-management/file-management';
 
 const loading = <div>loading ...</div>;
 
@@ -90,6 +91,14 @@ const AppRoutes = (props: RouteProps) => {
           element={
             <PrivateRoute hasAnyAuthorities={[AUTHORITIES.ADMIN]}>
               <ChapterManagerment />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/app/admin/chapter-managerment/:chapterId"
+          element={
+            <PrivateRoute hasAnyAuthorities={[AUTHORITIES.ADMIN]}>
+              <FileManagerment />
             </PrivateRoute>
           }
         />

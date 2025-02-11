@@ -63,10 +63,16 @@ function FileManagerment() {
   };
 
   useEffect(() => {
-    fetchBook();
     fetchChapter();
+  }, [chapterId]);
+
+  useEffect(() => {
+    fetchBook();
+  }, [bookId]);
+
+  useEffect(() => {
     fetchFiles(0, searchQuery);
-  }, [searchQuery]);
+  }, [chapterStorageId, searchQuery]);
 
   const handlePageChange = pageNumber => {
     if (pageNumber >= 0 && pageNumber < totalPages) {
@@ -129,6 +135,7 @@ function FileManagerment() {
       .then(response => response.json())
       .then(data => {
         console.log('File saved:', data);
+        toggleModal();
         fetchFiles(Page, searchText);
         toast.success('File uploaded successfully');
       })
@@ -174,12 +181,12 @@ function FileManagerment() {
         <div className="file-header-breadcrumbs">
           <span onClick={() => navigate('/app/admin/book-managerment')}>Book Management</span>
           <span>&gt;</span>
-          <span>{bookName}</span>
+          <span onClick={() => navigate(`/app/admin/book-managerment/${bookId}`)}>{bookName}</span>
           <span>&gt;</span>
           <span>{chapterName}</span>
         </div>
 
-        <div className="action-buttons">
+        <div className="file-action-buttons">
           <button className="btn" onClick={() => setIsModalOpen(true)}>
             + Upload File
           </button>
@@ -187,11 +194,11 @@ function FileManagerment() {
         </div>
 
         <div className="file-search-bar-container">
-          <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
+          <FontAwesomeIcon icon={faMagnifyingGlass} className="file-search-icon" />
           <input
             type="text"
-            placeholder="Search Chapter..."
-            className="search-input"
+            placeholder="Search by file name..."
+            className="file-search-input"
             value={searchText}
             onChange={handleSearchChange}
             onKeyPress={handleSearchKeyPress}
@@ -199,13 +206,13 @@ function FileManagerment() {
         </div>
       </div>
 
-      <h2>Chapters</h2>
+      <h2>Files</h2>
       <table className="file-table">
         <thead>
           <tr>
-            <th>No</th>
             <th>Name</th>
             <th>File Storage</th>
+            <th>File Url</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -213,19 +220,19 @@ function FileManagerment() {
         <tbody>
           {Files.map((file, index) => (
             <tr key={index}>
-              <td>{file.number}</td>
               <td>{file.fileName}</td>
               <td>{file.fileStore}</td>
+              <td>{file.fileUrl}</td>
               <td>
                 <div className={`badge status ${file.fileStatus !== 'UPLOAD_FINISH' ? 'UPLOAD_ERROR' : ''}`}>
                   <span>{file.fileStatus === 'UPLOAD_FINISH' ? 'Upload finish' : 'Upload error'}</span>
                 </div>
               </td>
               <td>
-                <button className="action-btn">
+                <button className="file-action-btn">
                   <FontAwesomeIcon icon={faEdit} />
                 </button>
-                <button className="action-btn" style={{ marginLeft: '10px' }} onClick={() => handleDeleteClick(file.id)}>
+                <button className="file-action-btn" style={{ marginLeft: '10px' }} onClick={() => handleDeleteClick(file.id)}>
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </td>
@@ -233,20 +240,20 @@ function FileManagerment() {
           ))}
         </tbody>
       </table>
-      <div className="pagination">
+      <div className="file-pagination">
         <span>
           Showing page {Page + 1} of {totalPages}
         </span>
         <div>
-          <button className="page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
+          <button className="file-page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
             Previous
           </button>
           {[...Array(totalPages)].map((_, index) => (
-            <button key={index} className={`page-btn ${Page === index ? 'active' : ''}`} onClick={() => handlePageChange(index)}>
+            <button key={index} className={`file-page-btn ${Page === index ? 'active' : ''}`} onClick={() => handlePageChange(index)}>
               {index + 1}
             </button>
           ))}
-          <button className="page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
+          <button className="file-page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
             Next
           </button>
         </div>
