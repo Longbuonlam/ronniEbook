@@ -19,6 +19,8 @@ public class RonnieFileDTO {
 
     private String chapterStorageId;
 
+    private Integer order;
+
     public RonnieFileDTO(
         String id,
         String fileName,
@@ -26,7 +28,8 @@ public class RonnieFileDTO {
         FileStore fileStore,
         FileStatus fileStatus,
         String storageId,
-        String chapterStorageId
+        String chapterStorageId,
+        Integer order
     ) {
         this.id = id;
         this.fileName = fileName;
@@ -35,6 +38,7 @@ public class RonnieFileDTO {
         this.fileStatus = fileStatus;
         this.storageId = storageId;
         this.chapterStorageId = chapterStorageId;
+        this.order = order;
     }
 
     public String getId() {
@@ -91,5 +95,13 @@ public class RonnieFileDTO {
 
     public void setChapterStorageId(String chapterStorageId) {
         this.chapterStorageId = chapterStorageId;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 }

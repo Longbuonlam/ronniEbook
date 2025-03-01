@@ -95,6 +95,10 @@ function ChapterManagerment() {
     }
   };
 
+  const handleClick = chapterId => {
+    navigate(`/app/admin/chapter-managerment/${chapterId}`);
+  };
+
   const getXsrfToken = () => {
     const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
     return match ? match[1] : null;
@@ -265,7 +269,11 @@ function ChapterManagerment() {
           {Chapters.map((chapter, index) => (
             <tr key={index}>
               <td>{chapter.number}</td>
-              <td>{chapter.chapterName}</td>
+              <td>
+                <span onClick={() => handleClick(chapter.id)} className="clickable-chapter-name">
+                  {chapter.chapterName}
+                </span>
+              </td>
               <td>{chapter.language}</td>
               <td>
                 <div className={`badge status ${chapter.chapterStatus !== 'DONE' ? 'in-progress' : ''}`}>

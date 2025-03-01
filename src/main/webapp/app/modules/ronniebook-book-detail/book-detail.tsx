@@ -7,6 +7,7 @@ import { faBookOpen, faPen, faStar, faClose, faEllipsisH } from '@fortawesome/fr
 import { Comment } from '../../shared/model/comment.model';
 import toast, { Toaster } from 'react-hot-toast';
 import ConfirmationModal from '../../shared/layout/confirmation/confirmation-modal';
+import ChapterSelectionModal from '../../shared/layout/chapter-selection/chapter-selection-modal';
 
 function BookDetail() {
   const { bookId } = useParams();
@@ -21,6 +22,8 @@ function BookDetail() {
   const [rating, setRating] = useState<number>(0);
   const [description, setDescription] = useState('');
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const [isChapterModalOpen, setIsChapterModalOpen] = useState(false);
+  const [chapterStorageIds, setChapterStorageIds] = useState<{ [key: number]: string }>({});
   const navigate = useNavigate();
 
   const fetchBook = () => {
@@ -30,6 +33,15 @@ function BookDetail() {
         setBook(data);
       })
       .catch(error => console.error('Error fetching books:', error));
+  };
+
+  const fetchChapterStorageIds = () => {
+    fetch(`http://localhost:9000/api/chapters/get-storageId?bookId=${bookId}`)
+      .then(response => response.json())
+      .then(data => {
+        setChapterStorageIds(data);
+      })
+      .catch(error => console.error('Error fetching chapter storage IDs:', error));
   };
 
   const fetchReviews = () => {
@@ -290,8 +302,17 @@ function BookDetail() {
       });
   };
 
+  const handleSelectChapter = (chapter: number) => {
+    const chapterStorageId = chapterStorageIds[chapter];
+    if (chapterStorageId) {
+      navigate(`/app/reading/${chapterStorageId}`);
+    }
+    setIsChapterModalOpen(false);
+  };
+
   useEffect(() => {
     fetchBook();
+    fetchChapterStorageIds();
   }, [bookId]);
 
   return (
@@ -307,7 +328,7 @@ function BookDetail() {
               </div>
             </div>
             <div className="book-info">
-              <h1>{book.title}</h1>
+              <h1>{book.bookName}</h1>
 
               <div className="book-meta">
                 <span className="publisher"></span>
@@ -316,6 +337,9 @@ function BookDetail() {
               </div>
 
               <div className="action-btn">
+                <button className="continue-btn" onClick={() => setIsChapterModalOpen(true)}>
+                  <FontAwesomeIcon icon={faBookOpen} /> Select Chapter
+                </button>
                 <button className="continue-btn">
                   <FontAwesomeIcon icon={faBookOpen} /> Continue
                 </button>
@@ -379,7 +403,7 @@ function BookDetail() {
           </a>
         </nav>
       </div>
-      {showReviews && reviews && reviews.length > 0 && (
+      {showReviews && reviews && (
         <div className="reviews-section">
           <h2 className="reviews">
             Reviews <FontAwesomeIcon icon={faPen} onClick={() => toggleCommentModal()} />
@@ -458,6 +482,13 @@ function BookDetail() {
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
         message="Are you sure you want to delete this comment?"
+      />
+
+      <ChapterSelectionModal
+        isOpen={isChapterModalOpen}
+        onClose={() => setIsChapterModalOpen(false)}
+        chapterCount={book?.chapterCount || 0}
+        onSelect={handleSelectChapter}
       />
 
       <Toaster />

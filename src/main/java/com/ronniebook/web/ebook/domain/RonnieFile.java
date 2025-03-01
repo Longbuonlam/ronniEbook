@@ -22,6 +22,8 @@ public class RonnieFile extends BaseEntity implements Serializable {
 
     private String content;
 
+    private Integer order;
+
     public FileStatus getFileStatus() {
         return fileStatus;
     }
@@ -76,6 +78,14 @@ public class RonnieFile extends BaseEntity implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 
     public RonnieFile(

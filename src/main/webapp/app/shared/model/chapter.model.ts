@@ -4,6 +4,7 @@ export interface Chapter {
   chapterName: string;
   language: string;
   number: number;
+  storageId: string;
   chapterStatus?: string;
   isDeleted: boolean;
 }

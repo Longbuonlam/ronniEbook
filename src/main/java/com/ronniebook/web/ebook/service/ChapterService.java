@@ -8,7 +8,9 @@ import com.ronniebook.web.util.Utils;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,5 +149,14 @@ public class ChapterService {
         } catch (IOException e) {
             throw new BadRequestAlertException("", "", "Error in create storage for chapter");
         }
+    }
+
+    public Map<Integer, String> findByBookId(String bookId) {
+        List<Chapter> list = findAllByBookId(bookId);
+        Map<Integer, String> map = new HashMap<>();
+        for (Chapter chapter : list) {
+            map.put(chapter.getNumber(), chapter.getStorageId());
+        }
+        return map;
     }
 }
