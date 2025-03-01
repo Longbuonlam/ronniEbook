@@ -156,4 +156,11 @@ public class ChapterResource {
         log.debug("REST request to get Chapter : {}", id);
         return chapterService.findOne(id).orElseThrow();
     }
+
+    @GetMapping("/chapters/get-storageId")
+    public ResponseEntity<Map<Integer, String>> getAllChapterStorageId(@RequestParam String bookId) {
+        log.debug("Rest request to get all chapter storage of book {}", bookId);
+        Map<Integer, String> result = chapterService.findByBookId(bookId);
+        return ResponseEntity.ok().body(result);
+    }
 }

@@ -1,6 +1,7 @@
 package com.ronniebook.web.ebook.repository;
 
 import com.ronniebook.web.ebook.domain.RonnieFile;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -15,4 +16,6 @@ public interface FileRepository extends MongoRepository<RonnieFile, String> {
 
     @Query("{'chapterStorageId': ?0," + " 'fileName': { $regex: ?1, $options: 'i' }}")
     Page<RonnieFile> findByChapterStorageIdAndFileNameContains(Pageable pageable, String chapterStorageId, String fileName);
+
+    List<RonnieFile> findByChapterStorageId(String chapterStorageId);
 }

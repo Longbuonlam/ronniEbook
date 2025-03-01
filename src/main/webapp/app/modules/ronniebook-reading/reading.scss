@@ -1,0 +1,71 @@
+$file-bg: #f5f5dc;
+$content-bg: #ffffff;
+$shadow-color: rgba(0, 0, 0, 0.1);
+
+.file-content {
+  min-height: 100vh;
+  background-color: $file-bg;
+  padding: 24px;
+  font-family: serif;
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    button {
+      font-size: 1.25rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 4px;
+      transition: background 0.3s ease;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    .setting-btn,
+    .close-btn {
+      font-size: 1.25rem;
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+  }
+
+  &-body {
+    background: $content-bg;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px $shadow-color;
+
+    h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 16px;
+
+      span {
+        background: $content-bg;
+        padding: 0 8px;
+        color: black;
+      }
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .text-lg {
+      font-size: 1.125rem;
+      line-height: 1.75;
+    }
+  }
+}

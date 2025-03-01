@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faEdit, faMagnifyingGlass, faTrash } from '@fortawesome/free-solid-svg-icons';
 import ConfirmationModal from '../../shared/layout/confirmation/confirmation-modal';
 import UploadFileModal from '../../shared/layout/upload-file/upload-file-modal';
+import FileReorderModal from '../../shared/layout/file-reorder/file-reorder-modal';
 import { RonnieFile } from '../../shared/model/file.model';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -175,6 +176,48 @@ function FileManagerment() {
       });
   };
 
+  const handleSaveReorderedFiles = (reorderedFiles: RonnieFile[]) => {
+    setFiles(reorderedFiles);
+    setIsEditing(false);
+
+    const newOrder = reorderedFiles.reduce(
+      (acc, file) => {
+        acc[file.id] = file.order;
+        return acc;
+      },
+      {} as { [key: string]: number },
+    );
+
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      toast.error('Failed to save reordered files: XSRF token is missing');
+      return;
+    }
+
+    fetch(`http://localhost:9000/api/files/change-order`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+      body: JSON.stringify({ chapterStorageId, newOrder }),
+    })
+      .then(response => {
+        if (response.ok) {
+          toast.success('Files reordered successfully');
+        } else {
+          console.error('Error reordering files:', response.statusText);
+        }
+      })
+      .catch(error => {
+        console.error('Error reordering files:', error);
+        toast.error('Failed to reorder files');
+      });
+  };
+
   return (
     <div className="file-container">
       <div className="file-header-div">
@@ -191,6 +234,9 @@ function FileManagerment() {
             + Upload File
           </button>
           <UploadFileModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onUpload={handleSaveFile} file={docxFile} />
+          <button className="btn" onClick={() => setIsEditing(true)}>
+            Reorder Files
+          </button>
         </div>
 
         <div className="file-search-bar-container">
@@ -210,6 +256,7 @@ function FileManagerment() {
       <table className="file-table">
         <thead>
           <tr>
+            <th>Order</th>
             <th>Name</th>
             <th>File Storage</th>
             <th>File Url</th>
@@ -220,6 +267,7 @@ function FileManagerment() {
         <tbody>
           {Files.map((file, index) => (
             <tr key={index}>
+              <td>{file.order}</td>
               <td>{file.fileName}</td>
               <td>{file.fileStore}</td>
               <td>{file.fileUrl}</td>
@@ -265,6 +313,9 @@ function FileManagerment() {
         onConfirm={handleConfirmDelete}
         message="All the information of this file will be deleted. Are you sure you want to continue delete it?"
       />
+
+      <FileReorderModal isOpen={isEditing} onClose={() => setIsEditing(false)} onSave={handleSaveReorderedFiles} initialFiles={Files} />
+
       <Toaster />
     </div>
   );
