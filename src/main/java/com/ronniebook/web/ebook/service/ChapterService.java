@@ -159,4 +159,8 @@ public class ChapterService {
         }
         return map;
     }
+
+    public Chapter findByStorageId(String storageId) {
+        return chapterRepository.findByStorageIdAndIsDeletedFalse(storageId);
+    }
 }

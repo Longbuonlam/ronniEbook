@@ -52,9 +52,9 @@ public class TTSResource {
         if (nation.equals(LanguageCode.VIETNAMESE)) {
             audioData = ttsService.getVnAudio(content);
         } else if (nation.equals(LanguageCode.JAPANESE)) {
-            audioData = ttsService.synthesizeSpeech(content, String.valueOf(SpeechLanguage.JAPANESE));
+            audioData = ttsService.synthesizeSpeech(content, "ja-jp");
         } else {
-            audioData = ttsService.synthesizeSpeech(content, String.valueOf(SpeechLanguage.ENGLISH));
+            audioData = ttsService.synthesizeSpeech(content, "en-us");
         }
 
         HttpHeaders headers = new HttpHeaders();

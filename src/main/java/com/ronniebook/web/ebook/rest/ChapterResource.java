@@ -3,6 +3,7 @@ package com.ronniebook.web.ebook.rest;
 import com.ronniebook.web.ebook.domain.Book;
 import com.ronniebook.web.ebook.domain.Chapter;
 import com.ronniebook.web.ebook.domain.LanguageCode;
+import com.ronniebook.web.ebook.domain.dto.ChapterInfoDTO;
 import com.ronniebook.web.ebook.repository.ChapterRepository;
 import com.ronniebook.web.ebook.service.BookService;
 import com.ronniebook.web.ebook.service.ChapterService;
@@ -162,5 +163,14 @@ public class ChapterResource {
         log.debug("Rest request to get all chapter storage of book {}", bookId);
         Map<Integer, String> result = chapterService.findByBookId(bookId);
         return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/chapters/get-info/{chapterStorageId}")
+    public ResponseEntity<ChapterInfoDTO> getChapterInfo(@PathVariable String chapterStorageId) {
+        log.debug("Rest request to get info of chapter with storage id {}", chapterStorageId);
+        Chapter chapter = chapterService.findByStorageId(chapterStorageId);
+        Book book = bookService.findOne(chapter.getBookId());
+        return ResponseEntity.ok()
+            .body(new ChapterInfoDTO(chapter.getChapterName(), chapter.getNumber(), book.getBookName(), chapter.getLanguage()));
     }
 }

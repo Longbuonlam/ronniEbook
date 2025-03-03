@@ -3,6 +3,17 @@ $content-bg: #ffffff;
 $shadow-color: rgba(0, 0, 0, 0.1);
 
 .file-content {
+  .chapter-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  audio {
+    margin-left: 1rem;
+  }
+
   min-height: 100vh;
   background-color: $file-bg;
   padding: 24px;
