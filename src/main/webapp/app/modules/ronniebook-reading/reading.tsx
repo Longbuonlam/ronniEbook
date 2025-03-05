@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+
 import './reading.scss';
 
 function FileContent() {
@@ -43,14 +44,15 @@ function FileContent() {
       .catch(error => console.error('Error fetching chapter info:', error));
   };
 
-  const streamTextToSpeech = () => {
-    fetch(`http://localhost:9000/api/text-to-speech?content=${encodeURIComponent(rawContent)}&nation=${language}`)
-      .then(response => response.blob())
-      .then(blob => {
-        const url = URL.createObjectURL(blob);
-        setAudioUrl(url);
-      })
-      .catch(error => console.error('Error fetching audio:', error));
+  const streamTextToSpeech = async () => {
+    try {
+      const response = await fetch(`http://localhost:9000/api/text-to-speech?content=${encodeURIComponent(rawContent)}&nation=${language}`);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      setAudioUrl(url);
+    } catch (error) {
+      console.error('Error fetching audio:', error);
+    }
   };
 
   useEffect(() => {

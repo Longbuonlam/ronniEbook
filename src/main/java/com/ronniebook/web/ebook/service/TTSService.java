@@ -36,7 +36,9 @@ public class TTSService {
     private String getFileUrl(String text) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        String requestBody = "{\"data\": [\"" + text + "\"]}";
+        String sanitizedText = text.replace("\n", " ").replace("\r", " ").replace("_", " ");
+        String requestBody = "{\"data\": [\"" + sanitizedText + "\"]}";
+        log.debug("Request body {}", requestBody);
         HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<Map> response = restTemplate.exchange(VN_TTS_URL, HttpMethod.POST, entity, Map.class);
