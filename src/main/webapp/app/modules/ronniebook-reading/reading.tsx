@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import Spinner from '../../shared/layout/spinner/spinner';
 
 import './reading.scss';
 
@@ -12,6 +13,7 @@ function FileContent() {
   const [bookName, setBookName] = useState('');
   const [language, setLanguage] = useState('');
   const [audioUrl, setAudioUrl] = useState('');
+  const [loadingAudio, setLoadingAudio] = useState(false);
   const navigate = useNavigate();
 
   const fetchFileContent = () => {
@@ -45,6 +47,7 @@ function FileContent() {
   };
 
   const streamTextToSpeech = async () => {
+    setLoadingAudio(true);
     try {
       const response = await fetch(`http://localhost:9000/api/text-to-speech?content=${encodeURIComponent(rawContent)}&nation=${language}`);
       const blob = await response.blob();
@@ -52,6 +55,8 @@ function FileContent() {
       setAudioUrl(url);
     } catch (error) {
       console.error('Error fetching audio:', error);
+    } finally {
+      setLoadingAudio(false);
     }
   };
 
@@ -81,7 +86,7 @@ function FileContent() {
           <h2>
             Chapter <span>{chapterNumber}</span> : {chapterName}
           </h2>
-          {audioUrl && <audio controls src={audioUrl} />}
+          {loadingAudio ? <Spinner /> : audioUrl && <audio controls src={audioUrl} />}
         </div>
         <div dangerouslySetInnerHTML={{ __html: content }} />
       </div>
