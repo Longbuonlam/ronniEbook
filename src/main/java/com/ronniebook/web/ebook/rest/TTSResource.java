@@ -49,13 +49,7 @@ public class TTSResource {
     public ResponseEntity<byte[]> getAudio(@RequestParam String content, @RequestParam LanguageCode nation) {
         log.debug("Rest request to get data of text-to-speech");
         byte[] audioData;
-        if (nation.equals(LanguageCode.VIETNAMESE)) {
-            audioData = ttsService.getVnAudio(content);
-        } else if (nation.equals(LanguageCode.JAPANESE)) {
-            audioData = ttsService.synthesizeSpeech(content, "ja-jp");
-        } else {
-            audioData = ttsService.synthesizeSpeech(content, "en-us");
-        }
+        audioData = ttsService.streamSpeech(content, nation);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "audio/wav");

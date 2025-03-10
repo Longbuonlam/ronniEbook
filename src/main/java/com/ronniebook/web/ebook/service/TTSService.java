@@ -1,5 +1,6 @@
 package com.ronniebook.web.ebook.service;
 
+import com.ronniebook.web.ebook.domain.LanguageCode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -24,12 +26,20 @@ public class TTSService {
         this.restTemplate = restTemplate;
     }
 
-    public byte[] synthesizeSpeech(String text, String language) {
-        log.debug("Request to get data from voicerss");
-        String apiKey = "8ab5c7859af34cab8d68fca6da06e34a"; // Replace with your API key
-        //        String language = "en-us";
-        String url = "http://api.voicerss.org/?key=" + apiKey + "&hl=" + language + "&src=" + text + "&c=WAV";
+    @Cacheable(value = "textToSpeech", key = "#text + '_' + #language")
+    public byte[] streamSpeech(String text, LanguageCode language) {
+        log.debug("Request to save data to redis, key : {}", text + "_" + language);
+        return switch (language) {
+            case VIETNAMESE -> getVnAudio(text);
+            case JAPANESE -> synthesizeSpeech(text, "ja-jp");
+            default -> synthesizeSpeech(text, "en-us");
+        };
+    }
 
+    public byte[] synthesizeSpeech(String text, String language) {
+        log.debug("Request to get data from voicerss: text {} , language {}", text, language);
+        String apiKey = "8ab5c7859af34cab8d68fca6da06e34a";
+        String url = "http://api.voicerss.org/?key=" + apiKey + "&hl=" + language + "&src=" + text + "&c=WAV";
         return restTemplate.getForObject(url, byte[].class);
     }
 
