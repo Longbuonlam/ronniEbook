@@ -71,6 +71,7 @@ public class CacheConfiguration {
         return cm -> {
             createCache(cm, com.ronniebook.web.repository.UserRepository.USERS_BY_LOGIN_CACHE, jcacheConfiguration);
             createCache(cm, com.ronniebook.web.repository.UserRepository.USERS_BY_EMAIL_CACHE, jcacheConfiguration);
+            createCache(cm, "textToSpeech", jcacheConfiguration);
             // jhipster-needle-redis-add-entry
         };
     }

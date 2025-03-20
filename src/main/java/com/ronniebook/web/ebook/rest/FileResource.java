@@ -111,4 +111,18 @@ public class FileResource {
         fileService.changeFileOrder(request.getChapterStorageId(), request.getNewOrder());
         return ResponseEntity.ok("Successfully change the order of files");
     }
+
+    @GetMapping("/files/{chapterStorageId}/get-raw-content")
+    public ResponseEntity<String> getRawContent(@PathVariable String chapterStorageId) {
+        log.debug("Rest request to get raw content of chapter with storageId {}", chapterStorageId);
+        String rawContent = "";
+        List<RonnieFile> files = fileService.findAllByStorageId(chapterStorageId);
+        if (files != null) {
+            // Sort files by order
+            files.sort(Comparator.comparing(RonnieFile::getOrder));
+
+            rawContent = files.stream().map(RonnieFile::getRawContent).collect(Collectors.joining());
+        }
+        return ResponseEntity.ok().body(rawContent);
+    }
 }

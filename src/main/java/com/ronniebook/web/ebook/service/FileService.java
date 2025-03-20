@@ -63,9 +63,16 @@ public class FileService {
             InputStream inputStream = file.getInputStream();
             XWPFDocument document = new XWPFDocument(inputStream);
             StringBuilder htmlContent = new StringBuilder();
+            StringBuilder rawContent = new StringBuilder();
 
             for (XWPFParagraph paragraph : document.getParagraphs()) {
                 String text = paragraph.getText();
+                if (!text.isEmpty()) {
+                    if (!text.endsWith(".")) {
+                        text += ".";
+                    }
+                    rawContent.append(text).append("\n");
+                }
                 if (text.trim().isEmpty()) {
                     htmlContent.append("<br>");
                 } else {
@@ -80,6 +87,7 @@ public class FileService {
             inputStream.close();
 
             ronnieFile.setContent(htmlContent.toString());
+            ronnieFile.setRawContent(rawContent.toString());
             save(ronnieFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
