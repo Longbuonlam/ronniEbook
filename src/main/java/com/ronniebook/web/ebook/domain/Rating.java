@@ -12,7 +12,7 @@ public class Rating extends BaseEntity implements Serializable {
 
     private String bookId;
 
-    private int bookRating;
+    private Integer bookRating;
 
     public Rating(String userId, String bookId, int bookRating) {
         this.userId = userId;
@@ -36,11 +36,11 @@ public class Rating extends BaseEntity implements Serializable {
         this.bookId = bookId;
     }
 
-    public int getBookRating() {
+    public Integer getBookRating() {
         return bookRating;
     }
 
-    public void setBookRating(int bookRating) {
+    public void setBookRating(Integer bookRating) {
         this.bookRating = bookRating;
     }
 }

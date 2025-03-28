@@ -59,11 +59,19 @@ function BookDetail() {
       .then(data => {
         setSelectedCommentId(data.id);
         setDescription(data.description);
-        setRating(data.rating);
         toggleCommentModal(true);
       })
       .catch(error => console.error('Error fetching selected book:', error));
     setOpenMenuIndex(null);
+  };
+
+  const fetchCurrentUserRating = () => {
+    fetch(`http://localhost:9000/api/comments/getRating/${bookId}`)
+      .then(response => response.json())
+      .then(data => {
+        setRating(data.bookRating);
+      })
+      .catch(error => console.error('Error fetching rating:', error));
   };
 
   const getXsrfToken = () => {
@@ -421,7 +429,14 @@ function BookDetail() {
                     <FontAwesomeIcon icon={faEllipsisH} className="options-icon" onClick={() => toggleOptionsMenu(index)} />
                     {openMenuIndex === index && (
                       <div className="options-dropdown">
-                        <button onClick={() => fetchSelectedReview(review.id)}>Edit</button>
+                        <button
+                          onClick={() => {
+                            fetchSelectedReview(review.id);
+                            fetchCurrentUserRating();
+                          }}
+                        >
+                          Edit
+                        </button>
                         <button onClick={() => handleDeleteClick(review.id)}>Delete</button>
                       </div>
                     )}
