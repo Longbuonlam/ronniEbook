@@ -1,12 +1,8 @@
-package com.ronniebook.web.ebook.domain;
+package com.ronniebook.web.ebook.domain.dto;
 
-import java.io.Serializable;
-import org.springframework.data.mongodb.core.mapping.Document;
+public class CommentDTO {
 
-@Document("comment")
-public class Comment extends BaseEntity implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+    private String id;
 
     private String userId;
 
@@ -14,10 +10,22 @@ public class Comment extends BaseEntity implements Serializable {
 
     private String description;
 
-    public Comment(String userId, String bookId, String description) {
+    private int rating;
+
+    public CommentDTO(String id, String userId, String bookId, String description, int rating) {
+        this.id = id;
         this.userId = userId;
         this.bookId = bookId;
         this.description = description;
+        this.rating = rating;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUserId() {
@@ -42,5 +50,13 @@ public class Comment extends BaseEntity implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 }

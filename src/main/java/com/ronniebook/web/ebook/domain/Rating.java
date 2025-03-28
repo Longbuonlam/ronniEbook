@@ -3,8 +3,8 @@ package com.ronniebook.web.ebook.domain;
 import java.io.Serializable;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document("comment")
-public class Comment extends BaseEntity implements Serializable {
+@Document("rating")
+public class Rating extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -12,12 +12,12 @@ public class Comment extends BaseEntity implements Serializable {
 
     private String bookId;
 
-    private String description;
+    private int bookRating;
 
-    public Comment(String userId, String bookId, String description) {
+    public Rating(String userId, String bookId, int bookRating) {
         this.userId = userId;
         this.bookId = bookId;
-        this.description = description;
+        this.bookRating = bookRating;
     }
 
     public String getUserId() {
@@ -36,11 +36,11 @@ public class Comment extends BaseEntity implements Serializable {
         this.bookId = bookId;
     }
 
-    public String getDescription() {
-        return description;
+    public int getBookRating() {
+        return bookRating;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setBookRating(int bookRating) {
+        this.bookRating = bookRating;
     }
 }

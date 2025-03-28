@@ -1,7 +1,10 @@
 package com.ronniebook.web.ebook.service;
 
 import com.ronniebook.web.ebook.domain.Comment;
+import com.ronniebook.web.ebook.domain.Rating;
+import com.ronniebook.web.ebook.domain.dto.CommentDTO;
 import com.ronniebook.web.ebook.repository.CommentRepository;
+import com.ronniebook.web.ebook.repository.RatingRepository;
 import com.ronniebook.web.security.SecurityUtils;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -16,17 +19,24 @@ import org.springframework.stereotype.Service;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final RatingRepository ratingRepository;
     private final Logger log = LoggerFactory.getLogger(CommentService.class);
 
-    public CommentService(CommentRepository commentRepository) {
+    public CommentService(CommentRepository commentRepository, RatingRepository ratingRepository) {
         this.commentRepository = commentRepository;
+        this.ratingRepository = ratingRepository;
     }
 
-    public Comment save(Comment comment) {
-        log.debug("Request to save comment : {}", comment);
+    public Comment save(CommentDTO commentDTO) {
+        log.debug("Request to save comment : {}", commentDTO);
         String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
-        comment.setUserId(userId);
-        return commentRepository.save(comment);
+        if (commentDTO.getRating() != 0) {
+            Rating rating = new Rating(userId, commentDTO.getBookId(), commentDTO.getRating());
+            ratingRepository.save(rating);
+        }
+        Comment comment = new Comment(userId, commentDTO.getBookId(), commentDTO.getDescription());
+        commentRepository.save(comment);
+        return comment;
     }
 
     public Optional<Comment> update(Comment existingComment, Comment newComment) {
@@ -34,27 +44,38 @@ public class CommentService {
         if (newComment.getDescription() != null) {
             existingComment.setDescription(newComment.getDescription());
         }
-        if (newComment.getRating() != 0) {
-            existingComment.setRating(newComment.getRating());
-        }
         return Optional.of(commentRepository.save(existingComment));
     }
 
     public void delete(Comment comment) {
         log.debug("Request to delete Comment: {}", comment.getId());
+        Rating rating = ratingRepository.findByUserIdAndBookId(comment.getUserId(), comment.getBookId());
         commentRepository.delete(comment);
+        ratingRepository.delete(rating);
     }
 
-    public Page<Comment> findAllByBookId(Pageable pageable, String bookId) {
+    public Page<CommentDTO> findAllByBookId(Pageable pageable, String bookId) {
         log.debug("Request to get all Comment by BookId : {}", bookId);
         if (pageable.getSort().isEmpty()) {
             Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         }
-        return commentRepository.findAllByBookId(pageable, bookId);
+        Page<Comment> page = commentRepository.findAllByBookId(pageable, bookId);
+        return page.map(this::mapToDTO);
     }
 
     public Comment findOne(String id) {
         return commentRepository.findById(id).orElseThrow();
+    }
+
+    private CommentDTO mapToDTO(Comment comment) {
+        Rating rating = ratingRepository.findByUserIdAndBookId(comment.getUserId(), comment.getBookId());
+        return new CommentDTO(comment.getId(), comment.getUserId(), comment.getBookId(), comment.getDescription(), rating.getBookRating());
+    }
+
+    public Rating getBookRating(String bookId) {
+        String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        log.debug("Request to get book rating of user id {}, book id {}", userId, bookId);
+        return ratingRepository.findByUserIdAndBookId(userId, bookId);
     }
 }

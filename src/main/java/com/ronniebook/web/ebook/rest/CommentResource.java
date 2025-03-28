@@ -1,6 +1,8 @@
 package com.ronniebook.web.ebook.rest;
 
 import com.ronniebook.web.ebook.domain.Comment;
+import com.ronniebook.web.ebook.domain.Rating;
+import com.ronniebook.web.ebook.domain.dto.CommentDTO;
 import com.ronniebook.web.ebook.service.CommentService;
 import com.ronniebook.web.security.SecurityUtils;
 import com.ronniebook.web.service.UserService;
@@ -41,24 +43,25 @@ public class CommentResource {
     }
 
     @GetMapping("/{bookId}/comments")
-    public ResponseEntity<Page<Comment>> getAllComment(
+    public ResponseEntity<Page<CommentDTO>> getAllComment(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
         @PathVariable String bookId
     ) {
         log.debug("REST request to get a page of comments");
-        Page<Comment> page = commentService.findAllByBookId(pageable, bookId);
+        Page<CommentDTO> page = commentService.findAllByBookId(pageable, bookId);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page);
     }
 
     @PostMapping("/{bookId}/comments")
-    public ResponseEntity<Comment> createComment(@RequestBody Comment comment, @PathVariable String bookId) throws URISyntaxException {
-        log.debug("REST request to save comment : {}", comment);
-        if (comment.getId() != null) {
+    public ResponseEntity<Comment> createComment(@RequestBody CommentDTO commentDTO, @PathVariable String bookId)
+        throws URISyntaxException {
+        log.debug("REST request to save comment : {}", commentDTO);
+        if (commentDTO.getId() != null) {
             throw new BadRequestAlertException("A new comment cannot already have an ID", ENTITY_NAME, "id exists");
         }
-        comment.setBookId(bookId);
-        Comment result = commentService.save(comment);
+        commentDTO.setBookId(bookId);
+        Comment result = commentService.save(commentDTO);
 
         return ResponseEntity.created(new URI("/api/comments/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId()))
@@ -101,5 +104,10 @@ public class CommentResource {
     public Comment getComment(@PathVariable String id) {
         log.debug("REST request to get Book : {}", id);
         return commentService.findOne(id);
+    }
+
+    @GetMapping("/comments/getRating/{bookId}")
+    public Rating getBookRating(@PathVariable String bookId) {
+        return commentService.getBookRating(bookId);
     }
 }
