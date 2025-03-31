@@ -31,7 +31,12 @@ public class CommentService {
         log.debug("Request to save comment : {}", commentDTO);
         String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
         if (commentDTO.getRating() != null && commentDTO.getRating() != 0) {
-            Rating rating = new Rating(userId, commentDTO.getBookId(), commentDTO.getRating());
+            Rating rating = ratingRepository.findByUserIdAndBookId(userId, commentDTO.getBookId());
+            if (rating != null) {
+                rating.setBookRating(commentDTO.getRating());
+            } else {
+                rating = new Rating(userId, commentDTO.getBookId(), commentDTO.getRating());
+            }
             ratingRepository.save(rating);
         }
         Comment comment = new Comment(userId, commentDTO.getBookId(), commentDTO.getDescription());
