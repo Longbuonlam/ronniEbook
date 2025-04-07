@@ -30,8 +30,13 @@ public class CommentService {
     public Comment save(CommentDTO commentDTO) {
         log.debug("Request to save comment : {}", commentDTO);
         String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
-        if (commentDTO.getRating() != 0) {
-            Rating rating = new Rating(userId, commentDTO.getBookId(), commentDTO.getRating());
+        if (commentDTO.getRating() != null && commentDTO.getRating() != 0) {
+            Rating rating = ratingRepository.findByUserIdAndBookId(userId, commentDTO.getBookId());
+            if (rating != null) {
+                rating.setBookRating(commentDTO.getRating());
+            } else {
+                rating = new Rating(userId, commentDTO.getBookId(), commentDTO.getRating());
+            }
             ratingRepository.save(rating);
         }
         Comment comment = new Comment(userId, commentDTO.getBookId(), commentDTO.getDescription());
@@ -39,10 +44,13 @@ public class CommentService {
         return comment;
     }
 
-    public Optional<Comment> update(Comment existingComment, Comment newComment) {
-        log.debug("Request to update Comment : {}", newComment);
-        if (newComment.getDescription() != null) {
-            existingComment.setDescription(newComment.getDescription());
+    public Optional<Comment> update(Comment existingComment, CommentDTO newCommentDTO) {
+        log.debug("Request to update Comment : {}", newCommentDTO);
+        if (newCommentDTO.getDescription() != null) {
+            existingComment.setDescription(newCommentDTO.getDescription());
+        }
+        if (newCommentDTO.getRating() != null && newCommentDTO.getRating() != 0) {
+            updateRating(existingComment, newCommentDTO);
         }
         return Optional.of(commentRepository.save(existingComment));
     }
@@ -70,12 +78,25 @@ public class CommentService {
 
     private CommentDTO mapToDTO(Comment comment) {
         Rating rating = ratingRepository.findByUserIdAndBookId(comment.getUserId(), comment.getBookId());
-        return new CommentDTO(comment.getId(), comment.getUserId(), comment.getBookId(), comment.getDescription(), rating.getBookRating());
+        return new CommentDTO(
+            comment.getId(),
+            comment.getUserId(),
+            comment.getBookId(),
+            comment.getDescription(),
+            rating.getBookRating(),
+            comment.getCreatedDate()
+        );
     }
 
     public Rating getBookRating(String bookId) {
         String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
         log.debug("Request to get book rating of user id {}, book id {}", userId, bookId);
         return ratingRepository.findByUserIdAndBookId(userId, bookId);
+    }
+
+    private void updateRating(Comment comment, CommentDTO commentDTO) {
+        Rating rating = ratingRepository.findByUserIdAndBookId(comment.getUserId(), comment.getBookId());
+        rating.setBookRating(commentDTO.getRating());
+        ratingRepository.save(rating);
     }
 }

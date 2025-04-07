@@ -1,5 +1,7 @@
 package com.ronniebook.web.ebook.domain.dto;
 
+import java.time.Instant;
+
 public class CommentDTO {
 
     private String id;
@@ -10,14 +12,23 @@ public class CommentDTO {
 
     private String description;
 
-    private int rating;
+    private Integer rating;
 
-    public CommentDTO(String id, String userId, String bookId, String description, int rating) {
+    private Instant createdDate;
+
+    private Instant updatedDate;
+
+    private String createdBy;
+
+    private String updatedBy;
+
+    public CommentDTO(String id, String userId, String bookId, String description, int rating, Instant createdDate) {
         this.id = id;
         this.userId = userId;
         this.bookId = bookId;
         this.description = description;
         this.rating = rating;
+        this.createdDate = createdDate;
     }
 
     public String getId() {
@@ -52,11 +63,43 @@ public class CommentDTO {
         this.description = description;
     }
 
-    public int getRating() {
+    public Integer getRating() {
         return rating;
     }
 
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Instant getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Instant updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
     }
 }

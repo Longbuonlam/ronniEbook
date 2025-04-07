@@ -83,21 +83,24 @@ public class CommentResource {
     @PatchMapping(value = "/comments/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<Comment> updateComment(
         @PathVariable(value = "id", required = false) final String id,
-        @RequestBody Comment comment
+        @RequestBody CommentDTO commentDTO
     ) throws URISyntaxException {
-        log.debug("REST request to partial update Comment partially : {}, {}", id, comment);
-        if (comment.getId() == null) {
+        log.debug("REST request to partial update Comment partially : {}, {}", id, commentDTO);
+        if (commentDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, comment.getId())) {
+        if (!Objects.equals(id, commentDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
         Comment existingComment = commentService.findOne(id);
 
-        Optional<Comment> result = commentService.update(existingComment, comment);
+        Optional<Comment> result = commentService.update(existingComment, commentDTO);
 
-        return ResponseUtil.wrapOrNotFound(result, HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, comment.getId()));
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, commentDTO.getId())
+        );
     }
 
     @GetMapping("/comments/{id}")
