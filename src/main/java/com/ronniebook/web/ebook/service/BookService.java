@@ -6,6 +6,8 @@ import com.ronniebook.web.ebook.repository.BookRepository;
 import com.ronniebook.web.service.UserService;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
@@ -34,19 +36,22 @@ public class BookService {
     private final MongoTemplate mongoTemplate;
     private final CloudinaryService cloudinaryService;
     private final RonnieFileService ronnieFileService;
+    private final HybridRSService hybridRSService;
 
     public BookService(
         UserService userService,
         BookRepository bookRepository,
         MongoTemplate mongoTemplate,
         CloudinaryService cloudinaryService,
-        RonnieFileService ronnieFileService
+        RonnieFileService ronnieFileService,
+        HybridRSService hybridRSService
     ) {
         this.userService = userService;
         this.bookRepository = bookRepository;
         this.mongoTemplate = mongoTemplate;
         this.cloudinaryService = cloudinaryService;
         this.ronnieFileService = ronnieFileService;
+        this.hybridRSService = hybridRSService;
     }
 
     /**
@@ -242,5 +247,17 @@ public class BookService {
         } catch (IOException e) {
             throw new BadRequestAlertException("", "", "Error in create storage for book");
         }
+    }
+
+    public Page<Book> getRecommendBook(Pageable pageable) {
+        log.debug("get recommend books");
+        List<String> bookIds = hybridRSService.getRecommendBookIDs();
+        return bookRepository.findAllWithBookIds(pageable, bookIds);
+    }
+
+    public Page<Book> getSimilarBooks(Pageable pageable, String bookId) {
+        log.debug("get similar book with book id {}", bookId);
+        List<String> bookIds = hybridRSService.getSimilarBookIDs(bookId);
+        return bookRepository.findAllWithBookIds(pageable, bookIds);
     }
 }

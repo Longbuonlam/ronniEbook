@@ -10,6 +10,7 @@ import com.ronniebook.web.security.AuthoritiesConstants;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -162,5 +163,17 @@ public class BookResource {
     ) {
         log.debug("REST request to get a page of UnRelease Books");
         return bookService.findBookByStatus(pageable, BookStatus.IN_PROGRESS, searchText);
+    }
+
+    @GetMapping("/recommend-books")
+    public Page<Book> getRecommendBooks(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+        log.debug("Rest request to get recommend books");
+        return bookService.getRecommendBook(pageable);
+    }
+
+    @GetMapping("/recommend/similar-books/{id}")
+    public Page<Book> getSimilarBooks(@PathVariable String id, @org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+        log.debug("Rest request to get similar books");
+        return bookService.getSimilarBooks(pageable, id);
     }
 }
