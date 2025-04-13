@@ -12,4 +12,8 @@ public interface RonnieFileService {
     String createSubFolder(String folderName, String parentId) throws IOException;
 
     void deleteFile(String fileId);
+
+    String uploadUserVoice(String folderId, MultipartFile file) throws IOException;
+
+    String createVoiceFolder(String folderName) throws IOException;
 }

@@ -28,6 +28,8 @@ public class GoogleDriveService implements RonnieFileService {
 
     private static final String APPLICATION_FOLDER_ID = "17dSVOgUulyr4QUbqGJdnordUkuuqhcLG";
 
+    private static final String APPLICATION_VOICE_FOLDER_ID = "17dSVOgUulyr4QUbqGJdnordUkuuqhcLG";
+
     public List<File> getAllGoogleDriveFiles() throws IOException {
         log.debug("Request to get all files from google drive");
         FileList result = googleDrive.files().list().setFields("nextPageToken, files(id, name, parents, mimeType)").execute();
@@ -93,6 +95,35 @@ public class GoogleDriveService implements RonnieFileService {
         }
     }
 
+    @Override
+    public String uploadUserVoice(String folderId, MultipartFile file) throws IOException {
+        log.debug("Request to upload user voice {} to google drive", file.getOriginalFilename());
+        File newGGDriveFile = new File();
+        newGGDriveFile.setParents(Collections.singletonList(folderId)).setName(file.getOriginalFilename());
+        java.io.File fileToUpload = convertMultiPartToFile(file);
+
+        // MIME type for .wav file
+        FileContent mediaContent = new FileContent("audio/wav", fileToUpload);
+        File googleDriveFile = googleDrive.files().create(newGGDriveFile, mediaContent).setFields("id,webViewLink").execute();
+        log.debug("Successfully upload user voice to google drive");
+
+        String googleDriveFileUrl = "https://drive.google.com/file/d/" + googleDriveFile.getId() + "/view";
+        return googleDriveFileUrl;
+    }
+
+    @Override
+    public String createVoiceFolder(String folderName) throws IOException {
+        log.debug("Request to create new voice folder {}", folderName);
+        File fileMetadata = new File();
+        fileMetadata.setName(folderName);
+        fileMetadata.setMimeType("application/vnd.google-apps.folder");
+        fileMetadata.setParents(Collections.singletonList(APPLICATION_VOICE_FOLDER_ID));
+
+        File file = googleDrive.files().create(fileMetadata).setFields("id").execute();
+        addPermissionToVoiceFolder(googleDrive, file.getId());
+        return file.getId();
+    }
+
     private void addPermissionToFolder(Drive driveService, String folderId) throws IOException {
         Permission permission = new Permission().setType("user").setRole("reader").setEmailAddress("long.vo@ntq-solution.com.vn");
         driveService.permissions().create(folderId, permission).execute();
@@ -110,5 +141,10 @@ public class GoogleDriveService implements RonnieFileService {
             fos.write(file.getBytes());
         }
         return convFile;
+    }
+
+    private void addPermissionToVoiceFolder(Drive driveService, String folderId) throws IOException {
+        Permission permission = new Permission().setType("anyone").setRole("reader").setEmailAddress("long.vo@ntq-solution.com.vn");
+        driveService.permissions().create(folderId, permission).execute();
     }
 }

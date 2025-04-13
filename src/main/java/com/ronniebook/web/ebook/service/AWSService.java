@@ -27,4 +27,14 @@ public class AWSService implements RonnieFileService {
     public void deleteFile(String fileId) {
         System.out.println("delete file from aws");
     }
+
+    @Override
+    public String uploadUserVoice(String folderId, MultipartFile file) throws IOException {
+        return "";
+    }
+
+    @Override
+    public String createVoiceFolder(String folderName) throws IOException {
+        return "";
+    }
 }
