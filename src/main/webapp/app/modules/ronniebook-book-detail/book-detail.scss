@@ -409,12 +409,6 @@
   background-color: #e9ecef;
   color: #000000;
   text-align: center;
-
-  h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: #22223b;
-  }
 }
 
 .related-book-row {
@@ -456,17 +450,4 @@
     color: #b5b5b5; // Slightly lighter color for author text
     text-align: left;
   }
-}
-
-.related-book-pagination {
-  padding-top: 2%;
-  padding-bottom: 3%;
-}
-
-.left-chevron {
-  margin-left: auto;
-}
-
-.right-chevron {
-  margin-right: auto;
 }
