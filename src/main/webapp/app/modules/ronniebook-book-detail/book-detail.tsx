@@ -3,7 +3,15 @@ import { Book } from '../../shared/model/book.model';
 import { useNavigate, useParams } from 'react-router-dom';
 import './book-detail.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookOpen, faPen, faStar, faClose, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
+import {
+  faBookOpen,
+  faPen,
+  faStar,
+  faClose,
+  faEllipsisH,
+  faCircleChevronLeft,
+  faCircleChevronRight,
+} from '@fortawesome/free-solid-svg-icons';
 import { Comment } from '../../shared/model/comment.model';
 import toast, { Toaster } from 'react-hot-toast';
 import ConfirmationModal from '../../shared/layout/confirmation/confirmation-modal';
@@ -12,8 +20,11 @@ import ChapterSelectionModal from '../../shared/layout/chapter-selection/chapter
 function BookDetail() {
   const { bookId } = useParams();
   const [book, setBook] = useState<Book | null>(null);
+  const [relatedBooks, setRelatedBooks] = useState<Book[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [reviews, setReviews] = useState<Comment[] | null>(null);
   const [showReviews, setShowReviews] = useState(false);
+  const [showRelatedBook, setShowRelatedBook] = useState(true);
   const [activeTab, setActiveTab] = useState('related');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -74,6 +85,18 @@ function BookDetail() {
       .catch(error => console.error('Error fetching rating:', error));
   };
 
+  const fetchRelatedBooks = (pageNumber = 0) => {
+    setIsLoading(true);
+    fetch(`http://localhost:9000/api/recommend/similar-books/${bookId}?page=${pageNumber}&size=6`)
+      .then(response => response.json())
+      .then(data => {
+        setRelatedBooks(data.content);
+        setIsLoading(false);
+      })
+      .catch(error => console.error('Error fetching related books:', error));
+    setIsLoading(false);
+  };
+
   const getXsrfToken = () => {
     const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
     return match ? match[1] : null;
@@ -111,17 +134,16 @@ function BookDetail() {
       });
   };
 
-  const toggleReviews = () => {
-    setShowReviews(!showReviews);
-    if (!showReviews) fetchReviews();
-  };
-
   const handleTabClick = tab => {
     setActiveTab(tab);
     if (tab === 'related') {
       setShowReviews(false);
+      setShowRelatedBook(true);
+      fetchRelatedBooks(); // Ensure related books are fetched when switching back to "Related"
     } else if (tab === 'reviews') {
-      toggleReviews();
+      setShowRelatedBook(false);
+      setShowReviews(true);
+      fetchReviews();
     }
   };
 
@@ -321,6 +343,7 @@ function BookDetail() {
   useEffect(() => {
     fetchBook();
     fetchChapterStorageIds();
+    fetchRelatedBooks();
   }, [bookId]);
 
   return (
@@ -411,6 +434,35 @@ function BookDetail() {
           </a>
         </nav>
       </div>
+
+      {showRelatedBook && (
+        <div className="related-book-container">
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : relatedBooks.length === 0 ? (
+            <p>No data is available</p>
+          ) : (
+            <>
+              <div className="related-book-row">
+                {relatedBooks.map(book => (
+                  <div
+                    key={book.id}
+                    className="related-book-card"
+                    onClick={() => navigate(`/app/book/${book.id}`)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
+                    <h3>{book.title}</h3>
+                    <p>{book.author}</p>
+                    <p className="related-book-description">{book.description}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
       {showReviews && reviews && (
         <div className="reviews-section">
           <h2 className="reviews">
