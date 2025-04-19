@@ -37,7 +37,9 @@ public class HybridRSService {
             return response.getBody();
         } catch (RestClientException e) {
             log.error("Failed to fetch recommendations: {}", e.getMessage(), e);
-            return null;
+            RSResponseDTO fallback = new RSResponseDTO();
+            fallback.setRecommendations(Collections.emptyList());
+            return fallback;
         }
     }
 
@@ -48,7 +50,9 @@ public class HybridRSService {
             return response.getBody();
         } catch (RestClientException e) {
             log.error("Failed to fetch similar book recommendations: {}", e.getMessage(), e);
-            return null;
+            SimilarBookDTO fallback = new SimilarBookDTO();
+            fallback.setRecommendations(Collections.emptyList());
+            return fallback;
         }
     }
 

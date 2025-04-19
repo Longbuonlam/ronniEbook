@@ -54,7 +54,11 @@ public class FileService {
     public void uploadFile(String folderId, MultipartFile file) throws IOException {
         RonnieFile fileToSave = ronnieFileService.uploadFile(folderId, file);
         setFileOrderAuto(folderId, fileToSave);
-        convertDocxToHtmlAndSaveContent(file, fileToSave);
+
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename != null && originalFilename.toLowerCase().endsWith(".docx")) {
+            convertDocxToHtmlAndSaveContent(file, fileToSave);
+        }
     }
 
     private void convertDocxToHtmlAndSaveContent(MultipartFile file, RonnieFile ronnieFile) {

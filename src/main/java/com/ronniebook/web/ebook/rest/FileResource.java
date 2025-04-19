@@ -125,4 +125,25 @@ public class FileResource {
         }
         return ResponseEntity.ok().body(rawContent);
     }
+
+    //TODO : Refactor dirty code later
+    @GetMapping("/files/{chapterStorageId}/get-files-info")
+    public ResponseEntity<String> checkFileType(@PathVariable String chapterStorageId) {
+        log.debug("Rest request to get file type of chapter with storageId {}", chapterStorageId);
+        String storageId = "";
+        List<RonnieFile> files = fileService.findAllByStorageId(chapterStorageId);
+        if (files != null) {
+            RonnieFile ronnieFile = files.get(0);
+            String originalFilename = ronnieFile.getFileName();
+
+            //If file type is docx
+            if (originalFilename != null && originalFilename.toLowerCase().endsWith(".docx")) {
+                return ResponseEntity.ok().body("docx");
+            }
+
+            //If file type is PDF
+            storageId = ronnieFile.getStorageId();
+        }
+        return ResponseEntity.ok().body(storageId);
+    }
 }

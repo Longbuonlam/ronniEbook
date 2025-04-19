@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -189,12 +190,17 @@ public class BookService {
     public void upsertBook(Book book, MultipartFile image) {
         log.debug("Create new thread to upsert book {}", book);
         try {
-            String imageUrl = uploadImage(image);
+            AtomicReference<String> imageUrlRef = new AtomicReference<>(null);
+            try {
+                imageUrlRef.set(uploadImage(image));
+            } catch (Exception e) {
+                log.error("Failed to upload image, continuing without image", e);
+            }
             String storageId = createStorage(book.getBookName());
             bookRepository
                 .findById(book.getId())
                 .ifPresent(b -> {
-                    b.setImageUrl(imageUrl);
+                    b.setImageUrl(imageUrlRef.get());
                     b.setStorageId(storageId);
                     bookRepository.save(b);
                 });
