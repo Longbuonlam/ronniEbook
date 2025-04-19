@@ -78,5 +78,23 @@ $shadow-color: rgba(0, 0, 0, 0.1);
       font-size: 1.125rem;
       line-height: 1.75;
     }
+
+    .pdf-container {
+      width: 90%;
+      max-width: 1000px;
+      height: 90vh;
+      margin: 30px auto;
+      border: 1px solid #ccc;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      background-color: #fff;
+    }
+
+    .pdf-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
   }
 }

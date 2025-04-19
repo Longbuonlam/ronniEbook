@@ -14,6 +14,8 @@ function FileContent() {
   const [language, setLanguage] = useState('');
   const [audioUrl, setAudioUrl] = useState('');
   const [loadingAudio, setLoadingAudio] = useState(false);
+  const [fileType, setFileType] = useState<string | null>(null);
+  const [googleDriveId, setGoogleDriveId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const fetchFileContent = () => {
@@ -60,11 +62,31 @@ function FileContent() {
     }
   };
 
+  const fetchFileType = () => {
+    fetch(`http://localhost:9000/api/files/${fileId}/get-files-info`)
+      .then(response => response.text())
+      .then(data => {
+        if (data === 'docx') {
+          setFileType('docx');
+        } else {
+          setFileType('google-drive');
+          setGoogleDriveId(data);
+        }
+      })
+      .catch(error => console.error('Error fetching file type:', error));
+  };
+
   useEffect(() => {
-    fetchFileContent();
+    fetchFileType();
     fetchChapterInfo();
-    fetchRawContent();
   }, [fileId]);
+
+  useEffect(() => {
+    if (fileType === 'docx') {
+      fetchFileContent();
+      fetchRawContent();
+    }
+  }, [fileType, fileId]);
 
   useEffect(() => {
     if (rawContent && language) {
@@ -88,7 +110,17 @@ function FileContent() {
           </h2>
           {loadingAudio ? <Spinner /> : audioUrl && <audio controls src={audioUrl} />}
         </div>
-        <div dangerouslySetInnerHTML={{ __html: content }} />
+        {fileType === 'docx' ? (
+          <div dangerouslySetInnerHTML={{ __html: content }} />
+        ) : (
+          <div className="pdf-container">
+            {googleDriveId ? (
+              <iframe src={`https://drive.google.com/file/d/${googleDriveId}/preview`} allow="autoplay"></iframe>
+            ) : (
+              <p>Error loading preview</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

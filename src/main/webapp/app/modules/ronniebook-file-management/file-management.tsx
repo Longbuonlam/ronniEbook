@@ -121,6 +121,23 @@ function FileManagerment() {
       return;
     }
 
+    // File validation
+    const maxFileSize = 30 * 1024 * 1024; // 30 MB
+    const allowedFileTypes = [
+      'application/pdf', // PDF
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // DOCX
+    ];
+
+    if (file.size > maxFileSize) {
+      toast.error('File size exceeds the 30 MB limit');
+      return;
+    }
+
+    if (!allowedFileTypes.includes(file.type)) {
+      toast.error('Invalid file type. Only PDF and DOCX documents are allowed');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('folderId', chapterStorageId);
     formData.append('file', file);

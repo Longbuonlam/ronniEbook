@@ -67,12 +67,21 @@ public class GoogleDriveService implements RonnieFileService {
         newGGDriveFile.setParents(Collections.singletonList(folderId)).setName(file.getOriginalFilename());
         java.io.File fileToUpload = convertMultiPartToFile(file);
 
-        // MIME type for .docx file
-        FileContent mediaContent = new FileContent("application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileToUpload);
+        String originalFilename = file.getOriginalFilename();
+        String mimeType = "application/pdf";
+        if (originalFilename != null && originalFilename.toLowerCase().endsWith(".docx")) {
+            mimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        }
+
+        FileContent mediaContent = new FileContent(mimeType, fileToUpload);
         File googleDriveFile = googleDrive.files().create(newGGDriveFile, mediaContent).setFields("id,webViewLink").execute();
         log.debug("Successfully upload file to google drive");
 
-        String googleDriveFileUrl = "https://docs.google.com/document/d/" + googleDriveFile.getId();
+        String googleDriveFileUrl = "https://drive.google.com/file/d/" + googleDriveFile.getId() + "/preview";
+        if (originalFilename != null && originalFilename.toLowerCase().endsWith(".docx")) {
+            googleDriveFileUrl = "https://docs.google.com/document/d/" + googleDriveFile.getId();
+        }
+
         return new RonnieFile(
             file.getOriginalFilename(),
             googleDriveFileUrl,

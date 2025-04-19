@@ -31,11 +31,11 @@ function UploadFileModal({ isOpen, onClose, onUpload, file }) {
         </div>
         <div className="upload-modal-body">
           <div className="upload-box">
-            <input type="file" id="fileInput" onChange={handleFileChange} accept=".docx,.txt,.xlsx,.pptx,.xml" hidden />
+            <input type="file" id="fileInput" onChange={handleFileChange} accept=".docx,.pdf" hidden />
             <label htmlFor="fileInput" className="upload-label">
               <FontAwesomeIcon icon={faUpload} />
               <p>Click to upload or drag and drop</p>
-              <p className="file-types">DOCX</p>
+              <p className="file-types">DOCX or PDF</p>
             </label>
             {selectedFile && <p className="selected-file">Selected file: {selectedFile.name}</p>}
           </div>
