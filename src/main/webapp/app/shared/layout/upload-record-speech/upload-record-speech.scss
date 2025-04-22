@@ -1,0 +1,262 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background-color: #1e293b;
+  color: white;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.modal-title {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.modal-icon {
+  margin-right: 8px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  color: white;
+}
+
+.modal-instruction {
+  color: #cbd5e1;
+  margin-bottom: 12px;
+}
+
+.modal-quote {
+  border-left: 4px solid #475569;
+  padding-left: 16px;
+  margin-bottom: 16px;
+  color: #cbd5e1;
+  font-style: italic;
+}
+
+.upload-area {
+  padding: 48px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #475569;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.upload-icon-container {
+  margin-bottom: 16px;
+  padding: 8px;
+  border-radius: 50%;
+  background-color: #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-text {
+  text-align: center;
+}
+
+.upload-heading {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.upload-separator {
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-label {
+  margin-top: 16px;
+  cursor: pointer;
+  color: #60a5fa;
+}
+
+.file-label:hover {
+  color: #93c5fd;
+}
+
+.selected-file {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.file-name {
+  margin-bottom: 8px;
+  color: #4ade80;
+}
+
+.upload-button {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.upload-button:hover {
+  background-color: #1d4ed8;
+}
+
+.upload-button:disabled {
+  background-color: #475569;
+  cursor: not-allowed;
+}
+
+.record-area {
+  padding: 24px;
+  background-color: #1e293b;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.recorder-container {
+  width: 100%;
+}
+
+.record-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.record-button,
+.stop-button {
+  background-color: #334155;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.stop-button {
+  background-color: #ef4444;
+}
+
+.record-indicator {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background-color: #f97316;
+  margin-right: 8px;
+}
+
+.record-indicator.recording {
+  background-color: white;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.mic-select {
+  background-color: #334155;
+  color: white;
+  border-radius: 9999px;
+  padding: 8px 24px;
+}
+
+.status-display {
+  text-align: center;
+  color: #cbd5e1;
+  margin: 8px 0;
+}
+
+.status-text {
+  color: #60a5fa;
+}
+
+.status-text.recording {
+  color: #f87171;
+}
+
+.audio-preview {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.audio-player {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.toggle-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #475569;
+}
+
+.toggle-button {
+  margin: 0 8px;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #334155;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-button:hover {
+  background-color: #475569;
+}
+
+.toggle-button.active {
+  background-color: #2563eb;
+}

@@ -16,6 +16,9 @@ import { Comment } from '../../shared/model/comment.model';
 import toast, { Toaster } from 'react-hot-toast';
 import ConfirmationModal from '../../shared/layout/confirmation/confirmation-modal';
 import ChapterSelectionModal from '../../shared/layout/chapter-selection/chapter-selection-modal';
+import UploadOrRecordAudioModal from '../../shared/layout/upload-record-speech/upload-record-speech';
+import { UserRecord } from '../../shared/model/record.model';
+import VoiceSelectionModal from '../../shared/layout/user-record-selection/user-record-select';
 
 function BookDetail() {
   const { bookId } = useParams();
@@ -35,6 +38,11 @@ function BookDetail() {
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
   const [isChapterModalOpen, setIsChapterModalOpen] = useState(false);
   const [chapterStorageIds, setChapterStorageIds] = useState<{ [key: number]: string }>({});
+  const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
+  const [userRecord, setUserRecord] = useState<UserRecord[]>([]);
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
+  const [selectedUserRecord, setSelectedUserRecord] = useState<UserRecord | null>(null);
+
   const navigate = useNavigate();
 
   const fetchBook = () => {
@@ -95,6 +103,15 @@ function BookDetail() {
       })
       .catch(error => console.error('Error fetching related books:', error));
     setIsLoading(false);
+  };
+
+  const fetchUserRecord = (pageNumber = 0) => {
+    fetch(`http://localhost:9000/api/user-record?page=${pageNumber}&size=10`)
+      .then(response => response.json())
+      .then(data => {
+        setUserRecord(data.content);
+      })
+      .catch(error => console.error('Error fetching user records:', error));
   };
 
   const getXsrfToken = () => {
@@ -335,9 +352,62 @@ function BookDetail() {
   const handleSelectChapter = (chapter: number) => {
     const chapterStorageId = chapterStorageIds[chapter];
     if (chapterStorageId) {
-      navigate(`/app/reading/${chapterStorageId}`);
+      navigate(`/app/reading/${chapterStorageId}`, {
+        state: { userRecord: selectedUserRecord },
+      });
     }
     setIsChapterModalOpen(false);
+  };
+
+  const handleSelectVoice = (voice: UserRecord) => {
+    setSelectedUserRecord(voice);
+    setIsVoiceModalOpen(false);
+    toast.success(`Selected voice: ${voice.originalName}`);
+  };
+
+  const handleAudioUpload = async (file: File | Blob) => {
+    if (!file) {
+      toast.error('No file selected for upload.');
+      return;
+    }
+
+    const token = getXsrfToken();
+    if (!token) {
+      console.error('XSRF token is missing');
+      toast.error('Failed to upload audio: XSRF token is missing');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('http://localhost:9000/api/user-record/upload', {
+        method: 'POST',
+        headers: {
+          'X-XSRF-TOKEN': token,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Failed to upload audio:', errorText);
+        throw new Error(`Failed to upload audio: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log('Uploaded audio successfully:', result);
+      toast.success('Audio uploaded successfully!');
+    } catch (error) {
+      console.error('Error uploading audio:', error);
+      toast.error('Failed to upload audio. Please try again.');
+    }
+  };
+
+  const handleOpenUserRecord = () => {
+    fetchUserRecord();
+    setIsVoiceModalOpen(true);
   };
 
   useEffect(() => {
@@ -373,6 +443,12 @@ function BookDetail() {
                 </button>
                 <button className="continue-btn">
                   <FontAwesomeIcon icon={faBookOpen} /> Continue
+                </button>
+                <button className="continue-btn" onClick={() => setIsAudioModalOpen(true)}>
+                  <FontAwesomeIcon icon={faBookOpen} /> Upload/Record Audio
+                </button>
+                <button className="continue-btn" onClick={handleOpenUserRecord}>
+                  <FontAwesomeIcon icon={faBookOpen} /> Choose Audio
                 </button>
                 <FontAwesomeIcon icon={faStar} className="icon" onClick={addToFavorites} />
                 {/* <FontAwesomeIcon icon={faDownload} className="icon" /> */}
@@ -556,6 +632,15 @@ function BookDetail() {
         onClose={() => setIsChapterModalOpen(false)}
         chapterCount={book?.chapterCount || 0}
         onSelect={handleSelectChapter}
+      />
+
+      <UploadOrRecordAudioModal isOpen={isAudioModalOpen} onClose={() => setIsAudioModalOpen(false)} onUpload={handleAudioUpload} />
+
+      <VoiceSelectionModal
+        isOpen={isVoiceModalOpen}
+        onClose={() => setIsVoiceModalOpen(false)}
+        onSelect={handleSelectVoice}
+        voices={userRecord}
       />
 
       <Toaster />
