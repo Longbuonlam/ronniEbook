@@ -72,6 +72,7 @@ public class CacheConfiguration {
             createCache(cm, com.ronniebook.web.repository.UserRepository.USERS_BY_LOGIN_CACHE, jcacheConfiguration);
             createCache(cm, com.ronniebook.web.repository.UserRepository.USERS_BY_EMAIL_CACHE, jcacheConfiguration);
             createCache(cm, "textToSpeech", jcacheConfiguration);
+            createCache(cm, "ronnie-tts", jcacheConfiguration);
             // jhipster-needle-redis-add-entry
         };
     }

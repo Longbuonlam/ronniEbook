@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Spinner from '../../shared/layout/spinner/spinner';
+import { useLocation } from 'react-router-dom';
 
 import './reading.scss';
 
@@ -17,6 +18,12 @@ function FileContent() {
   const [fileType, setFileType] = useState<string | null>(null);
   const [googleDriveId, setGoogleDriveId] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const userRecord = location.state?.userRecord;
+  const [path, setPath] = useState<string | null>(null);
+  const [originalName, setOriginalName] = useState<string | null>(null);
+  const [size, setSize] = useState<number | null>(null);
+  const [recordUrl, setRecordUrl] = useState<string | null>(null);
 
   const fetchFileContent = () => {
     fetch(`http://localhost:9000/api/files/${fileId}`)
@@ -51,7 +58,9 @@ function FileContent() {
   const streamTextToSpeech = async () => {
     setLoadingAudio(true);
     try {
-      const response = await fetch(`http://localhost:9000/api/text-to-speech?content=${encodeURIComponent(rawContent)}&nation=${language}`);
+      const response = await fetch(
+        `http://localhost:9000/api/TTS/process-audio?content=${encodeURIComponent(rawContent)}&language=${language}&path=${path}&recordUrl=${recordUrl}&originalName=${originalName}&size=${size}`,
+      );
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       setAudioUrl(url);
@@ -93,6 +102,22 @@ function FileContent() {
       streamTextToSpeech();
     }
   }, [rawContent, language]);
+
+  // Set path, originalName, size, and recordUrl from userRecord or default values
+  useEffect(() => {
+    if (userRecord) {
+      setPath(userRecord.path || null);
+      setOriginalName(userRecord.originalName || null);
+      setSize(userRecord.size || null);
+      setRecordUrl(userRecord.recordUrl || null);
+    } else {
+      // Set default values if no userRecord is provided
+      setPath('/tmp/gradio/01b4edbba4aec9b7bba6fb7e7d5170287b4739f4/nu-luu-loat.wav');
+      setOriginalName('nu-luu-loat.wav');
+      setSize(0);
+      setRecordUrl('https://thinhlpg-vixtts-demo.hf.space/file=/tmp/gradio/01b4edbba4aec9b7bba6fb7e7d5170287b4739f4/nu-luu-loat.wav');
+    }
+  }, [userRecord]);
 
   return (
     <div className="file-content">
