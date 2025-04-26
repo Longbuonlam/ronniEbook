@@ -2,6 +2,7 @@ package com.ronniebook.web.ebook.repository;
 
 import com.ronniebook.web.ebook.domain.Book;
 import com.ronniebook.web.ebook.domain.BookStatus;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -73,4 +74,6 @@ public interface BookRepository extends MongoRepository<Book, String> {
         "{'_id' : { '$nin' : ?1 }, 'isDeleted': { '$ne': true }}]}"
     )
     Page<Book> findByTextExceptBookIds(Pageable pageable, String text, List<String> bookIds);
+
+    List<Book> findByCreatedDateBetween(Instant start, Instant end);
 }
