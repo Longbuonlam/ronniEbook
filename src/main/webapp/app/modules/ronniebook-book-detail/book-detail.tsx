@@ -447,9 +447,6 @@ function BookDetail() {
                 <button className="continue-btn" onClick={() => setIsAudioModalOpen(true)}>
                   <FontAwesomeIcon icon={faBookOpen} /> Upload/Record Audio
                 </button>
-                <button className="continue-btn" onClick={handleOpenUserRecord}>
-                  <FontAwesomeIcon icon={faBookOpen} /> Choose Audio
-                </button>
                 <FontAwesomeIcon icon={faStar} className="icon" onClick={addToFavorites} />
                 {/* <FontAwesomeIcon icon={faDownload} className="icon" /> */}
               </div>

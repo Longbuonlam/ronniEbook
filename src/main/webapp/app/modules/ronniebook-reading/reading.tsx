@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Spinner from '../../shared/layout/spinner/spinner';
-import { useLocation } from 'react-router-dom';
+import VoiceSelectionModal from '../../shared/layout/user-record-selection/user-record-select';
+import TextToSpeechButton from '../../shared/layout/text-to-speech-button/text-to-speech-button';
+import { UserRecord } from '../../shared/model/record.model';
 
 import './reading.scss';
 
@@ -18,12 +20,19 @@ function FileContent() {
   const [fileType, setFileType] = useState<string | null>(null);
   const [googleDriveId, setGoogleDriveId] = useState<string | null>(null);
   const navigate = useNavigate();
-  const location = useLocation();
-  const userRecord = location.state?.userRecord;
-  const [path, setPath] = useState<string | null>(null);
-  const [originalName, setOriginalName] = useState<string | null>(null);
-  const [size, setSize] = useState<number | null>(null);
-  const [recordUrl, setRecordUrl] = useState<string | null>(null);
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
+  const [selectedUserRecord, setSelectedUserRecord] = useState<UserRecord | null>(null);
+  const [userRecords, setUserRecords] = useState<UserRecord[]>([]);
+  const [ttsButtonActive, setTtsButtonActive] = useState(false);
+
+  const defaultVoice: UserRecord = {
+    id: '',
+    userId: 'nữ lưu loát',
+    path: '/tmp/gradio/01b4edbba4aec9b7bba6fb7e7d5170287b4739f4/nu-luu-loat.wav',
+    recordUrl: 'https://thinhlpg-vixtts-demo.hf.space/file=/tmp/gradio/01b4edbba4aec9b7bba6fb7e7d5170287b4739f4/nu-luu-loat.wav',
+    originalName: 'nu-luu-loat.wav',
+    size: 0,
+  };
 
   const fetchFileContent = () => {
     fetch(`http://localhost:9000/api/files/${fileId}`)
@@ -55,11 +64,11 @@ function FileContent() {
       .catch(error => console.error('Error fetching chapter info:', error));
   };
 
-  const streamTextToSpeech = async () => {
+  const streamTextToSpeech = async (voice: UserRecord) => {
     setLoadingAudio(true);
     try {
       const response = await fetch(
-        `http://localhost:9000/api/TTS/process-audio?content=${encodeURIComponent(rawContent)}&language=${language}&path=${path}&recordUrl=${recordUrl}&originalName=${originalName}&size=${size}`,
+        `http://localhost:9000/api/TTS/process-audio?content=${encodeURIComponent(rawContent)}&language=${language}&path=${voice.path}&recordUrl=${voice.recordUrl}&originalName=${voice.originalName}&size=${voice.size}`,
       );
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
@@ -85,6 +94,34 @@ function FileContent() {
       .catch(error => console.error('Error fetching file type:', error));
   };
 
+  const fetchUserRecord = (pageNumber = 0) => {
+    fetch(`http://localhost:9000/api/user-record?page=${pageNumber}&size=10`)
+      .then(response => response.json())
+      .then(data => {
+        setUserRecords([defaultVoice, ...data.content]);
+      })
+      .catch(error => console.error('Error fetching user records:', error));
+  };
+
+  const handleTextToSpeechClick = () => {
+    fetchUserRecord();
+    setIsVoiceModalOpen(true);
+    setTtsButtonActive(true);
+  };
+
+  const handleVoiceSelect = (voice: UserRecord) => {
+    setSelectedUserRecord(voice);
+    setIsVoiceModalOpen(false);
+    setTtsButtonActive(false);
+
+    streamTextToSpeech(voice);
+  };
+
+  const handleModalClose = () => {
+    setIsVoiceModalOpen(false);
+    setTtsButtonActive(false);
+  };
+
   useEffect(() => {
     fetchFileType();
     fetchChapterInfo();
@@ -96,28 +133,6 @@ function FileContent() {
       fetchRawContent();
     }
   }, [fileType, fileId]);
-
-  useEffect(() => {
-    if (rawContent && language) {
-      streamTextToSpeech();
-    }
-  }, [rawContent, language]);
-
-  // Set path, originalName, size, and recordUrl from userRecord or default values
-  useEffect(() => {
-    if (userRecord) {
-      setPath(userRecord.path || null);
-      setOriginalName(userRecord.originalName || null);
-      setSize(userRecord.size || null);
-      setRecordUrl(userRecord.recordUrl || null);
-    } else {
-      // Set default values if no userRecord is provided
-      setPath('/tmp/gradio/01b4edbba4aec9b7bba6fb7e7d5170287b4739f4/nu-luu-loat.wav');
-      setOriginalName('nu-luu-loat.wav');
-      setSize(0);
-      setRecordUrl('https://thinhlpg-vixtts-demo.hf.space/file=/tmp/gradio/01b4edbba4aec9b7bba6fb7e7d5170287b4739f4/nu-luu-loat.wav');
-    }
-  }, [userRecord]);
 
   return (
     <div className="file-content">
@@ -133,7 +148,14 @@ function FileContent() {
           <h2>
             Chapter <span>{chapterNumber}</span> : {chapterName}
           </h2>
-          {loadingAudio ? <Spinner /> : audioUrl && <audio controls src={audioUrl} />}
+          {fileType === 'docx' && // Only show the button for docx files
+            (loadingAudio ? (
+              <Spinner />
+            ) : audioUrl ? (
+              <audio controls src={audioUrl} />
+            ) : (
+              <TextToSpeechButton onClick={handleTextToSpeechClick} isActive={ttsButtonActive} />
+            ))}
         </div>
         {fileType === 'docx' ? (
           <div dangerouslySetInnerHTML={{ __html: content }} />
@@ -147,6 +169,8 @@ function FileContent() {
           </div>
         )}
       </div>
+
+      <VoiceSelectionModal isOpen={isVoiceModalOpen} onClose={handleModalClose} onSelect={handleVoiceSelect} voices={userRecords} />
     </div>
   );
 }
