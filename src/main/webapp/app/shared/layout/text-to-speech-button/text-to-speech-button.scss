@@ -1,0 +1,104 @@
+// Variables
+$primary-color: #2563eb;
+$primary-hover: #1d4ed8;
+$inactive-bg: #e5e7eb;
+$inactive-color: #4b5563;
+$inactive-hover: #d1d5db;
+$text-secondary: #6b7280;
+$transition-speed: 300ms;
+
+.tts-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+
+  .tts-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    border: none;
+    cursor: pointer;
+    transition: all $transition-speed ease;
+    background-color: $inactive-bg;
+    color: $inactive-color;
+
+    &:hover {
+      background-color: $inactive-hover;
+    }
+
+    &.active {
+      background-color: $primary-color;
+      color: white;
+
+      &:hover {
+        background-color: $primary-hover;
+      }
+    }
+  }
+
+  .tts-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .status-text {
+      font-size: 0.875rem;
+      color: $text-secondary;
+      margin-bottom: 0.5rem;
+    }
+
+    .audio-waves {
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
+
+      .wave {
+        width: 0.25rem;
+        background-color: $primary-color;
+        border-radius: 0.25rem;
+        animation: pulse 1.5s infinite ease-in-out;
+
+        &:nth-child(1) {
+          height: 1rem;
+        }
+
+        &:nth-child(2) {
+          height: 1.5rem;
+          animation-delay: 0.1s;
+        }
+
+        &:nth-child(3) {
+          height: 2rem;
+          animation-delay: 0.2s;
+        }
+
+        &:nth-child(4) {
+          height: 1rem;
+          animation-delay: 0.1s;
+        }
+
+        &:nth-child(5) {
+          height: 1.5rem;
+        }
+      }
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scaleY(0.7);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(0.7);
+    opacity: 0.8;
+  }
+}

@@ -1,6 +1,8 @@
 package com.ronniebook.web.repository;
 
 import com.ronniebook.web.domain.User;
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.*;
@@ -20,4 +22,6 @@ public interface UserRepository extends MongoRepository<User, String> {
     Optional<User> findOneByLogin(String login);
 
     Page<User> findAllByIdNotNullAndActivatedIsTrue(Pageable pageable);
+
+    List<User> findByCreatedDateBetween(Instant start, Instant end);
 }
