@@ -2,10 +2,6 @@ package com.ronniebook.web.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ronniebook.web.config.Constants;
-import com.ronniebook.web.ebook.domain.BookView;
-import com.ronniebook.web.ebook.domain.FavouriteBook;
-import com.ronniebook.web.ebook.domain.History;
-import com.ronniebook.web.ebook.domain.ReadingProgress;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

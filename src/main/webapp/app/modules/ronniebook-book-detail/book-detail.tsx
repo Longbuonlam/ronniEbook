@@ -42,6 +42,7 @@ function BookDetail() {
   const [userRecord, setUserRecord] = useState<UserRecord[]>([]);
   const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
   const [selectedUserRecord, setSelectedUserRecord] = useState<UserRecord | null>(null);
+  const [readingProgress, setReadingProgress] = useState<number>(0);
 
   const navigate = useNavigate();
 
@@ -112,6 +113,15 @@ function BookDetail() {
         setUserRecord(data.content);
       })
       .catch(error => console.error('Error fetching user records:', error));
+  };
+
+  const fetchReadingProgress = () => {
+    fetch(`http://localhost:9000/api/reading-progress/${bookId}`)
+      .then(response => response.json())
+      .then(data => {
+        setReadingProgress(data);
+      })
+      .catch(error => console.error('Error fetching reading progress:', error));
   };
 
   const getXsrfToken = () => {
@@ -351,7 +361,10 @@ function BookDetail() {
 
   const handleSelectChapter = (chapter: number) => {
     const chapterStorageId = chapterStorageIds[chapter];
-    if (chapterStorageId) {
+    if (chapterStorageId && bookId) {
+      // Save reading progress
+      saveReadingProgress(bookId, chapterStorageId);
+
       navigate(`/app/reading/${chapterStorageId}`, {
         state: { userRecord: selectedUserRecord },
       });
@@ -405,6 +418,34 @@ function BookDetail() {
     }
   };
 
+  const saveReadingProgress = (bookId: string, chapterStorageId: string) => {
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      toast.error('Failed to save reading progress: XSRF token is missing');
+      return;
+    }
+
+    fetch(`http://localhost:9000/api/reading-progress?bookId=${bookId}&chapterStorageId=${chapterStorageId}`, {
+      method: 'POST',
+      headers: {
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+    })
+      .then(response => {
+        if (response.ok) {
+          console.log('Reading progress saved successfully');
+        } else {
+          console.error('Failed to save reading progress');
+        }
+      })
+      .catch(error => {
+        console.error('Error saving reading progress:', error);
+      });
+  };
+
   const handleOpenUserRecord = () => {
     fetchUserRecord();
     setIsVoiceModalOpen(true);
@@ -414,6 +455,7 @@ function BookDetail() {
     fetchBook();
     fetchChapterStorageIds();
     fetchRelatedBooks();
+    fetchReadingProgress();
   }, [bookId]);
 
   return (
@@ -424,7 +466,7 @@ function BookDetail() {
             <div className="book-cover">
               <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
               <div className="progress">
-                <span>%</span>
+                <span>{readingProgress} %</span>
                 <p></p>
               </div>
             </div>
@@ -433,7 +475,6 @@ function BookDetail() {
 
               <div className="book-meta">
                 <span className="publisher"></span>
-                <span className="pages"> Pages</span>
                 <span className="estimated-time">~1 Hour</span>
               </div>
 

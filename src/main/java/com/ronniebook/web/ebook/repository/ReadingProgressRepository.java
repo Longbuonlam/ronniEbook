@@ -11,4 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReadingProgressRepository extends MongoRepository<ReadingProgress, String> {
     List<ReadingProgress> findByUserId(String userId);
+
+    ReadingProgress findByUserIdAndBookId(String userId, String bookId);
 }
