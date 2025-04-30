@@ -107,10 +107,17 @@ public class HybridRSService {
         List<User> users = userRepository.findByCreatedDateBetween(startOfDay, endOfDay);
         List<Rating> ratings = ratingRepository.findByCreatedDateBetween(startOfDay, endOfDay);
 
+        for (Rating rating : ratings) {
+            User user = userRepository.findOneByLogin(rating.getUserId()).orElseThrow();
+            rating.setUserId(user.getId());
+        }
+
         Map<String, Object> payload = new HashMap<>();
-        payload.put("books", books);
-        payload.put("users", users);
-        payload.put("ratings", ratings);
+        payload.put("books", DataConverter.convertBooks(books));
+        payload.put("users", DataConverter.convertUsers(users));
+        payload.put("ratings", DataConverter.convertRatings(ratings));
+
+        System.out.println(payload);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
