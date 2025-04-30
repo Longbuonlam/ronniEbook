@@ -1,7 +1,7 @@
 package com.ronniebook.web.ebook.domain;
 
 import java.io.Serializable;
-import java.time.Instant;
+import java.util.Set;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "reading_progress")
@@ -13,19 +13,9 @@ public class ReadingProgress extends BaseEntity implements Serializable {
 
     private String bookId;
 
-    private Integer currentChapter;
-
-    private Integer totalChapter;
+    private Set<String> finishedChapterStorageIds;
 
     public ReadingProgress() {}
-
-    public Integer getCurrentChapter() {
-        return currentChapter;
-    }
-
-    public void setCurrentChapter(Integer currentChapter) {
-        this.currentChapter = currentChapter;
-    }
 
     public String getBookId() {
         return bookId;
@@ -35,19 +25,19 @@ public class ReadingProgress extends BaseEntity implements Serializable {
         this.bookId = bookId;
     }
 
-    public Integer getTotalChapter() {
-        return totalChapter;
-    }
-
-    public void setTotalChapter(Integer totalChapter) {
-        this.totalChapter = totalChapter;
-    }
-
     public String getUserId() {
         return userId;
     }
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public Set<String> getFinishedChapterStorageIds() {
+        return finishedChapterStorageIds;
+    }
+
+    public void setFinishedChapterStorageIds(Set<String> finishedChapterStorageIds) {
+        this.finishedChapterStorageIds = finishedChapterStorageIds;
     }
 }

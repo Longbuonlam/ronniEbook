@@ -32,12 +32,10 @@ public class ReadingProgressResource {
     }
 
     @PostMapping("/reading-progress")
-    public ResponseEntity<ReadingProgress> createReadingProgress(@RequestBody ReadingProgress readingProgress) throws URISyntaxException {
+    public ResponseEntity<ReadingProgress> createReadingProgress(@RequestParam String bookId, @RequestParam String chapterStorageId)
+        throws URISyntaxException {
         log.debug("Request to save reading progress");
-        if (readingProgress.getId() != null) {
-            throw new BadRequestAlertException("A new reading progress cannot already have an ID", ENTITY_NAME, "id exists");
-        }
-        ReadingProgress result = readingProgressService.save(readingProgress);
+        ReadingProgress result = readingProgressService.save(bookId, chapterStorageId);
         return ResponseEntity.created(new URI("/api/reading-progress/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId()))
             .body(result);
@@ -65,5 +63,12 @@ public class ReadingProgressResource {
         @RequestParam(required = false) String searchText
     ) {
         return readingProgressService.findOtherBookByUserId(pageable, searchText);
+    }
+
+    @GetMapping("/reading-progress/{bookId}")
+    public ResponseEntity<Integer> getBookProcess(@PathVariable String bookId) {
+        log.debug("Rest request to get process of book {}", bookId);
+        int process = readingProgressService.getProcess(bookId);
+        return ResponseEntity.ok().body(process);
     }
 }

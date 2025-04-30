@@ -7,7 +7,9 @@ import com.ronniebook.web.ebook.repository.ReadingProgressRepository;
 import com.ronniebook.web.security.SecurityUtils;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +31,22 @@ public class ReadingProgressService {
         this.bookRepository = bookRepository;
     }
 
-    public ReadingProgress save(ReadingProgress readingProgress) {
-        log.debug("Request to save reading progress : {}", readingProgress);
+    public ReadingProgress save(String bookId, String chapterStorageId) {
+        log.debug("Request to save reading progress");
         String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
-        readingProgress.setUserId(userId);
+        ReadingProgress readingProgress = readingProgressRepository.findByUserIdAndBookId(userId, bookId);
+        if (readingProgress == null) {
+            ReadingProgress progress = new ReadingProgress();
+            Set<String> finishChapterId = new HashSet<>();
+            finishChapterId.add(chapterStorageId);
+            progress.setUserId(userId);
+            progress.setBookId(bookId);
+            progress.setFinishedChapterStorageIds(finishChapterId);
+            return readingProgressRepository.save(progress);
+        }
+        Set<String> finishChapters = readingProgress.getFinishedChapterStorageIds();
+        finishChapters.add(chapterStorageId);
+
         return readingProgressRepository.save(readingProgress);
     }
 
@@ -92,5 +106,23 @@ public class ReadingProgressService {
             bookPage = bookRepository.findByTextExceptBookIds(pageable, searchText, listBookIds);
         }
         return bookPage;
+    }
+
+    public Integer getProcess(String bookId) {
+        log.debug("Request to get process of book {}", bookId);
+        String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        ReadingProgress readingProgress = readingProgressRepository.findByUserIdAndBookId(userId, bookId);
+        if (readingProgress == null) {
+            return 0;
+        }
+        Book book = bookRepository.findById(bookId).orElseThrow();
+
+        int finishedChapter = readingProgress.getFinishedChapterStorageIds().size();
+        int totalChapter = book.getChapterCount();
+
+        if (totalChapter == 0) {
+            return 0;
+        }
+        return (finishedChapter * 100) / totalChapter;
     }
 }
