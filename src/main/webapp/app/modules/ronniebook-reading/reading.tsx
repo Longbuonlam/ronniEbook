@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Spinner from '../../shared/layout/spinner/spinner';
 import VoiceSelectionModal from '../../shared/layout/user-record-selection/user-record-select';
 import TextToSpeechButton from '../../shared/layout/text-to-speech-button/text-to-speech-button';
 import { UserRecord } from '../../shared/model/record.model';
 
 import './reading.scss';
+import toast from 'react-hot-toast';
 
 function FileContent() {
   const { fileId } = useParams();
@@ -24,6 +25,9 @@ function FileContent() {
   const [selectedUserRecord, setSelectedUserRecord] = useState<UserRecord | null>(null);
   const [userRecords, setUserRecords] = useState<UserRecord[]>([]);
   const [ttsButtonActive, setTtsButtonActive] = useState(false);
+  const location = useLocation();
+  const bookId = location.state?.bookId;
+  const [hasSavedProgress, setHasSavedProgress] = useState(false);
 
   const defaultVoice: UserRecord = {
     id: '',
@@ -103,6 +107,22 @@ function FileContent() {
       .catch(error => console.error('Error fetching user records:', error));
   };
 
+  const checkSavedProgress = () => {
+    fetch(`http://localhost:9000/api/reading-progress/check-saved-chapters?bookId=${bookId}&chapterStorageId=${fileId}`)
+      .then(response => {
+        if (response.ok) {
+          response.json().then(result => {
+            setHasSavedProgress(result);
+          });
+        } else {
+          toast.error('Failed to check saved progress');
+        }
+      })
+      .catch(error => {
+        console.error('Error checking saved progress:', error);
+      });
+  };
+
   const handleTextToSpeechClick = () => {
     fetchUserRecord();
     setIsVoiceModalOpen(true);
@@ -122,9 +142,58 @@ function FileContent() {
     setTtsButtonActive(false);
   };
 
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const getXsrfToken = () => {
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    return match ? match[1] : null;
+  };
+
+  const saveReadingProgress = (bookId: string, chapterStorageId: string) => {
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      toast.error('Failed to save reading progress: XSRF token is missing');
+      return;
+    }
+
+    fetch(`http://localhost:9000/api/reading-progress?bookId=${bookId}&chapterStorageId=${chapterStorageId}`, {
+      method: 'POST',
+      headers: {
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+    })
+      .then(response => {
+        if (response.ok) {
+          console.log('Reading progress saved successfully');
+        } else {
+          console.error('Failed to save reading progress');
+        }
+      })
+      .catch(error => {
+        console.error('Error saving reading progress:', error);
+      });
+  };
+
+  const handleScroll = () => {
+    if (contentRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
+      if (scrollTop + clientHeight >= scrollHeight - 10) {
+        // User has reached the bottom of the page
+        if (!hasSavedProgress && bookId && fileId) {
+          saveReadingProgress(bookId, fileId);
+          setHasSavedProgress(true);
+        }
+      }
+    }
+  };
+
   useEffect(() => {
     fetchFileType();
     fetchChapterInfo();
+    checkSavedProgress();
   }, [fileId]);
 
   useEffect(() => {
@@ -143,7 +212,7 @@ function FileContent() {
         <button className="close-btn">✖</button>
         <button>&gt;</button>
       </div>
-      <div className="file-content-body">
+      <div className="file-content-body" onScroll={handleScroll} ref={contentRef}>
         <div className="chapter-info">
           <h2>
             Chapter <span>{chapterNumber}</span> : {chapterName}

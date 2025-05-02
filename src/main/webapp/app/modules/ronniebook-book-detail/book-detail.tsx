@@ -362,11 +362,8 @@ function BookDetail() {
   const handleSelectChapter = (chapter: number) => {
     const chapterStorageId = chapterStorageIds[chapter];
     if (chapterStorageId && bookId) {
-      // Save reading progress
-      saveReadingProgress(bookId, chapterStorageId);
-
       navigate(`/app/reading/${chapterStorageId}`, {
-        state: { userRecord: selectedUserRecord },
+        state: { bookId },
       });
     }
     setIsChapterModalOpen(false);
