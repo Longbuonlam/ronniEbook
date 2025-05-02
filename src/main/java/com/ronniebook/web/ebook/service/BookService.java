@@ -2,7 +2,9 @@ package com.ronniebook.web.ebook.service;
 
 import com.ronniebook.web.ebook.domain.Book;
 import com.ronniebook.web.ebook.domain.BookStatus;
+import com.ronniebook.web.ebook.domain.ElasticsearchBookDocument;
 import com.ronniebook.web.ebook.repository.BookRepository;
+import com.ronniebook.web.ebook.repository.ElasticsearchBookDocumentRepository;
 import com.ronniebook.web.service.UserService;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
 import java.io.IOException;
@@ -11,14 +13,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -38,6 +38,7 @@ public class BookService {
     private final CloudinaryService cloudinaryService;
     private final RonnieFileService ronnieFileService;
     private final HybridRSService hybridRSService;
+    private final ElasticsearchBookDocumentRepository elasticsearchBookDocumentRepository;
 
     public BookService(
         UserService userService,
@@ -45,7 +46,8 @@ public class BookService {
         MongoTemplate mongoTemplate,
         CloudinaryService cloudinaryService,
         RonnieFileService ronnieFileService,
-        HybridRSService hybridRSService
+        HybridRSService hybridRSService,
+        ElasticsearchBookDocumentRepository elasticsearchBookDocumentRepository
     ) {
         this.userService = userService;
         this.bookRepository = bookRepository;
@@ -53,6 +55,7 @@ public class BookService {
         this.cloudinaryService = cloudinaryService;
         this.ronnieFileService = ronnieFileService;
         this.hybridRSService = hybridRSService;
+        this.elasticsearchBookDocumentRepository = elasticsearchBookDocumentRepository;
     }
 
     /**
@@ -90,6 +93,11 @@ public class BookService {
             // Handle special characters
             searchText = Pattern.quote(searchText);
             bookPage = bookRepository.findByText(pageable, searchText);
+
+            if (bookPage.isEmpty()) {
+                List<Book> books = findByContentWithElasticsearch(searchText);
+                bookPage = new PageImpl<>(books, pageable, books.size());
+            }
         }
         return bookPage;
     }
@@ -265,5 +273,11 @@ public class BookService {
         log.debug("get similar book with book id {}", bookId);
         List<String> bookIds = hybridRSService.getSimilarBookIDs(bookId);
         return bookRepository.findAllWithBookIds(pageable, bookIds);
+    }
+
+    public List<Book> findByContentWithElasticsearch(String searchText) {
+        log.debug("Request to find books by content with elasticsearch");
+        List<ElasticsearchBookDocument> documentList = elasticsearchBookDocumentRepository.findByContentContaining(searchText);
+        return documentList.stream().map(ElasticsearchBookDocument::getBookId).distinct().map(this::findOne).toList();
     }
 }

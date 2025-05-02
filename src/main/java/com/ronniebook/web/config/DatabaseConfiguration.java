@@ -24,7 +24,7 @@ import tech.jhipster.domain.util.JSR310DateConverters.ZonedDateTimeToDateConvert
 
 @Configuration
 @EnableMongock
-@EnableElasticsearchRepositories("com.ronniebook.web.repository.search")
+@EnableElasticsearchRepositories({ "com.ronniebook.web.repository.search", "com.ronniebook.web.ebook.repository" })
 @EnableMongoRepositories(
     basePackages = { "com.ronniebook.web.repository", "com.ronniebook.web.ebook.repository" },
     includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, value = MongoRepository.class)
