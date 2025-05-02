@@ -55,6 +55,8 @@ $shadow-color: rgba(0, 0, 0, 0.1);
     padding: 24px;
     border-radius: 8px;
     box-shadow: 0 4px 8px $shadow-color;
+    overflow-y: auto; // Enables vertical scrolling
+    max-height: 100vh;
 
     h2 {
       font-size: 2rem;

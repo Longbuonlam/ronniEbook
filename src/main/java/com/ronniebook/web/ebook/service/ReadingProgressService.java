@@ -125,4 +125,18 @@ public class ReadingProgressService {
         }
         return (finishedChapter * 100) / totalChapter;
     }
+
+    public Boolean hadProcessSaved(String bookId, String chapterStorageId) {
+        log.debug("Request to check if process had been saved : book id {}, chapter storage id {}", bookId, chapterStorageId);
+        String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        ReadingProgress readingProgress = readingProgressRepository.findByUserIdAndBookId(userId, bookId);
+        if (readingProgress == null) {
+            return false;
+        }
+        Set<String> finishedChapters = readingProgress.getFinishedChapterStorageIds();
+        if (finishedChapters == null) {
+            return false;
+        }
+        return finishedChapters.contains(chapterStorageId);
+    }
 }

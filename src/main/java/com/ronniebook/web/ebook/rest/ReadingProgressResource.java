@@ -71,4 +71,11 @@ public class ReadingProgressResource {
         int process = readingProgressService.getProcess(bookId);
         return ResponseEntity.ok().body(process);
     }
+
+    @GetMapping("/reading-progress/check-saved-chapters")
+    public ResponseEntity<Boolean> hadSavedProgress(@RequestParam String bookId, @RequestParam String chapterStorageId) {
+        log.debug("Rest request to check if progress had been saved : book id {}, chapter storage id {}", bookId, chapterStorageId);
+        Boolean result = readingProgressService.hadProcessSaved(bookId, chapterStorageId);
+        return ResponseEntity.ok().body(result);
+    }
 }
