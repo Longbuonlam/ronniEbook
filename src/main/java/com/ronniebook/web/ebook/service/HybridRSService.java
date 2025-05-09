@@ -117,7 +117,7 @@ public class HybridRSService {
         payload.put("users", DataConverter.convertUsers(users));
         payload.put("ratings", DataConverter.convertRatings(ratings));
 
-        System.out.println(payload);
+        log.info("Payload : {}", payload);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

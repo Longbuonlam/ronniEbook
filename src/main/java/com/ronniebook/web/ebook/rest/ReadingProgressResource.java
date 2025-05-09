@@ -36,6 +36,7 @@ public class ReadingProgressResource {
         throws URISyntaxException {
         log.debug("Request to save reading progress");
         ReadingProgress result = readingProgressService.save(bookId, chapterStorageId);
+        readingProgressService.checkAndSaveToHistory(bookId);
         return ResponseEntity.created(new URI("/api/reading-progress/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId()))
             .body(result);

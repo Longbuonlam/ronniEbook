@@ -62,4 +62,13 @@ public class HistoryService {
         History history = historyRepository.findById(id).orElseThrow();
         historyRepository.delete(history);
     }
+
+    public void save(String bookId) {
+        log.debug("Request to save history, book {}", bookId);
+        String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        History history = new History();
+        history.setBookId(bookId);
+        history.setUserId(userId);
+        historyRepository.save(history);
+    }
 }

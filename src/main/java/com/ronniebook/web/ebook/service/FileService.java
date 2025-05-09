@@ -29,11 +29,18 @@ public class FileService {
     private final RonnieFileService ronnieFileService;
     private final UserService userService;
     private final FileRepository fileRepository;
+    private final ElasticsearchService elasticsearchService;
 
-    public FileService(RonnieFileService ronnieFileService, UserService userService, FileRepository fileRepository) {
+    public FileService(
+        RonnieFileService ronnieFileService,
+        UserService userService,
+        FileRepository fileRepository,
+        ElasticsearchService elasticsearchService
+    ) {
         this.ronnieFileService = ronnieFileService;
         this.userService = userService;
         this.fileRepository = fileRepository;
+        this.elasticsearchService = elasticsearchService;
     }
 
     private void save(RonnieFile file) {
@@ -92,7 +99,10 @@ public class FileService {
 
             ronnieFile.setContent(htmlContent.toString());
             ronnieFile.setRawContent(rawContent.toString());
-            save(ronnieFile);
+            fileRepository.save(ronnieFile);
+
+            // save data to elasticsearch
+            elasticsearchService.postData(ronnieFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -114,7 +124,7 @@ public class FileService {
             }
         }
         ronnieFile.setOrder(expectedOrder);
-        save(ronnieFile);
+        fileRepository.save(ronnieFile);
     }
 
     public Page<RonnieFileDTO> findAll(Pageable pageable, String chapterStorageId, String searchText) {
