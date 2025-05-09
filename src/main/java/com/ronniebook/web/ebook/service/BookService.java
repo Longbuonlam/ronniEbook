@@ -172,6 +172,7 @@ public class BookService {
 
     public Page<Book> findBookByStatus(Pageable pageable, BookStatus bookStatus, String searchText) {
         log.debug("Request to get release books and unrelease books");
+        Page<Book> bookPage;
         // Add SortPage
         if (pageable != null && pageable.getSort().isEmpty()) {
             Sort sort = Sort.by(Sort.Direction.ASC, "book_name");
@@ -182,16 +183,16 @@ public class BookService {
         }
 
         if (searchText == null) {
-            if (bookStatus == BookStatus.DONE) {
-                return bookRepository.findByBookStatusAndNotDeleted(pageable, BookStatus.DONE);
-            }
-            return bookRepository.findByBookStatusAndNotDeleted(pageable, BookStatus.IN_PROGRESS);
+            return bookRepository.findByBookStatusAndNotDeleted(pageable, bookStatus);
         }
+        bookPage = bookRepository.findByBookStatusAndSearchText(pageable, searchText, bookStatus);
 
-        if (bookStatus == BookStatus.DONE) {
-            return bookRepository.findByBookStatusAndSearchText(pageable, searchText, BookStatus.DONE);
+        if (bookPage.isEmpty()) {
+            List<Book> books = findByContentWithElasticsearch(searchText);
+            List<Book> results = books.stream().filter(book -> book.getBookStatus() == bookStatus).toList();
+            bookPage = new PageImpl<>(results, pageable, results.size());
         }
-        return bookRepository.findByBookStatusAndSearchText(pageable, searchText, BookStatus.IN_PROGRESS);
+        return bookPage;
     }
 
     @Async
@@ -277,7 +278,7 @@ public class BookService {
 
     public List<Book> findByContentWithElasticsearch(String searchText) {
         log.debug("Request to find books by content with elasticsearch");
-        List<ElasticsearchBookDocument> documentList = elasticsearchBookDocumentRepository.findByContentContaining(searchText);
+        List<ElasticsearchBookDocument> documentList = elasticsearchBookDocumentRepository.searchByContent(searchText);
         return documentList.stream().map(ElasticsearchBookDocument::getBookId).distinct().map(this::findOne).toList();
     }
 }

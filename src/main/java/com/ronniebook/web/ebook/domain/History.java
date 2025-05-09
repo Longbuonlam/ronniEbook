@@ -12,8 +12,6 @@ public class History extends BaseEntity implements Serializable {
 
     private String bookId;
 
-    private boolean isFinished;
-
     public History() {}
 
     public String getBookId() {
@@ -22,14 +20,6 @@ public class History extends BaseEntity implements Serializable {
 
     public void setBookId(String bookId) {
         this.bookId = bookId;
-    }
-
-    public boolean isFinished() {
-        return isFinished;
-    }
-
-    public void setFinished(boolean finished) {
-        isFinished = finished;
     }
 
     public String getUserId() {

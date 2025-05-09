@@ -29,7 +29,7 @@ public class ElasticsearchService {
 
     public List<ElasticsearchBookDocument> findBookDocumentsByContent(String searchText) {
         log.debug("Request to find book document by content : {}", searchText);
-        return elasticsearchBookDocumentRepository.findByContentContaining(searchText);
+        return elasticsearchBookDocumentRepository.searchByContent(searchText);
     }
 
     public void deleteDocument(String id) {

@@ -25,10 +25,16 @@ public class ReadingProgressService {
     private final Logger log = LoggerFactory.getLogger(ReadingProgressService.class);
     private final ReadingProgressRepository readingProgressRepository;
     private final BookRepository bookRepository;
+    private final HistoryService historyService;
 
-    public ReadingProgressService(ReadingProgressRepository readingProgressRepository, BookRepository bookRepository) {
+    public ReadingProgressService(
+        ReadingProgressRepository readingProgressRepository,
+        BookRepository bookRepository,
+        HistoryService historyService
+    ) {
         this.readingProgressRepository = readingProgressRepository;
         this.bookRepository = bookRepository;
+        this.historyService = historyService;
     }
 
     public ReadingProgress save(String bookId, String chapterStorageId) {
@@ -138,5 +144,12 @@ public class ReadingProgressService {
             return false;
         }
         return finishedChapters.contains(chapterStorageId);
+    }
+
+    public void checkAndSaveToHistory(String bookId) {
+        int progress = getProcess(bookId);
+        if (progress == 100) {
+            historyService.save(bookId);
+        }
     }
 }
