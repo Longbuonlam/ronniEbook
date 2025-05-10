@@ -43,6 +43,7 @@ function BookDetail() {
   const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
   const [selectedUserRecord, setSelectedUserRecord] = useState<UserRecord | null>(null);
   const [readingProgress, setReadingProgress] = useState<number>(0);
+  const [chaptersRead, setChaptersRead] = useState(new Set());
 
   const navigate = useNavigate();
 
@@ -122,6 +123,15 @@ function BookDetail() {
         setReadingProgress(data);
       })
       .catch(error => console.error('Error fetching reading progress:', error));
+  };
+
+  const fetchChaptersRead = () => {
+    fetch(`http://localhost:9000/api/reading-progress/get-finished-chapters/${bookId}`)
+      .then(response => response.json())
+      .then(data => {
+        setChaptersRead(new Set(data));
+      })
+      .catch(error => console.error('Error fetching chapters read:', error));
   };
 
   const getXsrfToken = () => {
@@ -443,16 +453,12 @@ function BookDetail() {
       });
   };
 
-  const handleOpenUserRecord = () => {
-    fetchUserRecord();
-    setIsVoiceModalOpen(true);
-  };
-
   useEffect(() => {
     fetchBook();
     fetchChapterStorageIds();
     fetchRelatedBooks();
     fetchReadingProgress();
+    fetchChaptersRead();
   }, [bookId]);
 
   return (
@@ -499,7 +505,7 @@ function BookDetail() {
 
                 <div>
                   <strong>Number of Chapter</strong>
-                  <p>{book.chapterCount}</p>
+                  <p>{Object.keys(chapterStorageIds).length}</p>
                 </div>
 
                 <div>
@@ -665,8 +671,10 @@ function BookDetail() {
       <ChapterSelectionModal
         isOpen={isChapterModalOpen}
         onClose={() => setIsChapterModalOpen(false)}
-        chapterCount={book?.chapterCount || 0}
+        chapterCount={Object.keys(chapterStorageIds).length}
         onSelect={handleSelectChapter}
+        chapterStorageIds={chapterStorageIds}
+        chaptersRead={chaptersRead}
       />
 
       <UploadOrRecordAudioModal isOpen={isAudioModalOpen} onClose={() => setIsAudioModalOpen(false)} onUpload={handleAudioUpload} />
