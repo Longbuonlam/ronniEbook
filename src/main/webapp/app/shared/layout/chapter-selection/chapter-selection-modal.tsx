@@ -2,8 +2,9 @@ import React from 'react';
 import './chapter-selection-modal.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
 
-function ChapterSelectionModal({ isOpen, onClose, onSelect, chapterCount }) {
+function ChapterSelectionModal({ isOpen, onClose, onSelect, chapterCount, chapterStorageIds = {}, chaptersRead = new Set() }) {
   if (!isOpen) return null;
 
   return (
@@ -20,11 +21,22 @@ function ChapterSelectionModal({ isOpen, onClose, onSelect, chapterCount }) {
             <div className="no-chapters-message">No chapters available.</div>
           ) : (
             <div className="chapter-grid">
-              {[...Array(chapterCount)].map((_, index) => (
-                <div key={index} className="chapter-item" onClick={() => onSelect(index + 1)}>
-                  Chapter {index + 1}
-                </div>
-              ))}
+              {[...Array(chapterCount)].map((_, index) => {
+                const chapterNumber = index + 1;
+                const isRead = chaptersRead.has(chapterStorageIds[chapterNumber]);
+                return (
+                  <div
+                    key={index}
+                    className={classNames('chapter-item', {
+                      'chapter-item-read': isRead,
+                      'chapter-item-unread': !isRead,
+                    })}
+                    onClick={() => onSelect(chapterNumber)}
+                  >
+                    Chapter {chapterNumber}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

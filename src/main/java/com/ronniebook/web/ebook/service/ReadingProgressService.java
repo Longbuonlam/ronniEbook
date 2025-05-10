@@ -152,4 +152,14 @@ public class ReadingProgressService {
             historyService.save(bookId);
         }
     }
+
+    public Set<String> getAllFinishedChapters(String bookId) {
+        log.debug("Request to get all finished chapters of book {}", bookId);
+        String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        ReadingProgress readingProgress = readingProgressRepository.findByUserIdAndBookId(userId, bookId);
+        if (readingProgress == null) {
+            return new HashSet<>();
+        }
+        return readingProgress.getFinishedChapterStorageIds();
+    }
 }

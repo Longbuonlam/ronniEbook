@@ -6,6 +6,7 @@ import com.ronniebook.web.ebook.service.ReadingProgressService;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -77,6 +78,13 @@ public class ReadingProgressResource {
     public ResponseEntity<Boolean> hadSavedProgress(@RequestParam String bookId, @RequestParam String chapterStorageId) {
         log.debug("Rest request to check if progress had been saved : book id {}, chapter storage id {}", bookId, chapterStorageId);
         Boolean result = readingProgressService.hadProcessSaved(bookId, chapterStorageId);
+        return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/reading-progress/get-finished-chapters/{bookId}")
+    public ResponseEntity<Set<String>> getFinishedChapters(@PathVariable String bookId) {
+        log.debug("Rest request to get all finished chapters : book {}", bookId);
+        Set<String> result = readingProgressService.getAllFinishedChapters(bookId);
         return ResponseEntity.ok().body(result);
     }
 }
