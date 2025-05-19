@@ -146,7 +146,6 @@ function Home() {
                 <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
                 <h3>{book.title}</h3>
                 <p>{book.author}</p>
-                <p className="book-description">{book.description}</p>
               </div>
             ))}
           </div>
@@ -194,7 +193,6 @@ function Home() {
                 <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
                 <h3>{book.title}</h3>
                 <p>{book.author}</p>
-                <p className="book-description">{book.description}</p>
               </div>
             ))}
           </div>
@@ -242,7 +240,6 @@ function Home() {
                 <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
                 <h3>{book.title}</h3>
                 <p>{book.author}</p>
-                <p className="book-description">{book.description}</p>
               </div>
             ))}
           </div>
