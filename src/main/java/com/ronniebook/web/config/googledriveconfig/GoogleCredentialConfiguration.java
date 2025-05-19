@@ -24,9 +24,9 @@ public class GoogleCredentialConfiguration {
         return new GoogleCredential.Builder()
             .setTransport(httpTransport)
             .setJsonFactory(jsonFactory)
-            .setServiceAccountId("ronniebook@ronniebook.iam.gserviceaccount.com")
+            .setServiceAccountId("ronniebook-drive-uploader@ronniebook-web.iam.gserviceaccount.com")
             .setServiceAccountScopes(elenco)
-            .setServiceAccountPrivateKeyFromP12File(new File("src/main/resources/config/google-drive/account-key.p12"))
+            .setServiceAccountPrivateKeyFromP12File(new File("src/main/resources/config/google-drive/ronniebook-web-credentials.p12"))
             .build();
     }
 }

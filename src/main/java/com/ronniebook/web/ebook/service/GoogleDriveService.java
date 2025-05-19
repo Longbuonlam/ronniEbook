@@ -26,7 +26,7 @@ public class GoogleDriveService implements RonnieFileService {
 
     private final Logger log = LoggerFactory.getLogger(GoogleDriveService.class);
 
-    private static final String APPLICATION_FOLDER_ID = "17dSVOgUulyr4QUbqGJdnordUkuuqhcLG";
+    private static final String APPLICATION_FOLDER_ID = "1I1ozk55jgqtegzQcOtFXG7X3Ui-A9h_E";
 
     public List<File> getAllGoogleDriveFiles() throws IOException {
         log.debug("Request to get all files from google drive");
@@ -103,7 +103,7 @@ public class GoogleDriveService implements RonnieFileService {
     }
 
     private void addPermissionToFolder(Drive driveService, String folderId) throws IOException {
-        Permission permission = new Permission().setType("user").setRole("reader").setEmailAddress("long.vo@ntq-solution.com.vn");
+        Permission permission = new Permission().setType("user").setRole("reader").setEmailAddress("sonlong2302@gmail.com");
         driveService.permissions().create(folderId, permission).execute();
     }
 
