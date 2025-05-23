@@ -27,6 +27,16 @@
       height: 25px;
       border-radius: 50%;
       margin-right: 8px;
+      border: 2px solid #e5e7eb;
+
+      // For SVG icons (like User from lucide-react)
+      &.dropdown__icon {
+        border-radius: 50%;
+        color: #666;
+        padding: 3px;
+        background-color: #f9fafb;
+        border: 2px solid #e5e7eb;
+      }
     }
   }
 

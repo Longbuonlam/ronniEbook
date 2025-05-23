@@ -20,6 +20,7 @@ import BookManagerment from './modules/ronniebook-book-managerment/book-managerm
 import ChapterManagerment from './modules/ronniebook-chapter-management/chapter-management';
 import FileManagerment from './modules/ronniebook-file-management/file-management';
 import FileContent from './modules/ronniebook-reading/reading';
+import UserProfile from './modules/ronniebook-user-profile/user-profile';
 
 const loading = <div>loading ...</div>;
 
@@ -72,6 +73,7 @@ const AppRoutes = (props: RouteProps) => {
         <Route path="/app/favourite" element={<FavouriteBook />} />
         <Route path="/app/history" element={<History />} />
         <Route path="/app/reading/:fileId" element={<FileContent />} />
+        <Route path="/app/user-profile" element={<UserProfile />} />
         <Route
           path="/app/admin/user-managerment"
           element={
