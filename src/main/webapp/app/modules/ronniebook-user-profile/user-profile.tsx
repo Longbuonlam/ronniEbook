@@ -3,6 +3,10 @@ import { Camera, Edit2, Check, X, User, Mail, FileText } from 'lucide-react';
 import './user-profile.scss';
 import { useAppSelector } from '../../config/store';
 import toast, { Toaster } from 'react-hot-toast';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 interface ProfileData {
   firstName: string;
@@ -24,6 +28,7 @@ export default function UserProfile() {
   const [editData, setEditData] = useState<ProfileData>({ ...profileData });
   const account = useAppSelector(state => state.authentication.account);
   const cached = sessionStorage.getItem('cachedUserProfile');
+  const [createdDate, setCreatedDate] = useState('');
 
   useEffect(() => {
     if (cached) {
@@ -41,7 +46,7 @@ export default function UserProfile() {
       setEditData(initialData);
     }
 
-    fetchUserImage();
+    fetchUserInfo();
   }, [account]);
 
   const handleEdit = () => {
@@ -49,17 +54,18 @@ export default function UserProfile() {
     setEditData({ ...profileData });
   };
 
-  const fetchUserImage = () => {
-    fetch('http://localhost:9000/api/user-profile/image')
-      .then(response => response.text())
-      .then(imageUrl => {
-        if (imageUrl) {
-          setProfileData(prev => ({ ...prev, profileImage: imageUrl }));
-          setEditData(prev => ({ ...prev, profileImage: imageUrl }));
+  const fetchUserInfo = () => {
+    fetch('http://localhost:9000/api/user-profile/info')
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.imageUrl) {
+          setProfileData(prev => ({ ...prev, profileImage: data.imageUrl }));
+          setEditData(prev => ({ ...prev, profileImage: data.imageUrl }));
         }
+        setCreatedDate(data.createdDate);
       })
       .catch(error => {
-        console.error('Error fetching user image:', error);
+        console.error('Error fetching user info:', error);
       });
   };
 
@@ -165,6 +171,17 @@ export default function UserProfile() {
   };
 
   const displayData = isEditing ? editData : profileData;
+
+  // Format dates and calculate profile completion
+  const memberSince = createdDate ? dayjs(createdDate).format('MM/YYYY') : 'N/A';
+  const lastUpdated = account?.lastModifiedDate ? dayjs(account.lastModifiedDate).fromNow() : 'N/A';
+  const accountStatus = account?.activated ? 'Active' : 'Inactive';
+  const statusClass = accountStatus === 'Active' ? 'active' : 'inactive';
+
+  // Profile completion calculation based on ProfileData fields
+  const profileFields = Object.values(profileData);
+  const filledFields = profileFields.filter(v => v !== null && v !== undefined && v !== '').length;
+  const profileCompletion = Math.round((filledFields / profileFields.length) * 100);
 
   return (
     <div className="user-profile">
@@ -313,19 +330,15 @@ export default function UserProfile() {
           <div className="info-grid">
             <div className="info-item">
               <span className="label">Member since:</span>
-              <span className="value">January 2024</span>
+              <span className="value">{memberSince}</span>
             </div>
             <div className="info-item">
               <span className="label">Profile completion:</span>
-              <span className="value completion">85%</span>
+              <span className="value completion">{profileCompletion}%</span>
             </div>
             <div className="info-item">
               <span className="label">Account status:</span>
-              <span className="value active">Active</span>
-            </div>
-            <div className="info-item">
-              <span className="label">Last updated:</span>
-              <span className="value">2 days ago</span>
+              <span className={`value ${statusClass}`}>{accountStatus}</span>
             </div>
           </div>
         </div>

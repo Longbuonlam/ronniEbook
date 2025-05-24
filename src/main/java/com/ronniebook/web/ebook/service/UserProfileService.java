@@ -8,6 +8,7 @@ import com.ronniebook.web.repository.UserRepository;
 import com.ronniebook.web.security.SecurityUtils;
 import com.ronniebook.web.service.UserService;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
+import java.time.Instant;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,5 +101,10 @@ public class UserProfileService {
             return null;
         }
         return userImage.getImageUrl();
+    }
+
+    public Instant getCurrentUserCreatedDate(String userId) {
+        User user = userRepository.findOneByLogin(userId).orElseThrow();
+        return user.getCreatedDate();
     }
 }

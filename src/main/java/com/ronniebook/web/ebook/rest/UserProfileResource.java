@@ -2,9 +2,11 @@ package com.ronniebook.web.ebook.rest;
 
 import com.ronniebook.web.domain.User;
 import com.ronniebook.web.ebook.domain.UserImage;
+import com.ronniebook.web.ebook.domain.dto.UserInfoDTO;
 import com.ronniebook.web.ebook.domain.dto.UserProfileDTO;
 import com.ronniebook.web.ebook.service.UserProfileService;
 import com.ronniebook.web.security.SecurityUtils;
+import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +45,16 @@ public class UserProfileResource {
         String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
         log.debug("REST request to get user {} 's image ", userId);
         String result = userProfileService.getCurrentUserImageUrl(userId);
+        return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/user-profile/info")
+    public ResponseEntity<UserInfoDTO> getUserInfo() {
+        String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        log.debug("REST request to get database information of user {}", userId);
+        String imageUrl = userProfileService.getCurrentUserImageUrl(userId);
+        Instant createdDate = userProfileService.getCurrentUserCreatedDate(userId);
+        UserInfoDTO result = new UserInfoDTO(imageUrl, createdDate);
         return ResponseEntity.ok().body(result);
     }
 }
