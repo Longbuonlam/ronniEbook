@@ -94,6 +94,15 @@
               background-color: #2563eb;
             }
 
+            &.disabled {
+              background-color: #9ca3af;
+              cursor: not-allowed;
+
+              &:hover {
+                background-color: #9ca3af;
+              }
+            }
+
             svg {
               width: 1rem;
               height: 1rem;
@@ -136,6 +145,34 @@
           &:focus {
             border-color: #3b82f6;
             outline: none;
+          }
+        }
+
+        .name-inputs {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          align-items: center;
+
+          input {
+            font-size: 1.125rem;
+            font-weight: 600;
+            text-align: center;
+            max-width: 18rem;
+
+            &::placeholder {
+              color: #9ca3af;
+              font-weight: 400;
+            }
+          }
+
+          @media (min-width: 640px) {
+            flex-direction: row;
+            justify-content: center;
+
+            input {
+              max-width: 12rem;
+            }
           }
         }
       }
@@ -223,6 +260,13 @@
           font-weight: 600;
           transition: background-color 0.3s;
           box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          border: none;
+          cursor: pointer;
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
 
           svg {
             width: 1.25rem;

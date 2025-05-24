@@ -1,14 +1,24 @@
 import React, { useLayoutEffect, useState, useRef, useEffect } from 'react';
 import './account.scss';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from 'app/config/store';
+import { useAppSelector } from '../../../config/store';
 import { User } from 'lucide-react';
 
 const AccountDropdown = () => {
   const account = useAppSelector(state => state.authentication.account);
   const [isOpen, setIsOpen] = useState(false);
+  const [userImageUrl, setUserImageUrl] = useState<string | null>(null);
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetch('http://localhost:9000/api/user-profile/image')
+      .then(response => response.text())
+      .then(imageUrl => {
+        if (imageUrl) setUserImageUrl(imageUrl);
+      })
+      .catch(() => setUserImageUrl(null));
+  }, [account]);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -45,8 +55,8 @@ const AccountDropdown = () => {
     <div className="dropdown" ref={dropdownRef}>
       <button className="dropdown__button" onClick={toggleDropdown}>
         {/* <span className="dropdown__icon">⚙️</span> */}
-        {account.imageUrl ? (
-          <img className="dropdown__avatar" src={account.imageUrl} alt="User Avatar" />
+        {userImageUrl ? (
+          <img className="dropdown__avatar" src={userImageUrl} alt="User Avatar" />
         ) : (
           <User className="dropdown__avatar dropdown__icon" size={25} />
         )}
