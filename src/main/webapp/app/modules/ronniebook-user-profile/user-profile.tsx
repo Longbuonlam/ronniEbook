@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import { Camera, Edit2, Check, X, User, Mail, FileText } from 'lucide-react';
 import './user-profile.scss';
-import { useAppSelector, useAppDispatch } from '../../config/store';
+import { useAppSelector } from '../../config/store';
 import toast, { Toaster } from 'react-hot-toast';
 
 interface ProfileData {
@@ -25,7 +25,6 @@ export default function UserProfile() {
   const account = useAppSelector(state => state.authentication.account);
   const cached = sessionStorage.getItem('cachedUserProfile');
 
-  // Initialize profile data from account when component mounts or account changes
   useEffect(() => {
     if (cached) {
       const cachedData = JSON.parse(cached);
@@ -41,11 +40,27 @@ export default function UserProfile() {
       setProfileData(initialData);
       setEditData(initialData);
     }
+
+    fetchUserImage();
   }, [account]);
 
   const handleEdit = () => {
     setIsEditing(true);
     setEditData({ ...profileData });
+  };
+
+  const fetchUserImage = () => {
+    fetch('http://localhost:9000/api/user-profile/image')
+      .then(response => response.text())
+      .then(imageUrl => {
+        if (imageUrl) {
+          setProfileData(prev => ({ ...prev, profileImage: imageUrl }));
+          setEditData(prev => ({ ...prev, profileImage: imageUrl }));
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching user image:', error);
+      });
   };
 
   const getXsrfToken = () => {
@@ -315,7 +330,7 @@ export default function UserProfile() {
           </div>
         </div>
       </div>
-      <Toaster position="top-right" />
+      <Toaster />
     </div>
   );
 }

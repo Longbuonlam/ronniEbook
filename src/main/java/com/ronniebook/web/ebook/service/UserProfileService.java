@@ -1,7 +1,9 @@
 package com.ronniebook.web.ebook.service;
 
 import com.ronniebook.web.domain.User;
+import com.ronniebook.web.ebook.domain.UserImage;
 import com.ronniebook.web.ebook.domain.dto.UserProfileDTO;
+import com.ronniebook.web.ebook.repository.UserImageRepository;
 import com.ronniebook.web.repository.UserRepository;
 import com.ronniebook.web.security.SecurityUtils;
 import com.ronniebook.web.service.UserService;
@@ -20,20 +22,23 @@ public class UserProfileService {
     private final UserService userService;
     private final CloudinaryService cloudinaryService;
     private final KeycloakService keycloakService;
+    private final UserImageRepository userImageRepository;
 
     public UserProfileService(
         UserRepository userRepository,
         UserService userService,
         CloudinaryService cloudinaryService,
-        KeycloakService keycloakService
+        KeycloakService keycloakService,
+        UserImageRepository userImageRepository
     ) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.cloudinaryService = cloudinaryService;
         this.keycloakService = keycloakService;
+        this.userImageRepository = userImageRepository;
     }
 
-    public Optional<User> uploadImage(MultipartFile image, String userId) {
+    public UserImage uploadImage(MultipartFile image, String userId) {
         log.debug("Request to upload image user profile");
         try {
             if (image.getSize() > 20 * 1024 * 1024) {
@@ -50,10 +55,13 @@ public class UserProfileService {
             }
             String imageUrl = cloudinaryService.uploadImage(cloudinaryService.convertMultiPartToFile(image));
 
-            User currentUser = userRepository.findOneByLogin(userId).orElseThrow();
-            currentUser.setImageUrl(imageUrl);
-            userRepository.save(currentUser);
-            return Optional.of(currentUser);
+            UserImage userImage = userImageRepository.findByUserId(userId);
+            if (userImage != null) {
+                userImage.setImageUrl(imageUrl);
+            } else {
+                userImage = new UserImage(userId, imageUrl);
+            }
+            return userImageRepository.save(userImage);
         } catch (Exception e) {
             throw new BadRequestAlertException("", "", "Error when upload image to cloudinary");
         }
@@ -84,5 +92,13 @@ public class UserProfileService {
         keycloakService.updateUserInKeycloak(keycloakUserId, updateUserInfo);
 
         return Optional.of(currentUser);
+    }
+
+    public String getCurrentUserImageUrl(String userId) {
+        UserImage userImage = userImageRepository.findByUserId(userId);
+        if (userImage == null) {
+            return null;
+        }
+        return userImage.getImageUrl();
     }
 }
