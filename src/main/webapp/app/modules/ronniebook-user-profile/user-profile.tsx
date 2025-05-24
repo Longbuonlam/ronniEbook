@@ -1,33 +1,99 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import { Camera, Edit2, Check, X, User, Mail, FileText } from 'lucide-react';
 import './user-profile.scss';
+import { useAppSelector, useAppDispatch } from '../../config/store';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface ProfileData {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  bio: string;
   profileImage: string | null;
 }
 
 export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData>({
-    name: 'Sarah Johnson',
-    email: 'sarah.johnson@example.com',
-    bio: 'Full-stack developer passionate about creating user-friendly applications. I love exploring new technologies and contributing to open-source projects.',
+    firstName: '',
+    lastName: '',
+    email: '',
     profileImage: null,
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const [editData, setEditData] = useState<ProfileData>({ ...profileData });
+  const account = useAppSelector(state => state.authentication.account);
+  const cached = sessionStorage.getItem('cachedUserProfile');
+
+  // Initialize profile data from account when component mounts or account changes
+  useEffect(() => {
+    if (cached) {
+      const cachedData = JSON.parse(cached);
+      setProfileData(cachedData);
+      setEditData(cachedData);
+    } else if (account) {
+      const initialData: ProfileData = {
+        firstName: account.firstName || '',
+        lastName: account.lastName || '',
+        email: account.email || '',
+        profileImage: account.imageUrl || null,
+      };
+      setProfileData(initialData);
+      setEditData(initialData);
+    }
+  }, [account]);
 
   const handleEdit = () => {
     setIsEditing(true);
     setEditData({ ...profileData });
   };
 
+  const getXsrfToken = () => {
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    return match ? match[1] : null;
+  };
+
   const handleSave = () => {
-    setProfileData({ ...editData });
-    setIsEditing(false);
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      toast.error('Failed to update profile: XSRF token is missing');
+      return;
+    }
+
+    setIsLoading(true);
+
+    const userProfileData = {
+      firstName: editData.firstName,
+      lastName: editData.lastName,
+      email: editData.email,
+    };
+
+    fetch(`http://localhost:9000/api/user-profile/update`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+      body: JSON.stringify(userProfileData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Profile updated:', data);
+        setProfileData({ ...editData });
+        setIsEditing(false);
+        sessionStorage.setItem('cachedUserProfile', JSON.stringify(data)); // Cache the updated profile data
+        toast.success('Profile updated successfully');
+      })
+      .catch(error => {
+        console.error('Error updating profile:', error);
+        toast.error('Failed to update profile');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleCancel = () => {
@@ -42,18 +108,44 @@ export default function UserProfile() {
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        const imageUrl = e.target?.result as string;
-        if (imageUrl) {
+      const token = getXsrfToken();
+
+      if (!token) {
+        console.error('XSRF token is missing');
+        toast.error('Failed to upload image: XSRF token is missing');
+        return;
+      }
+
+      setIsLoading(true);
+
+      const formData = new FormData();
+      formData.append('image', file);
+
+      fetch(`http://localhost:9000/api/user-profile/upload-image`, {
+        method: 'POST',
+        headers: {
+          Accept: '*/*',
+          'X-XSRF-TOKEN': token,
+        },
+        body: formData,
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Image uploaded:', data);
+          const newImageUrl = data.imageUrl || null;
+          setProfileData(prev => ({ ...prev, profileImage: newImageUrl }));
           if (isEditing) {
-            setEditData(prev => ({ ...prev, profileImage: imageUrl }));
-          } else {
-            setProfileData(prev => ({ ...prev, profileImage: imageUrl }));
+            setEditData(prev => ({ ...prev, profileImage: newImageUrl }));
           }
-        }
-      };
-      reader.readAsDataURL(file);
+          toast.success('Image uploaded successfully');
+        })
+        .catch(error => {
+          console.error('Error uploading image:', error);
+          toast.error('Failed to upload image');
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   };
 
@@ -84,10 +176,17 @@ export default function UserProfile() {
                   )}
                 </div>
                 {/* Camera Button */}
-                <label htmlFor="profile-upload" className="camera-button">
+                <label htmlFor="profile-upload" className={`camera-button ${isLoading ? 'disabled' : ''}`}>
                   <Camera />
                 </label>
-                <input id="profile-upload" type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
+                <input
+                  id="profile-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: 'none' }}
+                  disabled={isLoading}
+                />
               </div>
             </div>
           </div>
@@ -97,9 +196,24 @@ export default function UserProfile() {
             {/* Name Section */}
             <div className="name-section">
               {isEditing ? (
-                <input type="text" value={editData.name} onChange={e => handleInputChange('name', e.target.value)} />
+                <div className="name-inputs">
+                  <input
+                    type="text"
+                    value={editData.firstName}
+                    onChange={e => handleInputChange('firstName', e.target.value)}
+                    placeholder="First Name"
+                  />
+                  <input
+                    type="text"
+                    value={editData.lastName}
+                    onChange={e => handleInputChange('lastName', e.target.value)}
+                    placeholder="Last Name"
+                  />
+                </div>
               ) : (
-                <h2>{displayData.name}</h2>
+                <h2>
+                  {displayData.firstName} {displayData.lastName}
+                </h2>
               )}
             </div>
 
@@ -118,21 +232,39 @@ export default function UserProfile() {
                 )}
               </div>
 
-              {/* Bio Field */}
+              {/* First Name Field */}
               <div className="info-field">
                 <div className="field-header">
-                  <FileText />
-                  <label>Bio</label>
+                  <User />
+                  <label>First Name</label>
                 </div>
                 {isEditing ? (
-                  <textarea
-                    value={editData.bio}
-                    onChange={e => handleInputChange('bio', e.target.value)}
-                    rows={4}
-                    placeholder="Tell us about yourself..."
+                  <input
+                    type="text"
+                    value={editData.firstName}
+                    onChange={e => handleInputChange('firstName', e.target.value)}
+                    placeholder="Enter your first name..."
                   />
                 ) : (
-                  <p className="field-content bio">{displayData.bio}</p>
+                  <p className="field-content">{displayData.firstName}</p>
+                )}
+              </div>
+
+              {/* Last Name Field */}
+              <div className="info-field">
+                <div className="field-header">
+                  <User />
+                  <label>Last Name</label>
+                </div>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editData.lastName}
+                    onChange={e => handleInputChange('lastName', e.target.value)}
+                    placeholder="Enter your last name..."
+                  />
+                ) : (
+                  <p className="field-content">{displayData.lastName}</p>
                 )}
               </div>
             </div>
@@ -141,17 +273,17 @@ export default function UserProfile() {
             <div className="action-buttons">
               {isEditing ? (
                 <>
-                  <button onClick={handleSave} className="save-button">
+                  <button onClick={handleSave} className="save-button" disabled={isLoading}>
                     <Check />
-                    Save Changes
+                    {isLoading ? 'Saving...' : 'Save Changes'}
                   </button>
-                  <button onClick={handleCancel} className="cancel-button">
+                  <button onClick={handleCancel} className="cancel-button" disabled={isLoading}>
                     <X />
                     Cancel
                   </button>
                 </>
               ) : (
-                <button onClick={handleEdit} className="edit-button">
+                <button onClick={handleEdit} className="edit-button" disabled={isLoading}>
                   <Edit2 />
                   Edit Profile
                 </button>
@@ -183,6 +315,7 @@ export default function UserProfile() {
           </div>
         </div>
       </div>
+      <Toaster position="top-right" />
     </div>
   );
 }

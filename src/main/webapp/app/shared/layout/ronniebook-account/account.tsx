@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useState, useRef, useEffect } from 'react';
 import './account.scss';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from 'app/config/store';
+import { useAppSelector } from '../../../config/store';
 import { User } from 'lucide-react';
 
 const AccountDropdown = () => {

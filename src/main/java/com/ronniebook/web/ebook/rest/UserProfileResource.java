@@ -20,11 +20,8 @@ public class UserProfileResource {
 
     private final UserProfileService userProfileService;
 
-    private final UserService userService;
-
-    public UserProfileResource(UserProfileService userProfileService, UserService userService) {
+    public UserProfileResource(UserProfileService userProfileService) {
         this.userProfileService = userProfileService;
-        this.userService = userService;
     }
 
     @PostMapping("/user-profile/upload-image")
@@ -41,14 +38,6 @@ public class UserProfileResource {
     public ResponseEntity<User> updateProfile(@RequestBody UserProfileDTO userProfile) {
         log.debug("REST request to update user profile");
         User result = userProfileService.updateProfile(userProfile).orElseThrow();
-        return ResponseEntity.ok().body(result);
-    }
-
-    @GetMapping("/user-profile/login-user-info")
-    public ResponseEntity<User> getLoginUserInfo() {
-        log.debug("REST request to get login user info");
-        String login = SecurityUtils.getCurrentUserLogin().orElseThrow();
-        User result = userService.getUserWithAuthoritiesByLogin(login).orElseThrow();
         return ResponseEntity.ok().body(result);
     }
 }

@@ -4,6 +4,7 @@ import com.ronniebook.web.domain.User;
 import com.ronniebook.web.ebook.domain.dto.UserProfileDTO;
 import com.ronniebook.web.repository.UserRepository;
 import com.ronniebook.web.security.SecurityUtils;
+import com.ronniebook.web.service.UserService;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -16,11 +17,20 @@ public class UserProfileService {
 
     private final Logger log = LoggerFactory.getLogger(UserProfileService.class);
     private final UserRepository userRepository;
+    private final UserService userService;
     private final CloudinaryService cloudinaryService;
+    private final KeycloakService keycloakService;
 
-    public UserProfileService(UserRepository userRepository, CloudinaryService cloudinaryService) {
+    public UserProfileService(
+        UserRepository userRepository,
+        UserService userService,
+        CloudinaryService cloudinaryService,
+        KeycloakService keycloakService
+    ) {
         this.userRepository = userRepository;
+        this.userService = userService;
         this.cloudinaryService = cloudinaryService;
+        this.keycloakService = keycloakService;
     }
 
     public Optional<User> uploadImage(MultipartFile image, String userId) {
@@ -62,7 +72,17 @@ public class UserProfileService {
         if (updateUserInfo.getEmail() != null) {
             currentUser.setEmail(updateUserInfo.getEmail());
         }
-        userRepository.save(currentUser);
+        userService.updateUser(
+            currentUser.getFirstName(),
+            currentUser.getLastName(),
+            currentUser.getEmail(),
+            currentUser.getLangKey(),
+            currentUser.getImageUrl()
+        );
+
+        String keycloakUserId = keycloakService.findKeycloakUserId(userId);
+        keycloakService.updateUserInKeycloak(keycloakUserId, updateUserInfo);
+
         return Optional.of(currentUser);
     }
 }
