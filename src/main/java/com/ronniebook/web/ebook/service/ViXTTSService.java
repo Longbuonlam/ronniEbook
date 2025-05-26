@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,11 @@ public class ViXTTSService {
 
     private final Logger log = LoggerFactory.getLogger(ViXTTSService.class);
     private final RestTemplate restTemplate;
-    private static final String API_PROCESS_AUDIO_URL = "http://127.0.0.1:5000/process_audio";
+    private final String PROCESS_AUDIO_URL;
 
-    public ViXTTSService(RestTemplate restTemplate) {
+    public ViXTTSService(RestTemplate restTemplate, @Value("${ronniebook-other-services.process_audio_url}") String processAudioUrl) {
         this.restTemplate = restTemplate;
+        this.PROCESS_AUDIO_URL = processAudioUrl;
     }
 
     @Cacheable(value = "ronnie-tts", key = "#prompt + '_' + #language")
@@ -63,7 +65,7 @@ public class ViXTTSService {
 
             HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestMap, headers);
 
-            ResponseEntity<String> response = restTemplate.exchange(API_PROCESS_AUDIO_URL, HttpMethod.POST, requestEntity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(PROCESS_AUDIO_URL, HttpMethod.POST, requestEntity, String.class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 String fileUrl = response.getBody();

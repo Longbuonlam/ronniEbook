@@ -223,3 +223,9 @@ file:
   storage: google-drive
 #  storage: AWS-S3
 
+#other-services
+ronniebook-other-services:
+  recommend-url: https://ronniebook-other-services.onrender.com/recommend/
+  similar-book-url: https://ronniebook-other-services.onrender.com/recommend/book/
+  update-data-url: https://ronniebook-other-services.onrender.com/update-daily-data
+  process_audio_url: https://ronniebook-other-services.onrender.com/process_audio

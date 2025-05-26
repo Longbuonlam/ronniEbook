@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -34,9 +35,9 @@ public class HybridRSService {
 
     private final RestTemplate restTemplate;
     private final Logger log = LoggerFactory.getLogger(HybridRSService.class);
-    private static final String API_RECOMMEND_URL = "http://127.0.0.1:8000/recommend/";
-    private static final String API_SIMILAR_BOOK_URL = "http://127.0.0.1:8000/recommend/book/";
-    private static final String API_UPDATE_DATA_URL = "http://127.0.0.1:8000/update-daily-data";
+    private final String RECOMMEND_URL;
+    private final String SIMILAR_BOOK_URL;
+    private final String UPDATE_DATA_URL;
 
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
@@ -46,16 +47,22 @@ public class HybridRSService {
         RestTemplate restTemplate,
         BookRepository bookRepository,
         UserRepository userRepository,
-        RatingRepository ratingRepository
+        RatingRepository ratingRepository,
+        @Value("${ronniebook-other-services.recommend-url}") String recommendUrl,
+        @Value("${ronniebook-other-services.similar-book-url}") String similarBookUrl,
+        @Value("${ronniebook-other-services.update-data-url}") String updateDataUrl
     ) {
         this.restTemplate = restTemplate;
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
         this.ratingRepository = ratingRepository;
+        this.RECOMMEND_URL = recommendUrl;
+        this.SIMILAR_BOOK_URL = similarBookUrl;
+        this.UPDATE_DATA_URL = updateDataUrl;
     }
 
     public RSResponseDTO getRecommendations(String userId) {
-        String url = API_RECOMMEND_URL + userId;
+        String url = RECOMMEND_URL + userId;
         try {
             ResponseEntity<RSResponseDTO> response = restTemplate.getForEntity(url, RSResponseDTO.class);
             return response.getBody();
@@ -68,7 +75,7 @@ public class HybridRSService {
     }
 
     public SimilarBookDTO getSimilarBookRecommendation(String bookId) {
-        String url = API_SIMILAR_BOOK_URL + bookId;
+        String url = SIMILAR_BOOK_URL + bookId;
         try {
             ResponseEntity<SimilarBookDTO> response = restTemplate.getForEntity(url, SimilarBookDTO.class);
             return response.getBody();
@@ -125,7 +132,7 @@ public class HybridRSService {
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 
         try {
-            ResponseEntity<String> response = restTemplate.postForEntity(API_UPDATE_DATA_URL, request, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(UPDATE_DATA_URL, request, String.class);
             log.info("Sent daily data to recommendation system: {}", response.getBody());
         } catch (RestClientException e) {
             log.error("Failed to send daily data: {}", e.getMessage(), e);
