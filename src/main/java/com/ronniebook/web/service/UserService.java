@@ -10,6 +10,7 @@ import com.ronniebook.web.security.AuthoritiesConstants;
 import com.ronniebook.web.security.SecurityUtils;
 import com.ronniebook.web.service.dto.AdminUserDTO;
 import com.ronniebook.web.service.dto.UserDTO;
+import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -247,5 +248,9 @@ public class UserService {
 
     public boolean isAdmin() {
         return SecurityUtils.hasCurrentUserAnyOfAuthorities(clientId, AuthoritiesConstants.ADMIN);
+    }
+
+    public Page<UserDTO> getAllUsers(Pageable pageable) {
+        return userRepository.findAllByIdNotNull(pageable).map(UserDTO::new);
     }
 }

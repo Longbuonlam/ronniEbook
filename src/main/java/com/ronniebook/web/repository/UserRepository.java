@@ -24,4 +24,6 @@ public interface UserRepository extends MongoRepository<User, String> {
     Page<User> findAllByIdNotNullAndActivatedIsTrue(Pageable pageable);
 
     List<User> findByCreatedDateBetween(Instant start, Instant end);
+
+    Page<User> findAllByIdNotNull(Pageable pageable);
 }
