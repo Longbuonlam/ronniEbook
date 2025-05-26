@@ -250,22 +250,7 @@ public class UserService {
         return SecurityUtils.hasCurrentUserAnyOfAuthorities(clientId, AuthoritiesConstants.ADMIN);
     }
 
-    public Optional<User> findOneById(String id) {
-        return userRepository.findById(id);
-    }
-
-    public Optional<UserDTO> update(User existingUser, UserDTO userDTO) {
-        log.debug("Request to update user {}", userDTO);
-        if (!isAdmin()) {
-            throw new BadRequestAlertException("", "User", "Only admin can update user role and user status");
-        }
-        if (userDTO.getAuthorities() != null) {
-            existingUser.setAuthorities(userDTO.getAuthorities());
-        }
-        if (userDTO.isActivated() != existingUser.isActivated()) {
-            existingUser.setActivated(userDTO.isActivated());
-        }
-        userRepository.save(existingUser);
-        return Optional.of(existingUser).map(UserDTO::new);
+    public Page<UserDTO> getAllUsers(Pageable pageable) {
+        return userRepository.findAllByIdNotNull(pageable).map(UserDTO::new);
     }
 }

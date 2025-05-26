@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './user-managerment.scss';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { User } from '../../shared/model/ronniebookuser.model';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -14,18 +14,23 @@ function UserManagerment() {
   const [Users, setUsers] = useState<User[]>([]);
   const [Page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedBookId, setSelectedBookId] = useState(null);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const [userLogin, setUserLogin] = useState('');
   const [userRole, setUserRole] = useState('');
+  const [originalUserRole, setOriginalUserRole] = useState('');
   const [userStatus, setUserStatus] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const fetchUsers = (pageNumber = 0) => {
     fetch(`http://localhost:9000/api/users?page=${pageNumber}&size=6`)
       .then(response => response.json())
       .then(data => {
-        setUsers(data);
+        setUsers(data.content);
         setPage(pageNumber);
-        setTotalPages(1);
+        setTotalPages(data.totalPages);
+        setTotalUsers(data.totalElements);
       })
       .catch(error => console.error('Error fetching users:', error));
   };
@@ -34,12 +39,29 @@ function UserManagerment() {
     fetch(`http://localhost:9000/api/users/${userId}`)
       .then(response => response.json())
       .then(data => {
-        setSelectedBookId(data.id);
+        setSelectedUserId(data.id);
         setUserLogin(data.login);
-        setUserRole(data.authorities.map(authority => authority.name).join(', '));
+        const roleString = data.authorities.map(authority => authority.name).join(', ');
+        setUserRole(roleString);
+        setOriginalUserRole(roleString);
         setUserStatus(data.activated ? 'Active' : 'Inactive');
+        toggleModal(true);
       })
       .catch(error => console.error('Error fetching user:', error));
+  };
+
+  const toggleModal = (editing = false) => {
+    setIsModalOpen(!isModalOpen);
+    setIsEditing(editing);
+    if (!isModalOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      setUserLogin('');
+      setUserRole('');
+      setOriginalUserRole('');
+      setUserStatus('');
+      document.body.classList.remove('modal-open');
+    }
   };
 
   useEffect(() => {
@@ -67,12 +89,18 @@ function UserManagerment() {
       return;
     }
 
-    const userData = {
+    const userData: any = {
+      id: selectedUserId,
       login: userLogin,
-      authorities: userRole,
-      activated: userStatus,
+      activated: userStatus === 'Active' || userStatus === '' ? true : false,
     };
-    fetch(`http://localhost:9000/api/users/${selectedBookId}`, {
+
+    // Only include authorities if the role has been changed
+    if (userRole !== originalUserRole) {
+      userData.authorities = userRole ? [{ name: userRole }] : null;
+    }
+
+    fetch(`http://localhost:9000/api/users/${selectedUserId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -86,6 +114,7 @@ function UserManagerment() {
         console.log('User edited:', data);
         fetchUsers(Page);
         toast.success('User edited successfully');
+        toggleModal(false);
       })
       .catch(error => {
         console.error('Error editing user:', error);
@@ -113,14 +142,13 @@ function UserManagerment() {
                 <span className="badge role">{user.authorities.map(authority => authority.name)}</span>
               </td>
               <td>
-                <span className="badge status">{user.activated ? 'Active' : 'Inactive'}</span>
+                <span className={`badge ${user.activated ? 'status-active' : 'status-inactive'}`}>
+                  {user.activated ? 'Active' : 'Inactive'}
+                </span>
               </td>
               <td>
-                <button className="action-btn">
+                <button className="action-btn" onClick={() => fetchSelectedUser(user.id)}>
                   <FontAwesomeIcon icon={faEdit} />
-                </button>
-                <button className="action-btn" style={{ marginLeft: '10px' }}>
-                  <FontAwesomeIcon icon={faTrash} />
                 </button>
               </td>
             </tr>
@@ -129,7 +157,7 @@ function UserManagerment() {
       </table>
       <div className="pagination">
         <span>
-          Showing page {Page + 1} of {totalPages}
+          Showing page {Page + 1} of {totalPages} - Total users: {totalUsers}
         </span>
         <div>
           <button className="page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
@@ -145,6 +173,47 @@ function UserManagerment() {
           </button>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>{isEditing ? 'Edit User' : 'User Details'}</h2>
+            <form onSubmit={handleEditUser}>
+              <label>Account:</label>
+              <input
+                id="userLogin"
+                type="text"
+                placeholder="Enter user login"
+                value={userLogin}
+                onChange={e => setUserLogin(e.target.value)}
+                required
+                disabled
+              />
+
+              <label>Role:</label>
+              <select id="userRole" value={userRole} onChange={e => setUserRole(e.target.value)} required>
+                <option value="ROLE_ADMIN">ROLE_ADMIN</option>
+                <option value="ROLE_USER">ROLE_USER</option>
+              </select>
+
+              <label>Status:</label>
+              <select id="userStatus" value={userStatus} onChange={e => setUserStatus(e.target.value)} required>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+
+              <div className="modal-actions">
+                <button type="button" className="btn-close" onClick={() => toggleModal(true)}>
+                  <FontAwesomeIcon icon={faTimes} />
+                </button>
+                <button type="submit" className="btn-save">
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

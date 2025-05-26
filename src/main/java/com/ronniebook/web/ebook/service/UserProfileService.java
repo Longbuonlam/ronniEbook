@@ -7,6 +7,7 @@ import com.ronniebook.web.ebook.repository.UserImageRepository;
 import com.ronniebook.web.repository.UserRepository;
 import com.ronniebook.web.security.SecurityUtils;
 import com.ronniebook.web.service.UserService;
+import com.ronniebook.web.service.dto.UserDTO;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
 import java.time.Instant;
 import java.util.Optional;
@@ -106,5 +107,27 @@ public class UserProfileService {
     public Instant getCurrentUserCreatedDate(String userId) {
         User user = userRepository.findOneByLogin(userId).orElseThrow();
         return user.getCreatedDate();
+    }
+
+    public Optional<User> findOneById(String id) {
+        return userRepository.findById(id);
+    }
+
+    public Optional<UserDTO> update(User existingUser, UserDTO userDTO) {
+        log.debug("Request to update user role and status {}", userDTO);
+        if (!userService.isAdmin()) {
+            throw new BadRequestAlertException("", "User", "Only admin can update user role and user status");
+        }
+        String keycloakUserId = keycloakService.findKeycloakUserId(existingUser.getLogin());
+        if (userDTO.getAuthorities() != null) {
+            existingUser.setAuthorities(userDTO.getAuthorities());
+            keycloakService.updateUserRoles(keycloakUserId, userDTO.getAuthorities());
+        }
+        if (userDTO.isActivated() != existingUser.isActivated()) {
+            existingUser.setActivated(userDTO.isActivated());
+            keycloakService.updateUserStatus(keycloakUserId, userDTO.isActivated());
+        }
+        userRepository.save(existingUser);
+        return Optional.of(existingUser).map(UserDTO::new);
     }
 }
