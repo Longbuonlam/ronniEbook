@@ -45,7 +45,7 @@ public class HistoryService {
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         }
         if (pageable == null) {
-            throw new BadRequestAlertException("", "", "Pageable is null");
+            throw new BadRequestAlertException("", "history", "Pageable is null");
         }
         if (searchText == null) {
             bookPage = bookRepository.findAllWithBookIds(pageable, listBookIds);
@@ -57,9 +57,13 @@ public class HistoryService {
         return bookPage;
     }
 
-    public void delete(String id) {
-        log.debug("request to delete read-book, id: {}", id);
-        History history = historyRepository.findById(id).orElseThrow();
+    public void delete(String bookId) {
+        log.debug("request to delete read-book, bookId: {}", bookId);
+        String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        History history = historyRepository.findByBookIdAndUserId(bookId, userId);
+        if (history == null) {
+            throw new BadRequestAlertException("", "history", "History not found");
+        }
         historyRepository.delete(history);
     }
 

@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Book } from '../../shared/model/book.model';
 import './history.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleChevronRight, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faCircleChevronRight, faMagnifyingGlass, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import ConfirmationModal from '../../shared/layout/confirmation/confirmation-modal';
+import toast, { Toaster } from 'react-hot-toast';
 
 function History() {
   const [favouriteBooks, setFavouriteBooks] = useState<Book[]>([]);
@@ -13,6 +15,8 @@ function History() {
   const [searchText, setSearchText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const fetchFavouriteBooks = (pageNumber = 0, search = '') => {
@@ -59,6 +63,59 @@ function History() {
     navigate(`/app/book/${bookId}`);
   };
 
+  const getXsrfToken = () => {
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    return match ? match[1] : null;
+  };
+
+  const handleDeleteClick = (bookId: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent triggering the book click event
+    setSelectedBookId(bookId);
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedBookId) {
+      handleDeleteHistory(selectedBookId);
+      setIsConfirmOpen(false);
+    }
+  };
+
+  const handleDeleteHistory = (bookId: string) => {
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      toast.error('Failed to remove from history: XSRF token is missing');
+      return;
+    }
+
+    fetch(`http://localhost:9000/api/history/${bookId}`, {
+      method: 'DELETE',
+      headers: {
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+    })
+      .then(response => {
+        if (response.ok) {
+          // Remove the book from the current list
+          setFavouriteBooks(prevBooks => prevBooks.filter(book => book.id !== bookId));
+          toast.success('Removed from history successfully');
+
+          // Refresh the list to get updated pagination
+          fetchFavouriteBooks(favouritePage, searchQuery);
+        } else {
+          console.error('Failed to remove book from history');
+          toast.error('Failed to remove from history');
+        }
+      })
+      .catch(error => {
+        console.error('Error removing book from history:', error);
+        toast.error('Failed to remove from history');
+      });
+  };
+
   return (
     <div className="book-container">
       <div className="search-bar-container">
@@ -82,9 +139,14 @@ function History() {
           <div className="book-row">
             {favouriteBooks.map(book => (
               <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
-                <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
-                <h3>{book.title}</h3>
-                <p>{book.author}</p>
+                <div className="book-card-content">
+                  <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
+                  <h3>{book.title}</h3>
+                  <p>{book.author}</p>
+                </div>
+                <button className="delete-history-btn" onClick={e => handleDeleteClick(book.id, e)} title="Remove from history">
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
               </div>
             ))}
           </div>
@@ -118,6 +180,15 @@ function History() {
           </div>
         </>
       )}
+
+      <ConfirmationModal
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message="Are you sure you want to remove this book from your history?"
+      />
+
+      <Toaster />
     </div>
   );
 }

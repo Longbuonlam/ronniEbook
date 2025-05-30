@@ -11,4 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HistoryRepository extends MongoRepository<History, String> {
     List<History> findByUserId(String userId);
+
+    History findByBookIdAndUserId(String bookId, String userId);
 }

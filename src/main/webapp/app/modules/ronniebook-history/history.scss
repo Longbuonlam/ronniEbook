@@ -25,9 +25,18 @@
   width: 200px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s;
+  position: relative;
 
   &:hover {
     transform: translateY(-5px); // Lift the card slightly on hover
+
+    .delete-history-btn {
+      opacity: 1;
+    }
+  }
+
+  .book-card-content {
+    position: relative;
   }
 
   img {
@@ -49,6 +58,42 @@
     font-size: 14px;
     color: #b5b5b5; // Slightly lighter color for author text
     text-align: left;
+  }
+
+  .delete-history-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: rgba(231, 76, 60, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    z-index: 2;
+
+    &:hover {
+      background-color: rgba(192, 57, 43, 1);
+      transform: scale(1.1);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  // Show delete button on mobile devices and smaller screens
+  @media (max-width: 768px) {
+    .delete-history-btn {
+      opacity: 0.8;
+    }
   }
 }
 

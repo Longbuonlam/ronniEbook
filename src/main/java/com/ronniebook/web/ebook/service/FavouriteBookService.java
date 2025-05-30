@@ -90,10 +90,7 @@ public class FavouriteBookService {
         String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
         FavouriteBook favouriteBook = favouriteBookRepository.findFavouriteById(bookId, userId);
         if (favouriteBook == null) {
-            return;
-        }
-        if (!favouriteBook.getUserId().equals(userId)) {
-            throw new BadRequestAlertException("", "favourite-book", "You don't have permission to delete favourite book");
+            throw new BadRequestAlertException("", "favourite-book", "Favourite Book not found");
         }
         favouriteBook.setDeleted(true);
         favouriteBookRepository.save(favouriteBook);
