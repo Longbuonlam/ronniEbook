@@ -16,7 +16,7 @@ public class DataConverter {
         map.put("title", book.getTitle());
         map.put("author", book.getAuthor());
         map.put("genre", book.getCategory());
-        map.put("description", book.getDescription());
+        map.put("description", cleanText(book.getDescription()));
         return map;
     }
 
@@ -45,5 +45,10 @@ public class DataConverter {
 
     public static List<Map<String, Object>> convertRatings(List<Rating> ratings) {
         return ratings.stream().map(DataConverter::toSyncRating).collect(Collectors.toList());
+    }
+
+    private static String cleanText(String description) {
+        if (description == null) return "";
+        return description.replaceAll("[,\n\r;\"']", "");
     }
 }
