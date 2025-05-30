@@ -29,9 +29,9 @@ public class HistoryResource {
         return historyService.findAll(pageable, searchText);
     }
 
-    @DeleteMapping("/history")
-    public void deleteHistory(@RequestParam String id) {
-        log.debug("Rest request to delete history");
-        historyService.delete(id);
+    @DeleteMapping("/history/{bookId}")
+    public void deleteHistory(@PathVariable String bookId) {
+        log.debug("Rest request to delete history, book id {}", bookId);
+        historyService.delete(bookId);
     }
 }
