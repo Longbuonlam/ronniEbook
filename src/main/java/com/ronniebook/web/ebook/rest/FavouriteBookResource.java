@@ -71,13 +71,19 @@ public class FavouriteBookResource {
     /**
      * {@code DELETE  /favourite-books/:id} : delete the "id" favourite book.
      *
-     * @param id the id of the favourite book to delete.
+     * @param bookId the id of the favourite book to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @DeleteMapping("/favourite-books/{id}")
-    public ResponseEntity<Void> deleteFavouriteBook(@PathVariable String id) {
-        log.debug("REST request to delete favourite book : {}", id);
-        favouriteBookService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id)).build();
+    @DeleteMapping("/favourite-books/{bookId}")
+    public ResponseEntity<Void> deleteFavouriteBook(@PathVariable String bookId) {
+        log.debug("REST request to delete favourite book : {}", bookId);
+        favouriteBookService.delete(bookId);
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, bookId)).build();
+    }
+
+    @GetMapping("/favourite-books/{bookId}")
+    public ResponseEntity<Boolean> isFavouriteBook(@PathVariable String bookId) {
+        log.debug("REST request to check if {} is favourite book", bookId);
+        return ResponseEntity.ok().body(favouriteBookService.isExisted(bookId));
     }
 }

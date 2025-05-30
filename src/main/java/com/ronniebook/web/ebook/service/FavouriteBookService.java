@@ -34,6 +34,12 @@ public class FavouriteBookService {
     public FavouriteBook save(FavouriteBook favouriteBook) {
         log.debug("Request to save favourite book");
         String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        FavouriteBook deletedFavourite = favouriteBookRepository.findDeletedFavouriteByBookIdAndUserId(favouriteBook.getBookId(), userId);
+        if (deletedFavourite != null) {
+            deletedFavourite.setDeleted(false);
+            favouriteBookRepository.save(deletedFavourite);
+            return deletedFavourite;
+        }
         favouriteBook.setUserId(userId);
         return favouriteBookRepository.save(favouriteBook);
     }
@@ -76,13 +82,21 @@ public class FavouriteBookService {
     /**
      * Delete the Favourite Book by id.
      *
-     * @param id the id of the entity.
+     * @param bookId the id of the entity.
      */
     //    @CacheEvict(value = BOOK_CACHE_NAME)
-    public void delete(String id) {
-        log.debug("Request to delete Favourite Book : {}", id);
-        FavouriteBook favouriteBook = favouriteBookRepository.findById(id).orElseThrow();
-        favouriteBookRepository.delete(favouriteBook);
+    public void delete(String bookId) {
+        log.debug("Request to delete Favourite Book with book id : {}", bookId);
+        String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        FavouriteBook favouriteBook = favouriteBookRepository.findFavouriteById(bookId, userId);
+        if (favouriteBook == null) {
+            return;
+        }
+        if (!favouriteBook.getUserId().equals(userId)) {
+            throw new BadRequestAlertException("", "favourite-book", "You don't have permission to delete favourite book");
+        }
+        favouriteBook.setDeleted(true);
+        favouriteBookRepository.save(favouriteBook);
     }
 
     public boolean isExisted(String bookId) {

@@ -3,15 +3,7 @@ import { Book } from '../../shared/model/book.model';
 import { useNavigate, useParams } from 'react-router-dom';
 import './book-detail.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faBookOpen,
-  faPen,
-  faStar,
-  faClose,
-  faEllipsisH,
-  faCircleChevronLeft,
-  faCircleChevronRight,
-} from '@fortawesome/free-solid-svg-icons';
+import { faBookOpen, faPen, faStar, faClose, faEllipsisH, faHeart } from '@fortawesome/free-solid-svg-icons';
 import { Comment } from '../../shared/model/comment.model';
 import toast, { Toaster } from 'react-hot-toast';
 import ConfirmationModal from '../../shared/layout/confirmation/confirmation-modal';
@@ -44,6 +36,7 @@ function BookDetail() {
   const [selectedUserRecord, setSelectedUserRecord] = useState<UserRecord | null>(null);
   const [readingProgress, setReadingProgress] = useState<number>(0);
   const [chaptersRead, setChaptersRead] = useState(new Set());
+  const [isFavourite, setIsFavourite] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -107,15 +100,6 @@ function BookDetail() {
     setIsLoading(false);
   };
 
-  const fetchUserRecord = (pageNumber = 0) => {
-    fetch(`http://localhost:9000/api/user-record?page=${pageNumber}&size=10`)
-      .then(response => response.json())
-      .then(data => {
-        setUserRecord(data.content);
-      })
-      .catch(error => console.error('Error fetching user records:', error));
-  };
-
   const fetchReadingProgress = () => {
     fetch(`http://localhost:9000/api/reading-progress/${bookId}`)
       .then(response => response.json())
@@ -134,41 +118,76 @@ function BookDetail() {
       .catch(error => console.error('Error fetching chapters read:', error));
   };
 
+  const fetchFavouriteStatus = () => {
+    fetch(`http://localhost:9000/api/favourite-books/${bookId}`)
+      .then(response => response.json())
+      .then(data => {
+        setIsFavourite(data);
+      })
+      .catch(error => console.error('Error fetching favourite status:', error));
+  };
+
   const getXsrfToken = () => {
     const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
     return match ? match[1] : null;
   };
 
-  const addToFavorites = () => {
+  const toggleFavourite = () => {
     const token = getXsrfToken();
 
     if (!token) {
       console.error('XSRF token is missing');
-      toast.error('Failed to add book to favourite: XSRF token is missing');
+      toast.error('Failed to update favourite: XSRF token is missing');
       return;
     }
 
-    fetch('http://localhost:9000/api/favourite-books', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: '*/*',
-        'X-XSRF-TOKEN': token,
-      },
-      body: JSON.stringify({ bookId }),
-    })
-      .then(response => {
-        if (response.ok) {
-          console.log('Book added to favorites');
-          toast.success('Add to favorite successfully');
-        } else {
-          console.error('Failed to add book to favorites');
-        }
+    if (isFavourite) {
+      // Remove from favourites
+      fetch(`http://localhost:9000/api/favourite-books/${bookId}`, {
+        method: 'DELETE',
+        headers: {
+          Accept: '*/*',
+          'X-XSRF-TOKEN': token,
+        },
       })
-      .catch(error => {
-        console.error('Error adding book to favourite:', error);
-        toast.error('Failed to add book to favorites');
-      });
+        .then(response => {
+          if (response.ok) {
+            setIsFavourite(false);
+            toast.success('Removed from favourites successfully');
+          } else {
+            console.error('Failed to remove book from favourites');
+            toast.error('Failed to remove from favourites');
+          }
+        })
+        .catch(error => {
+          console.error('Error removing book from favourites:', error);
+          toast.error('Failed to remove from favourites');
+        });
+    } else {
+      // Add to favourites
+      fetch('http://localhost:9000/api/favourite-books', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: '*/*',
+          'X-XSRF-TOKEN': token,
+        },
+        body: JSON.stringify({ bookId }),
+      })
+        .then(response => {
+          if (response.ok) {
+            setIsFavourite(true);
+            toast.success('Added to favourites successfully');
+          } else {
+            console.error('Failed to add book to favourites');
+            toast.error('Failed to add to favourites');
+          }
+        })
+        .catch(error => {
+          console.error('Error adding book to favourites:', error);
+          toast.error('Failed to add to favourites');
+        });
+    }
   };
 
   const handleTabClick = tab => {
@@ -176,7 +195,7 @@ function BookDetail() {
     if (tab === 'related') {
       setShowReviews(false);
       setShowRelatedBook(true);
-      fetchRelatedBooks(); // Ensure related books are fetched when switching back to "Related"
+      fetchRelatedBooks();
     } else if (tab === 'reviews') {
       setShowRelatedBook(false);
       setShowReviews(true);
@@ -425,40 +444,13 @@ function BookDetail() {
     }
   };
 
-  const saveReadingProgress = (bookId: string, chapterStorageId: string) => {
-    const token = getXsrfToken();
-
-    if (!token) {
-      console.error('XSRF token is missing');
-      toast.error('Failed to save reading progress: XSRF token is missing');
-      return;
-    }
-
-    fetch(`http://localhost:9000/api/reading-progress?bookId=${bookId}&chapterStorageId=${chapterStorageId}`, {
-      method: 'POST',
-      headers: {
-        Accept: '*/*',
-        'X-XSRF-TOKEN': token,
-      },
-    })
-      .then(response => {
-        if (response.ok) {
-          console.log('Reading progress saved successfully');
-        } else {
-          console.error('Failed to save reading progress');
-        }
-      })
-      .catch(error => {
-        console.error('Error saving reading progress:', error);
-      });
-  };
-
   useEffect(() => {
     fetchBook();
     fetchChapterStorageIds();
     fetchRelatedBooks();
     fetchReadingProgress();
     fetchChaptersRead();
+    fetchFavouriteStatus();
   }, [bookId]);
 
   return (
@@ -491,7 +483,7 @@ function BookDetail() {
                 <button className="continue-btn" onClick={() => setIsAudioModalOpen(true)}>
                   <FontAwesomeIcon icon={faBookOpen} /> Upload/Record Audio
                 </button>
-                <FontAwesomeIcon icon={faStar} className="icon" onClick={addToFavorites} />
+                <FontAwesomeIcon icon={faHeart} className={`icon ${isFavourite ? 'favourite-active' : ''}`} onClick={toggleFavourite} />
                 {/* <FontAwesomeIcon icon={faDownload} className="icon" /> */}
               </div>
 
