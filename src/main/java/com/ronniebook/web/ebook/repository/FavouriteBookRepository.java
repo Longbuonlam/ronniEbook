@@ -11,8 +11,12 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface FavouriteBookRepository extends MongoRepository<FavouriteBook, String> {
+    @Query("{'userId': ?0, 'isDeleted' : {'$ne' : true}}")
     List<FavouriteBook> findByUserId(String userId);
 
-    @Query("{ 'bookId': ?0, 'userId': ?1 }")
+    @Query("{ 'bookId': ?0, 'userId': ?1, 'isDeleted': { '$ne': true } }")
     FavouriteBook findFavouriteById(String bookId, String userId);
+
+    @Query("{ 'bookId': ?0, 'userId': ?1, 'isDeleted': true }")
+    FavouriteBook findDeletedFavouriteByBookIdAndUserId(String bookId, String userId);
 }
