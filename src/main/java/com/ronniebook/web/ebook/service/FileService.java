@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.slf4j.Logger;
@@ -137,6 +138,7 @@ public class FileService {
         if (searchText == null) {
             page = fileRepository.findByChapterStorageId(pageable, chapterStorageId);
         } else {
+            searchText = Pattern.quote(searchText);
             page = fileRepository.findByChapterStorageIdAndFileNameContains(pageable, chapterStorageId, searchText);
         }
 

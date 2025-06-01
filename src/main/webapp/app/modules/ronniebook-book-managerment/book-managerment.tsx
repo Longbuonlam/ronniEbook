@@ -240,6 +240,7 @@ function BookManagerment() {
   return (
     <div className="container">
       <div className="header-div">
+        <h2>Quản lý sách</h2>
         <div className="action-buttons">
           <button className="btn" onClick={() => toggleModal(false)}>
             + Thêm sách mới
@@ -259,7 +260,6 @@ function BookManagerment() {
         </div>
       </div>
 
-      <h2>Quản lý sách</h2>
       <table className="book-table">
         <thead>
           <tr>

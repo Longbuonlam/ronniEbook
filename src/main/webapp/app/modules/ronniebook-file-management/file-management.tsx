@@ -22,10 +22,6 @@ function FileManagerment() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedFileId, setSelectedFileId] = useState(null);
-  const [fileName, setFileName] = useState('');
-  const [number, setNumber] = useState('');
-  const [fileStorage, setFileStorage] = useState('');
-  const [fileStatus, setFileStatus] = useState('');
   const [chapterName, setChapterName] = useState('');
   const [chapterStorageId, setChapterStorageId] = useState('');
   const [bookId, setBookId] = useState('');
@@ -245,7 +241,10 @@ function FileManagerment() {
           <span>&gt;</span>
           <span>{chapterName}</span>
         </div>
+      </div>
 
+      <div className="file-header-div">
+        <h2>Quản lý File</h2>
         <div className="file-action-buttons">
           <button className="btn" onClick={() => setIsModalOpen(true)}>
             + Tải lên tệp
@@ -269,7 +268,6 @@ function FileManagerment() {
         </div>
       </div>
 
-      <h2>Quản lý File</h2>
       <table className="file-table">
         <thead>
           <tr>

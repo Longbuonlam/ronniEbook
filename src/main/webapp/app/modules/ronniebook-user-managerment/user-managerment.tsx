@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import './user-managerment.scss';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash, faTimes, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { User } from '../../shared/model/ronniebookuser.model';
 import toast, { Toaster } from 'react-hot-toast';
+import { useAppSelector } from '../../config/store';
 
 function UserManagerment() {
   const [searchText, setSearchText] = useState('');
@@ -22,9 +23,10 @@ function UserManagerment() {
   const [userStatus, setUserStatus] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const currentUser = useAppSelector(state => state.authentication.account);
 
-  const fetchUsers = (pageNumber = 0) => {
-    fetch(`http://localhost:9000/api/users?page=${pageNumber}&size=6`)
+  const fetchUsers = (pageNumber = 0, search = '') => {
+    fetch(`http://localhost:9000/api/users?page=${pageNumber}&size=6&searchText=${search}`)
       .then(response => response.json())
       .then(data => {
         setUsers(data.content);
@@ -65,12 +67,22 @@ function UserManagerment() {
   };
 
   useEffect(() => {
-    fetchUsers(0);
-  }, []);
+    fetchUsers(0, searchQuery);
+  }, [searchQuery]);
 
   const handlePageChange = pageNumber => {
     if (pageNumber >= 0 && pageNumber < totalPages) {
       fetchUsers(pageNumber);
+    }
+  };
+
+  const handleSearchChange = event => {
+    setSearchText(event.target.value);
+  };
+
+  const handleSearchKeyPress = event => {
+    if (event.key === 'Enter') {
+      setSearchQuery(searchText);
     }
   };
 
@@ -124,7 +136,21 @@ function UserManagerment() {
 
   return (
     <div className="container">
-      <h2>Quản lý người dùng</h2>
+      <div className="header-div">
+        <h2>Quản lý người dùng</h2>
+        <div className="search-bar-container">
+          <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
+          <input
+            type="text"
+            placeholder="Tìm kiếm người dùng..."
+            className="search-input"
+            value={searchText}
+            onChange={handleSearchChange}
+            onKeyPress={handleSearchKeyPress}
+          />
+        </div>
+      </div>
+
       <table className="user-table">
         <thead>
           <tr>
@@ -147,7 +173,18 @@ function UserManagerment() {
                 </span>
               </td>
               <td>
-                <button className="action-btn" onClick={() => fetchSelectedUser(user.id)}>
+                <button
+                  className="action-btn"
+                  onClick={() => {
+                    if (currentUser && currentUser.login === user.login) {
+                      toast.error('Admins cannot edit their own account');
+                    } else {
+                      fetchSelectedUser(user.id);
+                    }
+                  }}
+                  style={currentUser && currentUser.login === user.login ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+                  title={currentUser && currentUser.login === user.login ? 'Admins cannot edit their own account' : 'Edit user'}
+                >
                   <FontAwesomeIcon icon={faEdit} />
                 </button>
               </td>

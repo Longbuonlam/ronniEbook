@@ -234,7 +234,10 @@ function ChapterManagerment() {
           <span>&gt;</span>
           <span>{bookName}</span>
         </div>
+      </div>
 
+      <div className="header-div">
+        <h2>Quản lý chương</h2>
         <div className="action-buttons">
           <button className="btn" onClick={() => toggleModal(false)}>
             + Thêm chương mới
@@ -254,7 +257,6 @@ function ChapterManagerment() {
         </div>
       </div>
 
-      <h2>Quản lý chương</h2>
       <table className="book-table">
         <thead>
           <tr>
