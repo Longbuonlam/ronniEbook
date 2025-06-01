@@ -230,14 +230,14 @@ function ChapterManagerment() {
     <div className="container">
       <div className="header-div">
         <div className="header-breadcrumbs">
-          <span onClick={() => navigate('/app/admin/book-managerment')}>Book Management</span>
+          <span onClick={() => navigate('/app/admin/book-managerment')}>Quản lý sách</span>
           <span>&gt;</span>
           <span>{bookName}</span>
         </div>
 
         <div className="action-buttons">
           <button className="btn" onClick={() => toggleModal(false)}>
-            + Add Chapter
+            + Thêm chương mới
           </button>
         </div>
 
@@ -245,7 +245,7 @@ function ChapterManagerment() {
           <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
           <input
             type="text"
-            placeholder="Search Chapter..."
+            placeholder="Tìm kiếm chương..."
             className="search-input"
             value={searchText}
             onChange={handleSearchChange}
@@ -254,15 +254,15 @@ function ChapterManagerment() {
         </div>
       </div>
 
-      <h2>Chapters</h2>
+      <h2>Quản lý chương</h2>
       <table className="book-table">
         <thead>
           <tr>
-            <th>No</th>
-            <th>Name</th>
-            <th>Language</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>Thứ tự</th>
+            <th>Tên chương</th>
+            <th>Ngôn ngữ</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -294,11 +294,11 @@ function ChapterManagerment() {
       </table>
       <div className="pagination">
         <span>
-          Showing page {Page + 1} of {totalPages}
+          Trang {Page + 1}/{totalPages}
         </span>
         <div>
           <button className="page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
-            Previous
+            Trang trước
           </button>
           {[...Array(totalPages)].map((_, index) => (
             <button key={index} className={`page-btn ${Page === index ? 'active' : ''}`} onClick={() => handlePageChange(index)}>
@@ -306,7 +306,7 @@ function ChapterManagerment() {
             </button>
           ))}
           <button className="page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
-            Next
+            Trang sau
           </button>
         </div>
       </div>
@@ -314,42 +314,42 @@ function ChapterManagerment() {
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content">
-            <h2>{isEditing ? 'Edit Chapter' : 'New Chapter'}</h2>
+            <h2>{isEditing ? 'Chỉnh sửa chương' : 'Thêm chương mới'}</h2>
             <form onSubmit={isEditing ? handleEditChapter : handleSaveChapter}>
-              <label>Chapter Name:</label>
+              <label>Tên chương:</label>
               <input
                 id="chapterName"
                 type="text"
-                placeholder="Enter chapter name"
+                placeholder="Nhập tên chương"
                 value={chapterName}
                 onChange={e => setChapterName(e.target.value)}
                 required
               />
 
-              <label>Chapter Number:</label>
+              <label>Thứ tự của chương:</label>
               <input
                 id="number"
                 type="text"
-                placeholder="Enter chapter number"
+                placeholder="Nhập thứ tự chương"
                 value={number}
                 onChange={e => setNumber(e.target.value)}
                 required
               />
 
-              <label htmlFor="language">Language:</label>
+              <label htmlFor="language">Ngôn ngữ:</label>
               <select id="language" value={language} onChange={e => setLanguage(e.target.value)} required>
                 <option value="" disabled selected>
-                  Select language
+                  Chọn ngôn ngữ
                 </option>
                 <option value="ENGLISH">English</option>
                 <option value="VIETNAMESE">Vietnamese</option>
                 <option value="JAPANESE">Japanese</option>
               </select>
 
-              <label htmlFor="chapterStatus">Chapter Status:</label>
+              <label htmlFor="chapterStatus">Trạng thái:</label>
               <select id="chapterStatus" value={chapterStatus} onChange={e => setChapterStatus(e.target.value)} required>
                 <option value="" disabled selected>
-                  Select status
+                  Chọn trạng thái
                 </option>
                 <option value="DONE">Done</option>
                 <option value="IN_PROGRESS">In Progress</option>
@@ -372,7 +372,7 @@ function ChapterManagerment() {
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
-        message="All the information of this chapter will be deleted. Are you sure you want to continue delete it?"
+        message="Tất cả thông tin của chương này sẽ bị xóa. Bạn có chắc chắn muốn tiếp tục xóa không?"
       />
       <Toaster />
     </div>

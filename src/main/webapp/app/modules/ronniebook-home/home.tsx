@@ -125,19 +125,19 @@ function Home() {
         <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
         <input
           type="text"
-          placeholder="Search Book..."
+          placeholder="Tìm kiếm sách..."
           className="search-input"
           value={searchText}
           onChange={handleSearchChange}
           onKeyPress={handleSearchKeyPress}
         />
       </div>
-      <h2>On Deck</h2>
+      <h2>Đã phát hành</h2>
 
       {isLoading ? (
         <p>Loading...</p>
       ) : releaseBooks.length === 0 ? (
-        <p>No data is available</p>
+        <p>Không có dữ liệu</p>
       ) : (
         <>
           <div className="book-row">
@@ -162,7 +162,7 @@ function Home() {
               <FontAwesomeIcon icon={faCircleChevronLeft} />
             </span>
             <span>
-              Page {releasePage + 1} / {totalReleasePages}
+              Trang {releasePage + 1} / {totalReleasePages}
             </span>
             <span
               className="right-chevron"
@@ -179,12 +179,12 @@ function Home() {
         </>
       )}
 
-      <h2>Release Soon</h2>
+      <h2>Sắp phát hành</h2>
 
       {isLoading ? (
         <p>Loading...</p>
       ) : unreleaseBooks.length === 0 ? (
-        <p>No data is available</p>
+        <p>Không có dữ liệu</p>
       ) : (
         <>
           <div className="book-row">
@@ -209,7 +209,7 @@ function Home() {
               <FontAwesomeIcon icon={faCircleChevronLeft} />
             </span>
             <span>
-              Page {unreleasePage + 1} / {totalUnreleasePages}
+              Trang {unreleasePage + 1} / {totalUnreleasePages}
             </span>
             <span
               className="right-chevron"
@@ -226,12 +226,12 @@ function Home() {
         </>
       )}
 
-      <h2>Top Books For You</h2>
+      <h2>Sách hay dành cho bạn</h2>
 
       {isLoading ? (
         <p>Loading...</p>
       ) : recommendedBooks.length === 0 ? (
-        <p>No data is available</p>
+        <p>Không có dữ liệu</p>
       ) : (
         <>
           <div className="book-row">
@@ -256,7 +256,7 @@ function Home() {
               <FontAwesomeIcon icon={faCircleChevronLeft} />
             </span>
             <span>
-              Page {recommendedPage + 1} / {totalRecommendedPages}
+              Trang {recommendedPage + 1} / {totalRecommendedPages}
             </span>
             <span
               className="right-chevron"

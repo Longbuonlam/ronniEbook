@@ -122,18 +122,18 @@ function FavouriteBook() {
         <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
         <input
           type="text"
-          placeholder="Search Book..."
+          placeholder="Tìm kiếm sách..."
           className="search-input"
           value={searchText}
           onChange={handleSearchChange}
           onKeyPress={handleSearchKeyPress}
         />
       </div>
-      <h2>Favourite</h2>
+      <h2>Sách yêu thích</h2>
       {isLoading ? (
         <p>Loading...</p>
       ) : favouriteBooks.length === 0 ? (
-        <p>No data is available</p>
+        <p>Không có dữ liệu</p>
       ) : (
         <>
           <div className="book-row">
@@ -164,7 +164,7 @@ function FavouriteBook() {
               <FontAwesomeIcon icon={faCircleChevronLeft} />
             </span>
             <span>
-              Page {favouritePage + 1} / {totalFavouritePages}
+              Trang {favouritePage + 1} / {totalFavouritePages}
             </span>
             <span
               className="right-chevron"
@@ -185,7 +185,7 @@ function FavouriteBook() {
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
-        message="Are you sure you want to remove this book from your favourites?"
+        message="Bạn có chắc muốn xóa cuốn sách này khỏi danh sách yêu thích không?"
       />
 
       <Toaster />

@@ -207,15 +207,13 @@ function FileContent() {
     <div className="file-content">
       <div className="file-content-header">
         <button onClick={() => navigate(-1)}>&lt;</button>
-        <button className="setting-btn">☰</button>
         <h1>{bookName}</h1>
-        <button className="close-btn">✖</button>
         <button>&gt;</button>
       </div>
       <div className="file-content-body" onScroll={handleScroll} ref={contentRef}>
         <div className="chapter-info">
           <h2>
-            Chapter <span>{chapterNumber}</span> : {chapterName}
+            {bookName} - {chapterName}
           </h2>
           {fileType === 'docx' && // Only show the button for docx files
             (loadingAudio ? (

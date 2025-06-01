@@ -242,7 +242,7 @@ function BookManagerment() {
       <div className="header-div">
         <div className="action-buttons">
           <button className="btn" onClick={() => toggleModal(false)}>
-            + Add Book
+            + Thêm sách mới
           </button>
         </div>
 
@@ -250,7 +250,7 @@ function BookManagerment() {
           <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
           <input
             type="text"
-            placeholder="Search Book..."
+            placeholder="Tìm kiếm sách..."
             className="search-input"
             value={searchText}
             onChange={handleSearchChange}
@@ -259,17 +259,17 @@ function BookManagerment() {
         </div>
       </div>
 
-      <h2>Books</h2>
+      <h2>Quản lý sách</h2>
       <table className="book-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Author</th>
-            <th>Category</th>
-            <th>Chapters</th>
-            <th>Language</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>Tên sách</th>
+            <th>Tác giả</th>
+            <th>Thể loại</th>
+            <th>Số chương</th>
+            <th>Ngôn ngữ</th>
+            <th>Tình trạng</th>
+            <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -303,11 +303,11 @@ function BookManagerment() {
       </table>
       <div className="pagination">
         <span>
-          Showing page {Page + 1} of {totalPages} - Total books: {totalBooks}
+          Trang {Page + 1}/{totalPages} - Tổng số sách hiện có: {totalBooks}
         </span>
         <div>
           <button className="page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
-            Previous
+            Trang trước
           </button>
           {[...Array(totalPages)].map((_, index) => (
             <button key={index} className={`page-btn ${Page === index ? 'active' : ''}`} onClick={() => handlePageChange(index)}>
@@ -315,7 +315,7 @@ function BookManagerment() {
             </button>
           ))}
           <button className="page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
-            Next
+            Trang sau
           </button>
         </div>
       </div>
@@ -323,65 +323,65 @@ function BookManagerment() {
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content">
-            <h2>{isEditing ? 'Edit Book' : 'New Book'}</h2>
+            <h2>{isEditing ? 'Chỉnh sửa sách' : 'Thêm sách mới'}</h2>
             <form onSubmit={isEditing ? handleEditBook : handleSaveBook}>
-              <label>Book Name:</label>
+              <label>Tên sách:</label>
               <input
                 id="bookName"
                 type="text"
-                placeholder="Enter book name"
+                placeholder="Nhập tên sách"
                 value={bookName}
                 onChange={e => setBookName(e.target.value)}
                 required
               />
 
-              <label>Author:</label>
+              <label>Tác giả:</label>
               <input
                 id="author"
                 type="text"
-                placeholder="Enter author name"
+                placeholder="Nhập tên tác giả"
                 value={author}
                 onChange={e => setAuthor(e.target.value)}
                 required
               />
 
-              <label>Title:</label>
-              <input id="title" type="text" placeholder="Enter title" value={title} onChange={e => setTitle(e.target.value)} required />
+              <label>Tiêu đề:</label>
+              <input id="title" type="text" placeholder="Nhập tiêu đề" value={title} onChange={e => setTitle(e.target.value)} required />
 
-              <label>Category:</label>
+              <label>Thể loại:</label>
               <input
                 id="category"
                 type="text"
-                placeholder="Enter category"
+                placeholder="Nhập thể loại"
                 value={category}
                 onChange={e => setCategory(e.target.value)}
                 required
               />
 
-              <label htmlFor="language">Language:</label>
+              <label htmlFor="language">Ngôn ngữ:</label>
               <select id="language" value={language} onChange={e => setLanguage(e.target.value)} required>
                 <option value="" disabled selected>
-                  Select language
+                  Chọn ngôn ngữ
                 </option>
                 <option value="ENGLISH">English</option>
                 <option value="VIETNAMESE">Vietnamese</option>
                 <option value="JAPANESE">Japanese</option>
               </select>
 
-              <label htmlFor="bookStatus">Book Status:</label>
+              <label htmlFor="bookStatus">Trạng thái:</label>
               <select id="bookStatus" value={bookStatus} onChange={e => setBookStatus(e.target.value)} required>
                 <option value="" disabled selected>
-                  Select status
+                  Chọn trạng thái
                 </option>
                 <option value="DONE">Done</option>
                 <option value="IN_PROGRESS">In Progress</option>
               </select>
 
-              <label htmlFor="imageUrl">Image URL:</label>
+              <label htmlFor="imageUrl">Ảnh bìa:</label>
               <input
                 id="imageUrl"
                 type="file"
-                placeholder="Upload image"
+                placeholder="Tải lên ảnh bìa"
                 onChange={e => {
                   if (e.target.files && e.target.files.length > 0) {
                     setImageFile(e.target.files[0]);
@@ -389,10 +389,10 @@ function BookManagerment() {
                 }}
               />
 
-              <label>Description:</label>
+              <label>Mô tả:</label>
               <textarea
                 id="description"
-                placeholder="Enter description"
+                placeholder="Nhập mô tả sách"
                 value={description}
                 onChange={e => setDescription(e.target.value)}
               ></textarea>
@@ -414,7 +414,7 @@ function BookManagerment() {
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
-        message="All the information of this book will be deleted. Are you sure you want to continue delete it?"
+        message="Tất cả thông tin về cuốn sách này sẽ bị xóa. Bạn có chắc chắn muốn tiếp tục xóa không?"
       />
       <Toaster />
     </div>

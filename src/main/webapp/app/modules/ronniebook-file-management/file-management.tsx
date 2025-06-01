@@ -239,7 +239,7 @@ function FileManagerment() {
     <div className="file-container">
       <div className="file-header-div">
         <div className="file-header-breadcrumbs">
-          <span onClick={() => navigate('/app/admin/book-managerment')}>Book Management</span>
+          <span onClick={() => navigate('/app/admin/book-managerment')}>Quản lý sách</span>
           <span>&gt;</span>
           <span onClick={() => navigate(`/app/admin/book-managerment/${bookId}`)}>{bookName}</span>
           <span>&gt;</span>
@@ -248,11 +248,11 @@ function FileManagerment() {
 
         <div className="file-action-buttons">
           <button className="btn" onClick={() => setIsModalOpen(true)}>
-            + Upload File
+            + Tải lên tệp
           </button>
           <UploadFileModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onUpload={handleSaveFile} file={docxFile} />
           <button className="btn" onClick={() => setIsEditing(true)}>
-            Reorder Files
+            Sắp xếp thứ tự
           </button>
         </div>
 
@@ -260,7 +260,7 @@ function FileManagerment() {
           <FontAwesomeIcon icon={faMagnifyingGlass} className="file-search-icon" />
           <input
             type="text"
-            placeholder="Search by file name..."
+            placeholder="Tìm theo tên tệp..."
             className="file-search-input"
             value={searchText}
             onChange={handleSearchChange}
@@ -269,16 +269,16 @@ function FileManagerment() {
         </div>
       </div>
 
-      <h2>Files</h2>
+      <h2>Quản lý File</h2>
       <table className="file-table">
         <thead>
           <tr>
-            <th>Order</th>
-            <th>Name</th>
-            <th>File Storage</th>
-            <th>File Url</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>Thứ tự</th>
+            <th>Tên file</th>
+            <th>Lưu trữ file</th>
+            <th>Đường dẫn</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -307,11 +307,11 @@ function FileManagerment() {
       </table>
       <div className="file-pagination">
         <span>
-          Showing page {Page + 1} of {totalPages}
+          Trang {Page + 1}/{totalPages}
         </span>
         <div>
           <button className="file-page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
-            Previous
+            Trang trước
           </button>
           {[...Array(totalPages)].map((_, index) => (
             <button key={index} className={`file-page-btn ${Page === index ? 'active' : ''}`} onClick={() => handlePageChange(index)}>
@@ -319,7 +319,7 @@ function FileManagerment() {
             </button>
           ))}
           <button className="file-page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
-            Next
+            Trang sau
           </button>
         </div>
       </div>

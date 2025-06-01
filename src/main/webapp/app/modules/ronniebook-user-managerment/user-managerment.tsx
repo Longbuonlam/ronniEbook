@@ -124,14 +124,14 @@ function UserManagerment() {
 
   return (
     <div className="container">
-      <h2>Users</h2>
+      <h2>Quản lý người dùng</h2>
       <table className="user-table">
         <thead>
           <tr>
-            <th>Account</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>Người dùng</th>
+            <th>Quyền hạn</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -157,11 +157,11 @@ function UserManagerment() {
       </table>
       <div className="pagination">
         <span>
-          Showing page {Page + 1} of {totalPages} - Total users: {totalUsers}
+          Trang {Page + 1}/{totalPages} - Tổng số người dùng: {totalUsers}
         </span>
         <div>
           <button className="page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
-            Previous
+            Trang trước
           </button>
           {[...Array(totalPages)].map((_, index) => (
             <button key={index} className={`page-btn ${Page === index ? 'active' : ''}`} onClick={() => handlePageChange(index)}>
@@ -169,7 +169,7 @@ function UserManagerment() {
             </button>
           ))}
           <button className="page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
-            Next
+            Trang sau
           </button>
         </div>
       </div>
@@ -177,9 +177,9 @@ function UserManagerment() {
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content">
-            <h2>{isEditing ? 'Edit User' : 'User Details'}</h2>
+            <h2>{isEditing ? 'Chỉnh sửa người dùng' : 'User Details'}</h2>
             <form onSubmit={handleEditUser}>
-              <label>Account:</label>
+              <label>Người dùng:</label>
               <input
                 id="userLogin"
                 type="text"
@@ -190,13 +190,13 @@ function UserManagerment() {
                 disabled
               />
 
-              <label>Role:</label>
+              <label>Quyền hạn:</label>
               <select id="userRole" value={userRole} onChange={e => setUserRole(e.target.value)} required>
                 <option value="ROLE_ADMIN">ROLE_ADMIN</option>
                 <option value="ROLE_USER">ROLE_USER</option>
               </select>
 
-              <label>Status:</label>
+              <label>Trạng thái:</label>
               <select id="userStatus" value={userStatus} onChange={e => setUserStatus(e.target.value)} required>
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
