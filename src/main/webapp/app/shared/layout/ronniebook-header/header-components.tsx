@@ -85,27 +85,22 @@ export const UserItems = () => {
     <ul className="nav__links" id="nav-links">
       <li>
         <a onClick={() => navigate('/app/home')} className={isHomeActive ? 'active' : ''}>
-          Home
+          Trang chủ
         </a>
       </li>
       <li>
         <a onClick={() => navigate('/app/book')} className={isBookActive ? 'active' : ''}>
-          Book
+          Tiến độ đọc
         </a>
       </li>
       <li>
         <a onClick={() => navigate('/app/favourite')} className={isFavouriteActive ? 'active' : ''}>
-          Favourite
+          Sách yêu thích
         </a>
       </li>
       <li>
         <a onClick={() => navigate('/app/history')} className={isHistoryActive ? 'active' : ''}>
-          History
-        </a>
-      </li>
-      <li>
-        <a onClick={() => navigate('/app/about-us')} className={isAboutUsActive ? 'active' : ''}>
-          About Us
+          Lịch sử đọc
         </a>
       </li>
     </ul>
@@ -125,32 +120,32 @@ export const AdminItems = () => {
     <ul className="nav__links" id="nav-links">
       <li>
         <a onClick={() => navigate('/app/home')} className={isHomeActive ? 'active' : ''}>
-          Home
+          Trang chủ
         </a>
       </li>
       <li>
         <a onClick={() => navigate('/app/book')} className={isBookActive ? 'active' : ''}>
-          Book
+          Tiến độ đọc
         </a>
       </li>
       <li>
         <a onClick={() => navigate('/app/favourite')} className={isFavouriteActive ? 'active' : ''}>
-          Favourite
+          Sách yêu thích
         </a>
       </li>
       <li>
         <a onClick={() => navigate('/app/history')} className={isHistoryActive ? 'active' : ''}>
-          History
+          Lịch sử đọc
         </a>
       </li>
       <li>
         <a onClick={() => navigate('/app/admin/book-managerment')} className={isBookManagermentActive ? 'active' : ''}>
-          Book Managerment
+          Quản lý sách
         </a>
       </li>
       <li>
         <a onClick={() => navigate('/app/admin/user-managerment')} className={isUserManagermentActive ? 'active' : ''}>
-          User Managerment
+          Quản lý người dùng
         </a>
       </li>
     </ul>
