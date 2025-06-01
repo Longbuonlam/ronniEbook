@@ -283,10 +283,18 @@ function BookManagerment() {
               <td>{book.author}</td>
               <td>{book.category}</td>
               <td>{book.chapterCount}</td>
-              <td>{book.language}</td>
+              <td>
+                {book.language === 'VIETNAMESE'
+                  ? 'Tiếng Việt'
+                  : book.language === 'ENGLISH'
+                    ? 'Tiếng Anh'
+                    : book.language === 'JAPANESE'
+                      ? 'Tiếng Nhật'
+                      : book.language}
+              </td>
               <td>
                 <div className={`badge status ${book.bookStatus !== 'DONE' ? 'in-progress' : ''}`}>
-                  <span>{book.bookStatus === 'DONE' ? 'Done' : 'In Progress'}</span>
+                  <span>{book.bookStatus === 'DONE' ? 'Đã phát hành' : 'Đang phát hành'}</span>
                 </div>
               </td>
               <td>
@@ -325,78 +333,95 @@ function BookManagerment() {
           <div className="modal-content">
             <h2>{isEditing ? 'Chỉnh sửa sách' : 'Thêm sách mới'}</h2>
             <form onSubmit={isEditing ? handleEditBook : handleSaveBook}>
-              <label>Tên sách:</label>
-              <input
-                id="bookName"
-                type="text"
-                placeholder="Nhập tên sách"
-                value={bookName}
-                onChange={e => setBookName(e.target.value)}
-                required
-              />
-
-              <label>Tác giả:</label>
-              <input
-                id="author"
-                type="text"
-                placeholder="Nhập tên tác giả"
-                value={author}
-                onChange={e => setAuthor(e.target.value)}
-                required
-              />
-
-              <label>Tiêu đề:</label>
-              <input id="title" type="text" placeholder="Nhập tiêu đề" value={title} onChange={e => setTitle(e.target.value)} required />
-
-              <label>Thể loại:</label>
-              <input
-                id="category"
-                type="text"
-                placeholder="Nhập thể loại"
-                value={category}
-                onChange={e => setCategory(e.target.value)}
-                required
-              />
-
-              <label htmlFor="language">Ngôn ngữ:</label>
-              <select id="language" value={language} onChange={e => setLanguage(e.target.value)} required>
-                <option value="" disabled selected>
-                  Chọn ngôn ngữ
-                </option>
-                <option value="ENGLISH">English</option>
-                <option value="VIETNAMESE">Vietnamese</option>
-                <option value="JAPANESE">Japanese</option>
-              </select>
-
-              <label htmlFor="bookStatus">Trạng thái:</label>
-              <select id="bookStatus" value={bookStatus} onChange={e => setBookStatus(e.target.value)} required>
-                <option value="" disabled selected>
-                  Chọn trạng thái
-                </option>
-                <option value="DONE">Done</option>
-                <option value="IN_PROGRESS">In Progress</option>
-              </select>
-
-              <label htmlFor="imageUrl">Ảnh bìa:</label>
-              <input
-                id="imageUrl"
-                type="file"
-                placeholder="Tải lên ảnh bìa"
-                onChange={e => {
-                  if (e.target.files && e.target.files.length > 0) {
-                    setImageFile(e.target.files[0]);
-                  }
-                }}
-              />
-
-              <label>Mô tả:</label>
-              <textarea
-                id="description"
-                placeholder="Nhập mô tả sách"
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-              ></textarea>
-
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Tên sách:</label>
+                  <input
+                    id="bookName"
+                    type="text"
+                    placeholder="Nhập tên sách"
+                    value={bookName}
+                    onChange={e => setBookName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Tác giả:</label>
+                  <input
+                    id="author"
+                    type="text"
+                    placeholder="Nhập tên tác giả"
+                    value={author}
+                    onChange={e => setAuthor(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Tiêu đề:</label>
+                  <input
+                    id="title"
+                    type="text"
+                    placeholder="Nhập tiêu đề"
+                    value={title}
+                    onChange={e => setTitle(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Thể loại:</label>
+                  <input
+                    id="category"
+                    type="text"
+                    placeholder="Nhập thể loại"
+                    value={category}
+                    onChange={e => setCategory(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="language">Ngôn ngữ:</label>
+                  <select id="language" value={language} onChange={e => setLanguage(e.target.value)} required>
+                    <option value="" disabled>
+                      Chọn ngôn ngữ
+                    </option>
+                    <option value="ENGLISH">Tiếng Anh</option>
+                    <option value="VIETNAMESE">Tiếng Việt</option>
+                    <option value="JAPANESE">Tiếng Nhật</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="bookStatus">Trạng thái:</label>
+                  <select id="bookStatus" value={bookStatus} onChange={e => setBookStatus(e.target.value)} required>
+                    <option value="" disabled>
+                      Chọn trạng thái
+                    </option>
+                    <option value="DONE">Đã phát hành</option>
+                    <option value="IN_PROGRESS">Đang phát hành</option>
+                  </select>
+                </div>
+                <div className="form-group full-width">
+                  <label htmlFor="imageUrl">Ảnh bìa:</label>
+                  <input
+                    id="imageUrl"
+                    type="file"
+                    placeholder="Tải lên ảnh bìa"
+                    onChange={e => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        setImageFile(e.target.files[0]);
+                      }
+                    }}
+                  />
+                </div>
+                <div className="form-group full-width">
+                  <label>Mô tả:</label>
+                  <textarea
+                    id="description"
+                    placeholder="Nhập mô tả sách"
+                    value={description}
+                    onChange={e => setDescription(e.target.value)}
+                  ></textarea>
+                </div>
+              </div>
               <div className="modal-actions">
                 <button type="button" className="btn-close" onClick={() => toggleModal(true)}>
                   <FontAwesomeIcon icon={faClose} />

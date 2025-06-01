@@ -179,7 +179,7 @@ function Home() {
         </>
       )}
 
-      <h2>Sắp phát hành</h2>
+      <h2>Đang phát hành</h2>
 
       {isLoading ? (
         <p>Loading...</p>
