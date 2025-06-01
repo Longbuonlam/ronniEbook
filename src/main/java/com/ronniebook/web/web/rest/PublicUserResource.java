@@ -48,10 +48,13 @@ public class PublicUserResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body all users.
      */
     @GetMapping("/users")
-    public ResponseEntity<Page<UserDTO>> getAllPublicUsers(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<Page<UserDTO>> getAllPublicUsers(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false) String searchText
+    ) {
         log.debug("REST request to get all public User names");
 
-        final Page<UserDTO> page = userService.getAllUsers(pageable);
+        final Page<UserDTO> page = userService.getAllUsers(pageable, searchText);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return new ResponseEntity<>(page, headers, HttpStatus.OK);
     }

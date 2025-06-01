@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -26,4 +27,7 @@ public interface UserRepository extends MongoRepository<User, String> {
     List<User> findByCreatedDateBetween(Instant start, Instant end);
 
     Page<User> findAllByIdNotNull(Pageable pageable);
+
+    @Query("{ 'login': { $regex: ?0, $options: 'i' } }")
+    Page<User> findByLoginContainingIgnoreCase(String regex, Pageable pageable);
 }

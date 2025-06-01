@@ -13,6 +13,7 @@ import com.ronniebook.web.service.dto.UserDTO;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
 import java.time.Instant;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -250,7 +251,11 @@ public class UserService {
         return SecurityUtils.hasCurrentUserAnyOfAuthorities(clientId, AuthoritiesConstants.ADMIN);
     }
 
-    public Page<UserDTO> getAllUsers(Pageable pageable) {
-        return userRepository.findAllByIdNotNull(pageable).map(UserDTO::new);
+    public Page<UserDTO> getAllUsers(Pageable pageable, String searchText) {
+        if (searchText == null) {
+            return userRepository.findAllByIdNotNull(pageable).map(UserDTO::new);
+        }
+        searchText = Pattern.quote(searchText);
+        return userRepository.findByLoginContainingIgnoreCase(searchText, pageable).map(UserDTO::new);
     }
 }
