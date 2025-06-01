@@ -153,6 +153,24 @@
   display: flex;
 }
 
+/* --- Book Form Grid Layout --- */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+  width: 100%;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
 /* Add blur to the main content when the modal is open */
 .container-blurred {
   filter: blur(8px);
@@ -182,6 +200,8 @@
   max-width: 90%;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 /* Modal header */
@@ -271,4 +291,16 @@
   cursor: pointer;
   color: blue; /* or any other color to indicate it's clickable */
   text-decoration: underline;
+}
+
+/* Responsive: stack form fields on small screens */
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .modal-content {
+    width: 98vw;
+    min-width: unset;
+    padding: 10px;
+  }
 }
