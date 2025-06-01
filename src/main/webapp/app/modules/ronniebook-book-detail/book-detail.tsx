@@ -468,50 +468,41 @@ function BookDetail() {
             <div className="book-info">
               <h1>{book.bookName}</h1>
 
-              <div className="book-meta">
-                <span className="publisher"></span>
-                <span className="estimated-time">~1 Hour</span>
-              </div>
-
               <div className="action-btn">
                 <button className="continue-btn" onClick={() => setIsChapterModalOpen(true)}>
-                  <FontAwesomeIcon icon={faBookOpen} /> Select Chapter
-                </button>
-                <button className="continue-btn">
-                  <FontAwesomeIcon icon={faBookOpen} /> Continue
+                  <FontAwesomeIcon icon={faBookOpen} /> Chọn chương
                 </button>
                 <button className="continue-btn" onClick={() => setIsAudioModalOpen(true)}>
-                  <FontAwesomeIcon icon={faBookOpen} /> Upload/Record Audio
+                  <FontAwesomeIcon icon={faBookOpen} /> Tải lên/ghi âm giọng nói
                 </button>
                 <FontAwesomeIcon icon={faHeart} className={`icon ${isFavourite ? 'favourite-active' : ''}`} onClick={toggleFavourite} />
-                {/* <FontAwesomeIcon icon={faDownload} className="icon" /> */}
               </div>
 
               <p className="book-description">{book.description}</p>
 
               <div className="book-details">
                 <div>
-                  <strong>Author</strong>
+                  <strong>Tác giả</strong>
                   <p>{book.author}</p>
                 </div>
 
                 <div>
-                  <strong>Number of Chapter</strong>
+                  <strong>Số chương</strong>
                   <p>{Object.keys(chapterStorageIds).length}</p>
                 </div>
 
                 <div>
-                  <strong>Status</strong>
+                  <strong>Trạng thái</strong>
                   <p>{book.bookStatus || '—'}</p>
                 </div>
 
                 <div>
-                  <strong>Category</strong>
+                  <strong>Thể loại</strong>
                   <p> {book.category}</p>
                 </div>
 
                 <div>
-                  <strong>Language</strong>
+                  <strong>Ngôn ngữ</strong>
                   <p> {book.language}</p>
                 </div>
               </div>
@@ -530,7 +521,7 @@ function BookDetail() {
               handleTabClick('related');
             }}
           >
-            Related
+            Gợi ý tương tự
           </a>
           <a
             className={`tab-link ${activeTab === 'reviews' ? 'active' : ''}`}
@@ -539,7 +530,7 @@ function BookDetail() {
               handleTabClick('reviews');
             }}
           >
-            Reviews
+            Bình luận
           </a>
         </nav>
       </div>
@@ -563,7 +554,6 @@ function BookDetail() {
                     <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
                     <h3>{book.title}</h3>
                     <p>{book.author}</p>
-                    <p className="related-book-description">{book.description}</p>
                   </div>
                 ))}
               </div>
@@ -575,7 +565,7 @@ function BookDetail() {
       {showReviews && reviews && (
         <div className="reviews-section">
           <h2 className="reviews">
-            Reviews <FontAwesomeIcon icon={faPen} onClick={() => toggleCommentModal()} />
+            Viết bình luận <FontAwesomeIcon icon={faPen} onClick={() => toggleCommentModal()} />
           </h2>
           <div className="review-box">
             {reviews.map((review, index) => (
@@ -618,9 +608,9 @@ function BookDetail() {
       {isModalOpen && (
         <div className="comment-modal">
           <div className="comment-modal-content">
-            <h2>{isCommentEditing ? 'Edit Comment' : 'New Comment'}</h2>
+            <h2>{isCommentEditing ? 'Chỉnh sửa bình luận' : 'Viết bình luận mới'}</h2>
             <form onSubmit={isCommentEditing ? handleEditComment : handleSaveComment}>
-              <label>Rating:</label>
+              <label>Đánh giá:</label>
               <div className="stars-container">
                 {[...Array(5)].map((_, index) => (
                   <FontAwesomeIcon
@@ -632,10 +622,10 @@ function BookDetail() {
                 ))}
               </div>
 
-              <label>Description:</label>
+              <label>Nội dung bình luận:</label>
               <textarea
                 id="description"
-                placeholder="Enter description"
+                placeholder="Nhập nội dung bình luận của bạn..."
                 value={description}
                 onChange={e => setDescription(e.target.value)}
               ></textarea>
@@ -657,7 +647,7 @@ function BookDetail() {
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
-        message="Are you sure you want to delete this comment?"
+        message="Bạn có chắc chắn muốn xóa bình luận này không?"
       />
 
       <ChapterSelectionModal

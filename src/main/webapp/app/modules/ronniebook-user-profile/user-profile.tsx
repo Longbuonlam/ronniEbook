@@ -188,8 +188,8 @@ export default function UserProfile() {
       <div className="profile-container">
         {/* Header */}
         <div className="header">
-          <h1>Profile Settings</h1>
-          <p>Manage your personal information and preferences</p>
+          <h1>Cài đặt hồ sơ</h1>
+          <p>Quản lý thông tin cá nhân của bạn</p>
         </div>
 
         {/* Main Profile Card */}
@@ -317,7 +317,7 @@ export default function UserProfile() {
               ) : (
                 <button onClick={handleEdit} className="edit-button" disabled={isLoading}>
                   <Edit2 />
-                  Edit Profile
+                  Chỉnh sửa hồ sơ
                 </button>
               )}
             </div>
@@ -326,18 +326,18 @@ export default function UserProfile() {
 
         {/* Additional Info Card */}
         <div className="account-info-card">
-          <h3>Account Information</h3>
+          <h3>Thông tin tài khoản</h3>
           <div className="info-grid">
             <div className="info-item">
-              <span className="label">Member since:</span>
+              <span className="label">Là thành viên từ:</span>
               <span className="value">{memberSince}</span>
             </div>
             <div className="info-item">
-              <span className="label">Profile completion:</span>
+              <span className="label">Tiến độ hoàn thiện hồ sơ:</span>
               <span className="value completion">{profileCompletion}%</span>
             </div>
             <div className="info-item">
-              <span className="label">Account status:</span>
+              <span className="label">Trạng thái tài khoản:</span>
               <span className={`value ${statusClass}`}>{accountStatus}</span>
             </div>
           </div>

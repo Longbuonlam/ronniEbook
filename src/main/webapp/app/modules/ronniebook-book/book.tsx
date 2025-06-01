@@ -95,19 +95,19 @@ function MainBook() {
         <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
         <input
           type="text"
-          placeholder="Search Book..."
+          placeholder="Tìm kiếm sách..."
           className="search-input"
           value={searchText}
           onChange={handleSearchChange}
           onKeyPress={handleSearchKeyPress}
         />
       </div>
-      <h2>In Progress</h2>
+      <h2>Đang đọc</h2>
 
       {isLoading ? (
         <p>Loading...</p>
       ) : inProgressBooks.length === 0 ? (
-        <p>No data is available</p>
+        <p>Không có dữ liệu</p>
       ) : (
         <>
           <div className="book-row">
@@ -132,7 +132,7 @@ function MainBook() {
               <FontAwesomeIcon icon={faCircleChevronLeft} />
             </span>
             <span>
-              Page {inProgressPage + 1} / {totalInProgressPages}
+              Trang {inProgressPage + 1} / {totalInProgressPages}
             </span>
             <span
               className="right-chevron"
@@ -149,12 +149,12 @@ function MainBook() {
         </>
       )}
 
-      <h2>Others</h2>
+      <h2>Có thể bạn cũng thích</h2>
 
       {isLoading ? (
         <p>Loading...</p>
       ) : otherBooks.length === 0 ? (
-        <p>No data is available</p>
+        <p>Không có dữ liệu</p>
       ) : (
         <>
           <div className="book-row">
@@ -179,7 +179,7 @@ function MainBook() {
               <FontAwesomeIcon icon={faCircleChevronLeft} />
             </span>
             <span>
-              Page {otherPage + 1} / {totalOtherPages}
+              Trang {otherPage + 1} / {totalOtherPages}
             </span>
             <span
               className="right-chevron"
