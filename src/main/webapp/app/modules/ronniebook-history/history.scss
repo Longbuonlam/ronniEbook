@@ -9,6 +9,8 @@
     margin-bottom: 20px;
     color: #22223b;
   }
+
+  min-height: calc(100vh - 100px); /* Adjust height to ensure footer is at bottom */
 }
 
 .book-row {

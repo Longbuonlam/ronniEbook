@@ -3,6 +3,9 @@
   padding: 20px;
   background-color: #e9ecef;
   font-family: Arial, sans-serif;
+  min-height: calc(100vh - 100px); /* Adjust height to ensure footer is at bottom */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Table styling */
@@ -87,4 +90,25 @@
     background-color: #0056b3;
     color: #fff;
   }
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+  .container {
+    min-height: calc(100vh - 150px);
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .user-table {
+    font-size: 14px;
+  }
+}
+
+/* Ensures consistent spacing when there's not enough content */
+h2 {
+  margin-bottom: 20px;
 }
