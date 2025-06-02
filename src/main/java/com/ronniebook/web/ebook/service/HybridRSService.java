@@ -89,13 +89,13 @@ public class HybridRSService {
 
     // TODO : un-commented code for production
     public List<String> getRecommendBookIDs() {
-        //        String userLogin = SecurityUtils.getCurrentUserLogin().orElseThrow();
-        //        User user = userRepository.findOneByLogin(userLogin).orElseThrow();
-        RSResponseDTO response = getRecommendations("4b22e638-3e13-43f9-b737-c5bbd8c97616");
+        String userLogin = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        User user = userRepository.findOneByLogin(userLogin).orElseThrow();
+        RSResponseDTO response = getRecommendations(user.getId());
         if (response != null && response.getRecommendations() != null) {
             return response.getRecommendations().stream().map(RecommendBookDTO::getBook_id).collect(Collectors.toList());
         } else {
-            //            log.warn("No recommendations found for user: {}", user.getId());
+            log.warn("No recommendations found for user: {}", user.getId());
             return Collections.emptyList();
         }
     }

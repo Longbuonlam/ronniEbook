@@ -2,12 +2,9 @@ package com.ronniebook.web.ebook.service;
 
 import com.ronniebook.web.ebook.domain.*;
 import com.ronniebook.web.ebook.repository.ChapterRepository;
-import com.ronniebook.web.security.SecurityUtils;
 import com.ronniebook.web.service.UserService;
-import com.ronniebook.web.util.Utils;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ChapterService {

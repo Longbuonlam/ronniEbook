@@ -32,7 +32,7 @@ public class ViXTTSResource {
         dto.setSize(request.getSize());
 
         byte[] audioData;
-        audioData = viXTTSService.streamAudio(request.getContent(), request.getLanguage(), dto);
+        audioData = viXTTSService.streamAudio(request.getContent(), request.getLanguage(), request.getRecordUrl(), dto);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "audio/wav");

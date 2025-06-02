@@ -25,8 +25,8 @@ public class ViXTTSService {
         this.PROCESS_AUDIO_URL = processAudioUrl;
     }
 
-    @Cacheable(value = "ronnie-tts", key = "#prompt + '_' + #language")
-    public byte[] streamAudio(String prompt, LanguageCode language, UserRecordDTO userRecord) {
+    @Cacheable(value = "ronnie-tts", key = "#prompt + '_' + #language + '_' + #recordUrl")
+    public byte[] streamAudio(String prompt, LanguageCode language, String recordUrl, UserRecordDTO userRecord) {
         log.debug("Request to save data to redis, key : {}", prompt + "_" + language);
         return switch (language) {
             case VIETNAMESE -> processAudio(prompt, "vi", true, userRecord);
