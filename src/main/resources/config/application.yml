@@ -229,3 +229,8 @@ ronniebook-other-services:
   similar-book-url: https://ronniebook-other-services.onrender.com/recommend/book/
   update-data-url: https://ronniebook-other-services.onrender.com/update-daily-data
   process_audio_url: https://ronniebook-other-services.onrender.com/process_audio
+
+keycloak-key:
+  admin:
+    client-id: admin-client
+    client-secret: AuP0Q4iEabT86YpN1QbSsIZtF5uuXFpk

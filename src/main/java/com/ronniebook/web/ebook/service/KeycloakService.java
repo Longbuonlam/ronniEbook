@@ -4,6 +4,7 @@ import com.ronniebook.web.domain.Authority;
 import com.ronniebook.web.ebook.domain.dto.UserProfileDTO;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -13,6 +14,12 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class KeycloakService {
 
+    @Value("${keycloak-key.admin.client-id}")
+    private String clientId;
+
+    @Value("${keycloak-key.admin.client-secret}")
+    private String clientSecret;
+
     public String getAdminAccessToken() {
         RestTemplate restTemplate = new RestTemplate();
 
@@ -21,8 +28,8 @@ public class KeycloakService {
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "client_credentials");
-        body.add("client_id", "admin-client");
-        body.add("client_secret", "AuP0Q4iEabT86YpN1QbSsIZtF5uuXFpk");
+        body.add("client_id", clientId);
+        body.add("client_secret", clientSecret);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
 
