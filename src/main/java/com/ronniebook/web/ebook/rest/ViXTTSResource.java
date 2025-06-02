@@ -1,6 +1,6 @@
 package com.ronniebook.web.ebook.rest;
 
-import com.ronniebook.web.ebook.domain.LanguageCode;
+import com.ronniebook.web.ebook.domain.dto.TextToSpeechRequest;
 import com.ronniebook.web.ebook.domain.dto.UserRecordDTO;
 import com.ronniebook.web.ebook.service.ViXTTSService;
 import org.slf4j.Logger;
@@ -21,25 +21,18 @@ public class ViXTTSResource {
         this.viXTTSService = viXTTSService;
     }
 
-    @GetMapping(value = "/TTS/process-audio", produces = "audio/wav")
-    public ResponseEntity<byte[]> getAudio(
-        @RequestParam String content,
-        @RequestParam LanguageCode language,
-        @RequestParam String path,
-        @RequestParam String recordUrl,
-        @RequestParam String originalName,
-        @RequestParam Long size
-    ) {
+    @PostMapping(value = "/TTS/process-audio", produces = "audio/wav")
+    public ResponseEntity<byte[]> getAudio(@RequestBody TextToSpeechRequest request) {
         log.debug("Rest request to get data of text-to-speech");
 
         UserRecordDTO dto = new UserRecordDTO();
-        dto.setPath(path);
-        dto.setRecordUrl(recordUrl);
-        dto.setOriginalName(originalName);
-        dto.setSize(size);
+        dto.setPath(request.getPath());
+        dto.setRecordUrl(request.getRecordUrl());
+        dto.setOriginalName(request.getOriginalName());
+        dto.setSize(request.getSize());
 
         byte[] audioData;
-        audioData = viXTTSService.streamAudio(content, language, dto);
+        audioData = viXTTSService.streamAudio(request.getContent(), request.getLanguage(), dto);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "audio/wav");

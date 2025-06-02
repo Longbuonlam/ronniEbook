@@ -56,9 +56,10 @@ public class ViXTTSService {
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             String sanitizedPrompt = prompt.replace("\n", " ").replace("\r", " ").replace("_", " ");
+            String shortenPrompt = get30Sentences(sanitizedPrompt);
 
             Map<String, Object> requestMap = new HashMap<>();
-            requestMap.put("prompt", sanitizedPrompt);
+            requestMap.put("prompt", shortenPrompt);
             requestMap.put("language", language);
             requestMap.put("normalize_vi_text", normalizeViText);
             requestMap.put("user_record", userRecord);
@@ -79,5 +80,17 @@ public class ViXTTSService {
         }
 
         return null;
+    }
+
+    private String get30Sentences(String text) {
+        String[] sentences = text.split("(?<=[.!?])\\s+");
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < Math.min(sentences.length, 30); i++) {
+            if (i > 0) result.append(" ");
+            result.append(sentences[i].trim());
+        }
+
+        return result.toString();
     }
 }
