@@ -71,14 +71,44 @@ function FileContent() {
   const streamTextToSpeech = async (voice: UserRecord) => {
     setLoadingAudio(true);
     try {
-      const response = await fetch(
-        `http://localhost:9000/api/TTS/process-audio?content=${encodeURIComponent(rawContent)}&language=${language}&path=${voice.path}&recordUrl=${voice.recordUrl}&originalName=${voice.originalName}&size=${voice.size}`,
-      );
+      const token = getXsrfToken();
+
+      if (!token) {
+        console.error('XSRF token is missing');
+        toast.error('Failed to process audio: XSRF token is missing');
+        setLoadingAudio(false);
+        return;
+      }
+
+      const requestBody = {
+        content: rawContent,
+        language: language,
+        path: voice.path,
+        recordUrl: voice.recordUrl,
+        originalName: voice.originalName,
+        size: voice.size,
+      };
+
+      const response = await fetch('http://localhost:9000/api/TTS/process-audio', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'audio/wav',
+          'X-XSRF-TOKEN': token,
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+      }
+
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       setAudioUrl(url);
     } catch (error) {
       console.error('Error fetching audio:', error);
+      toast.error(`Failed to process audio: ${error.message}`);
     } finally {
       setLoadingAudio(false);
     }
