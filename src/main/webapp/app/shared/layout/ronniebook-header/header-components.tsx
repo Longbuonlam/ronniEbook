@@ -90,7 +90,7 @@ export const UserItems = () => {
       </li>
       <li>
         <a onClick={() => navigate('/app/book')} className={isBookActive ? 'active' : ''}>
-          Tiến độ đọc
+          Sách đang đọc
         </a>
       </li>
       <li>
@@ -125,7 +125,7 @@ export const AdminItems = () => {
       </li>
       <li>
         <a onClick={() => navigate('/app/book')} className={isBookActive ? 'active' : ''}>
-          Tiến độ đọc
+          Sách đang đọc
         </a>
       </li>
       <li>
