@@ -29,6 +29,10 @@ function FileContent() {
   const bookId = location.state?.bookId;
   const [hasSavedProgress, setHasSavedProgress] = useState(false);
 
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [fontSize, setFontSize] = useState('medium');
+  const [fontFamily, setFontFamily] = useState('serif');
+
   const defaultVoice: UserRecord = {
     id: '',
     userId: 'nữ lưu loát',
@@ -220,6 +224,40 @@ function FileContent() {
     }
   };
 
+  // Load saved preferences from localStorage
+  useEffect(() => {
+    const savedFontSize = localStorage.getItem('reading-font-size') || 'medium';
+    const savedFontFamily = localStorage.getItem('reading-font-family') || 'serif';
+    setFontSize(savedFontSize);
+    setFontFamily(savedFontFamily);
+  }, []);
+
+  // Save preferences to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('reading-font-size', fontSize);
+  }, [fontSize]);
+
+  useEffect(() => {
+    localStorage.setItem('reading-font-family', fontFamily);
+  }, [fontFamily]);
+
+  // Handle keyboard events for settings panel
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isSettingsOpen) {
+        setIsSettingsOpen(false);
+      }
+    };
+
+    if (isSettingsOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isSettingsOpen]);
+
   useEffect(() => {
     fetchFileType();
     fetchChapterInfo();
@@ -238,9 +276,90 @@ function FileContent() {
       <div className="file-content-header">
         <button onClick={() => navigate(-1)}>&lt;</button>
         <h1>{bookName}</h1>
-        <button>&gt;</button>
+        <div className="header-controls">
+          {fileType === 'docx' && (
+            <button
+              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+              className="settings-btn"
+              title="Text settings"
+              aria-label="Open text settings"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.82,11.69,4.82,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" />
+              </svg>
+            </button>
+          )}
+          <button>&gt;</button>
+        </div>
       </div>
-      <div className="file-content-body" onScroll={handleScroll} ref={contentRef}>
+
+      {/* Settings Panel */}
+      {isSettingsOpen && (
+        <div
+          className="settings-panel"
+          onClick={e => {
+            if (e.target === e.currentTarget) {
+              setIsSettingsOpen(false);
+            }
+          }}
+        >
+          <div className="settings-content">
+            <h3>Cài đặt chế độ đọc</h3>
+
+            <div className="setting-group">
+              <label>Cỡ chữ:</label>
+              <div className="font-size-controls">
+                <button className={fontSize === 'small' ? 'active' : ''} onClick={() => setFontSize('small')} title="Small text">
+                  A
+                </button>
+                <button className={fontSize === 'medium' ? 'active' : ''} onClick={() => setFontSize('medium')} title="Medium text">
+                  A
+                </button>
+                <button className={fontSize === 'large' ? 'active' : ''} onClick={() => setFontSize('large')} title="Large text">
+                  A
+                </button>
+                <button
+                  className={fontSize === 'extra-large' ? 'active' : ''}
+                  onClick={() => setFontSize('extra-large')}
+                  title="Extra large text"
+                >
+                  A
+                </button>
+              </div>
+            </div>
+
+            <div className="setting-group">
+              <label>Phông chữ:</label>
+              <select value={fontFamily} onChange={e => setFontFamily(e.target.value)} title="Choose font family">
+                <option value="serif">Serif (Default)</option>
+                <option value="sans-serif">Sans-serif</option>
+                <option value="monospace">Monospace</option>
+                <option value="georgia">Georgia</option>
+                <option value="times">Times New Roman</option>
+                <option value="arial">Arial</option>
+                <option value="helvetica">Helvetica</option>
+                <option value="verdana">Verdana</option>
+              </select>
+            </div>
+
+            <div className="setting-group">
+              <label>Bản xem trước:</label>
+              <div className={`preview-text font-${fontSize} font-${fontFamily}`}>
+                <p>
+                  Đây là cách văn bản của bạn sẽ hiển thị với các cài đặt hiện tại. Bạn có thể điều chỉnh cỡ chữ và kiểu chữ theo sở thích
+                  của mình.
+                </p>
+              </div>
+            </div>
+
+            <button onClick={() => setIsSettingsOpen(false)} className="close-settings-btn" title="Close settings (Press Esc)">
+              Đóng
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className={`file-content-body font-${fontSize} font-${fontFamily}`} onScroll={handleScroll} ref={contentRef}>
         <div className="chapter-info">
           <h2>
             {bookName} - {chapterName}
@@ -255,7 +374,7 @@ function FileContent() {
             ))}
         </div>
         {fileType === 'docx' ? (
-          <div dangerouslySetInnerHTML={{ __html: content }} />
+          <div className="reading-content" dangerouslySetInnerHTML={{ __html: content }} />
         ) : (
           <div className="pdf-container">
             {googleDriveId ? (
