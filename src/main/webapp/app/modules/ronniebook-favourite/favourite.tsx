@@ -130,21 +130,46 @@ function FavouriteBook() {
         />
       </div>
       <h2>Sách yêu thích</h2>
+
       {isLoading ? (
-        <p>Loading...</p>
+        <div className="loading-state">
+          <p>Đang tải...</p>
+        </div>
       ) : favouriteBooks.length === 0 ? (
-        <p>Không có dữ liệu</p>
+        <div className="empty-state">
+          <p>Không có dữ liệu</p>
+        </div>
       ) : (
         <>
           <div className="book-row">
             {favouriteBooks.map(book => (
-              <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
-                <div className="book-card-content">
-                  <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
-                  <h3>{book.title}</h3>
-                  <p>{book.author}</p>
+              <div
+                key={book.id}
+                className="book-card"
+                onClick={() => handleBookClick(book.id)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleBookClick(book.id);
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={`Đọc sách ${book.title} của ${book.author}`}
+              >
+                <div className="book-image-container">
+                  <img src={book.imageUrl || 'default-image.jpg'} alt={`Bìa sách ${book.title}`} className="book-image" />
                 </div>
-                <button className="delete-favourite-btn" onClick={e => handleDeleteClick(book.id, e)} title="Remove from favourites">
+                <div className="book-info">
+                  <h3 className="book-title">{book.title}</h3>
+                  <p className="book-author">{book.author}</p>
+                </div>
+                <button
+                  className="delete-favourite-btn"
+                  onClick={e => handleDeleteClick(book.id, e)}
+                  title="Remove from favourites"
+                  aria-label={`Xóa ${book.title} khỏi danh sách yêu thích`}
+                >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </div>
@@ -152,31 +177,19 @@ function FavouriteBook() {
           </div>
 
           <div className="pagination">
-            <span
-              className="left-chevron"
-              onClick={goToPreviousFavouritePage}
-              style={{
-                cursor: favouritePage === 0 ? 'not-allowed' : 'pointer',
-                opacity: favouritePage === 0 ? 0.5 : 1,
-                marginRight: '10px',
-              }}
-            >
+            <button className="pagination-btn prev-btn" onClick={goToPreviousFavouritePage} disabled={favouritePage === 0}>
               <FontAwesomeIcon icon={faCircleChevronLeft} />
-            </span>
-            <span>
+            </button>
+            <span className="page-info">
               Trang {favouritePage + 1} / {totalFavouritePages}
             </span>
-            <span
-              className="right-chevron"
+            <button
+              className="pagination-btn next-btn"
               onClick={goToNextFavouritePage}
-              style={{
-                cursor: favouritePage === totalFavouritePages - 1 ? 'not-allowed' : 'pointer',
-                opacity: favouritePage === totalFavouritePages - 1 ? 0.5 : 1,
-                marginLeft: '10px',
-              }}
+              disabled={favouritePage === totalFavouritePages - 1}
             >
               <FontAwesomeIcon icon={faCircleChevronRight} />
-            </span>
+            </button>
           </div>
         </>
       )}

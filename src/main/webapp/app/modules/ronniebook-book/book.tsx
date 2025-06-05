@@ -105,46 +105,55 @@ function MainBook() {
       <h2>Đang đọc</h2>
 
       {isLoading ? (
-        <p>Loading...</p>
+        <div className="loading-state">
+          <p>Đang tải...</p>
+        </div>
       ) : inProgressBooks.length === 0 ? (
-        <p>Không có dữ liệu</p>
+        <div className="empty-state">
+          <p>Không có dữ liệu</p>
+        </div>
       ) : (
         <>
           <div className="book-row">
             {inProgressBooks.map(book => (
-              <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
-                <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
-                <h3>{book.title}</h3>
-                <p>{book.author}</p>
+              <div
+                key={book.id}
+                className="book-card"
+                onClick={() => handleBookClick(book.id)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleBookClick(book.id);
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={`Đọc sách ${book.title} của ${book.author}`}
+              >
+                <div className="book-image-container">
+                  <img src={book.imageUrl || 'default-image.jpg'} alt={`Bìa sách ${book.title}`} className="book-image" />
+                </div>
+                <div className="book-info">
+                  <h3 className="book-title">{book.title}</h3>
+                  <p className="book-author">{book.author}</p>
+                </div>
               </div>
             ))}
           </div>
           <div className="pagination">
-            <span
-              className="left-chevron"
-              onClick={goToPreviousInProgressPage}
-              style={{
-                cursor: inProgressPage === 0 ? 'not-allowed' : 'pointer',
-                opacity: inProgressPage === 0 ? 0.5 : 1,
-                marginRight: '10px',
-              }}
-            >
+            <button className="pagination-btn prev-btn" onClick={goToPreviousInProgressPage} disabled={inProgressPage === 0}>
               <FontAwesomeIcon icon={faCircleChevronLeft} />
-            </span>
-            <span>
+            </button>
+            <span className="page-info">
               Trang {inProgressPage + 1} / {totalInProgressPages}
             </span>
-            <span
-              className="right-chevron"
+            <button
+              className="pagination-btn next-btn"
               onClick={goToNextInProgressPage}
-              style={{
-                cursor: inProgressPage === totalInProgressPages - 1 ? 'not-allowed' : 'pointer',
-                opacity: inProgressPage === totalInProgressPages - 1 ? 0.5 : 1,
-                marginLeft: '10px',
-              }}
+              disabled={inProgressPage === totalInProgressPages - 1}
             >
               <FontAwesomeIcon icon={faCircleChevronRight} />
-            </span>
+            </button>
           </div>
         </>
       )}
@@ -152,46 +161,51 @@ function MainBook() {
       <h2>Có thể bạn cũng thích</h2>
 
       {isLoading ? (
-        <p>Loading...</p>
+        <div className="loading-state">
+          <p>Đang tải...</p>
+        </div>
       ) : otherBooks.length === 0 ? (
-        <p>Không có dữ liệu</p>
+        <div className="empty-state">
+          <p>Không có dữ liệu</p>
+        </div>
       ) : (
         <>
           <div className="book-row">
             {otherBooks.map(book => (
-              <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
-                <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
-                <h3>{book.title}</h3>
-                <p>{book.author}</p>
+              <div
+                key={book.id}
+                className="book-card"
+                onClick={() => handleBookClick(book.id)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleBookClick(book.id);
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={`Đọc sách ${book.title} của ${book.author}`}
+              >
+                <div className="book-image-container">
+                  <img src={book.imageUrl || 'default-image.jpg'} alt={`Bìa sách ${book.title}`} className="book-image" />
+                </div>
+                <div className="book-info">
+                  <h3 className="book-title">{book.title}</h3>
+                  <p className="book-author">{book.author}</p>
+                </div>
               </div>
             ))}
           </div>
           <div className="pagination">
-            <span
-              className="left-chevron"
-              onClick={gotoPreviousOtherPage}
-              style={{
-                cursor: otherPage === 0 ? 'not-allowed' : 'pointer',
-                opacity: otherPage === 0 ? 0.5 : 1,
-                marginRight: '10px',
-              }}
-            >
+            <button className="pagination-btn prev-btn" onClick={gotoPreviousOtherPage} disabled={otherPage === 0}>
               <FontAwesomeIcon icon={faCircleChevronLeft} />
-            </span>
-            <span>
+            </button>
+            <span className="page-info">
               Trang {otherPage + 1} / {totalOtherPages}
             </span>
-            <span
-              className="right-chevron"
-              onClick={gotoNextOtherPage}
-              style={{
-                cursor: otherPage === totalOtherPages - 1 ? 'not-allowed' : 'pointer',
-                opacity: otherPage === totalOtherPages - 1 ? 0.5 : 1,
-                marginLeft: '10px',
-              }}
-            >
+            <button className="pagination-btn next-btn" onClick={gotoNextOtherPage} disabled={otherPage === totalOtherPages - 1}>
               <FontAwesomeIcon icon={faCircleChevronRight} />
-            </span>
+            </button>
           </div>
         </>
       )}
