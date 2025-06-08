@@ -3,6 +3,9 @@ package com.ronniebook.web.ebook.rest;
 import com.ronniebook.web.ebook.domain.dto.TextToSpeechRequest;
 import com.ronniebook.web.ebook.domain.dto.UserRecordDTO;
 import com.ronniebook.web.ebook.service.ViXTTSService;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
@@ -18,6 +22,8 @@ public class ViXTTSResource {
 
     private final Logger log = LoggerFactory.getLogger(ViXTTSResource.class);
     private final ViXTTSService viXTTSService;
+
+    private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 
     public ViXTTSResource(ViXTTSService viXTTSService) {
         this.viXTTSService = viXTTSService;
@@ -42,9 +48,11 @@ public class ViXTTSResource {
         return new ResponseEntity<>(audioData, headers, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/TTS/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter streamAudio(@RequestBody TextToSpeechRequest request) {
+    @PostMapping("/TTS/init-stream")
+    public ResponseEntity<String> streamAudio(@RequestBody TextToSpeechRequest request) {
+        String streamId = UUID.randomUUID().toString();
         SseEmitter emitter = new SseEmitter(0L);
+        emitters.put(streamId, emitter);
 
         UserRecordDTO dto = new UserRecordDTO();
         dto.setPath(request.getPath());
@@ -61,8 +69,18 @@ public class ViXTTSResource {
             //            );
 
             viXTTSService.testSendDummyAudioUrls(request.getContent(), request.getLanguage(), dto, emitter);
+            emitters.remove(streamId); // Clean up
         }).start();
 
+        return ResponseEntity.ok(streamId);
+    }
+
+    @GetMapping(value = "/TTS/stream/{streamId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter stream(@PathVariable String streamId) {
+        SseEmitter emitter = emitters.get(streamId);
+        if (emitter == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid stream ID");
+        }
         return emitter;
     }
 }

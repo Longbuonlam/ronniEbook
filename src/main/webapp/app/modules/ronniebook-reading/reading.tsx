@@ -39,6 +39,7 @@ function FileContent() {
   const [isStreamingAudio, setIsStreamingAudio] = useState(false);
   const [audioBlobs, setAudioBlobs] = useState<Map<string, string>>(new Map());
   const audioRef = useRef<HTMLAudioElement>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
 
   const defaultVoice: UserRecord = {
     id: '',
@@ -330,125 +331,95 @@ function FileContent() {
         size: voice.size,
       };
 
-      const response = await fetch('http://localhost:9000/api/TTS/stream', {
+      // Step 1: Initialize the stream and get stream ID
+      console.log('Initializing stream...');
+      const initResponse = await fetch('http://localhost:9000/api/TTS/init-stream', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-XSRF-TOKEN': token,
-          Accept: 'text/event-stream',
-          'Cache-Control': 'no-cache',
         },
         body: JSON.stringify(requestBody),
       });
 
-      if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+      if (!initResponse.ok) {
+        throw new Error(`Failed to initialize stream: ${initResponse.status}: ${initResponse.statusText}`);
       }
 
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
+      const streamId = await initResponse.text();
+      console.log('Stream initialized with ID:', streamId);
 
-      if (!reader) {
-        throw new Error('Failed to get response reader');
-      }
+      // Step 2: Connect to the SSE stream using EventSource
+      console.log('Connecting to SSE stream...');
+      const eventSource = new EventSource(`http://localhost:9000/api/TTS/stream/${streamId}`);
+      eventSourceRef.current = eventSource;
 
-      let buffer = '';
-      let currentEventType = '';
+      // Handle audio events
+      eventSource.addEventListener('audio', (event: MessageEvent) => {
+        const audioUrl = event.data.trim();
+        console.log('Received audio URL via EventSource:', audioUrl, 'at time:', new Date().toISOString());
 
-      while (true) {
-        const { done, value } = await reader.read();
+        if (audioUrl && (audioUrl.startsWith('http') || audioUrl.startsWith('/'))) {
+          setAudioQueue(prev => {
+            const newQueue = [...prev, audioUrl];
+            console.log('Audio queue updated:', newQueue);
+            // If this is the first URL, start playback immediately
+            if (newQueue.length === 1) {
+              console.log('Starting playback of first audio');
+              loadAndPlayAudio(audioUrl, 0);
+            }
+            return newQueue;
+          });
+        }
+      });
 
-        if (done) {
+      // Handle error events
+      eventSource.addEventListener('error', (event: MessageEvent) => {
+        const errorMessage = event.data;
+        console.error('Backend audio generation error:', errorMessage);
+        toast.error('Lỗi tạo âm thanh: ' + errorMessage);
+        eventSource.close();
+        eventSourceRef.current = null;
+        setIsStreamingAudio(false);
+        setLoadingAudio(false);
+      });
+
+      // Handle general messages (fallback)
+      eventSource.onmessage = event => {
+        const data = event.data.trim();
+        console.log('Received general message:', data, 'at time:', new Date().toISOString());
+
+        if (data === '[DONE]') {
+          console.log('SSE streaming completed');
+          eventSource.close();
+          eventSourceRef.current = null;
           setIsStreamingAudio(false);
           setLoadingAudio(false);
-          break;
+          return;
         }
 
-        buffer += decoder.decode(value, { stream: true });
-        console.log('Buffer after decode:', JSON.stringify(buffer));
-
-        const lines = buffer.split('\n');
-        console.log(
-          'Split lines:',
-          lines.map(line => JSON.stringify(line)),
-        );
-
-        // Keep the last incomplete line in buffer
-        buffer = lines.pop() || '';
-        console.log('Processing lines, keeping buffer:', JSON.stringify(buffer));
-
-        for (const line of lines) {
-          console.log('Processing SSE line:', JSON.stringify(line));
-
-          // Handle event name (no space after colon)
-          if (line.startsWith('event:')) {
-            currentEventType = line.substring(6).trim();
-            console.log('Set event type to:', currentEventType);
-            continue;
-          }
-
-          if (line.startsWith('data:')) {
-            const data = line.substring(5).trim();
-            console.log('Processing data:', JSON.stringify(data), 'with event type:', currentEventType);
-
-            if (data === '[DONE]') {
-              setIsStreamingAudio(false);
-              setLoadingAudio(false);
-              console.log('SSE streaming completed');
-              continue;
+        // Fallback for audio URLs without specific event type
+        if (data && (data.startsWith('http') || data.startsWith('/'))) {
+          console.log('Treating as audio URL (fallback):', data);
+          setAudioQueue(prev => {
+            const newQueue = [...prev, data];
+            if (newQueue.length === 1) {
+              loadAndPlayAudio(data, 0);
             }
-
-            if (data === '') {
-              // Keep-alive ping, ignore
-              console.log('Ignoring empty data line');
-              continue;
-            }
-
-            try {
-              // Handle based on event type
-              if (currentEventType === 'audio') {
-                // This is an audio URL
-                if (data && (data.startsWith('http') || data.startsWith('/'))) {
-                  console.log('Received audio URL:', data);
-                  setAudioQueue(prev => {
-                    const newQueue = [...prev, data];
-                    console.log('Audio queue updated:', newQueue);
-                    // If this is the first URL, start playback immediately
-                    if (newQueue.length === 1) {
-                      console.log('Starting playback of first audio');
-                      loadAndPlayAudio(data, 0);
-                    }
-                    return newQueue;
-                  });
-                }
-              } else if (currentEventType === 'error') {
-                // This is an error message
-                console.error('Backend audio generation error:', data);
-                toast.error('Lỗi tạo âm thanh: ' + data);
-                setIsStreamingAudio(false);
-                setLoadingAudio(false);
-              } else {
-                // Fallback for data without event type (shouldn't happen with proper SSE)
-                console.log('Received data without event type:', data);
-                if (data && (data.startsWith('http') || data.startsWith('/'))) {
-                  console.log('Treating as audio URL (fallback):', data);
-                  setAudioQueue(prev => {
-                    const newQueue = [...prev, data];
-                    if (newQueue.length === 1) {
-                      loadAndPlayAudio(data, 0);
-                    }
-                    return newQueue;
-                  });
-                }
-              }
-
-              // Don't reset event type here - it should persist until next event line
-            } catch (parseError) {
-              console.warn('Error parsing SSE data:', parseError, 'Data:', data);
-            }
-          }
+            return newQueue;
+          });
         }
-      }
+      };
+
+      // Handle connection errors
+      eventSource.onerror = event => {
+        console.error('EventSource error:', event);
+        eventSource.close();
+        eventSourceRef.current = null;
+        setIsStreamingAudio(false);
+        setLoadingAudio(false);
+        toast.error('Kết nối SSE bị lỗi');
+      };
     } catch (error) {
       console.error('Error with SSE streaming:', error);
       toast.error(`Failed to stream audio: ${error.message}`);
@@ -534,6 +505,12 @@ function FileContent() {
   // Cleanup on component unmount
   useEffect(() => {
     return () => {
+      // Close EventSource if it's open
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
+
       // Stop audio if playing
       if (audioRef.current) {
         audioRef.current.pause();
@@ -561,6 +538,12 @@ function FileContent() {
   };
 
   const handleStopAudio = () => {
+    // Close EventSource if it's open
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    }
+
     // Stop current audio
     if (audioRef.current) {
       audioRef.current.pause();
