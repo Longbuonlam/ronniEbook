@@ -2,6 +2,7 @@ package com.ronniebook.web.ebook.rest;
 
 import com.ronniebook.web.ebook.domain.dto.TextToSpeechRequest;
 import com.ronniebook.web.ebook.domain.dto.UserRecordDTO;
+import com.ronniebook.web.ebook.service.SSEService;
 import com.ronniebook.web.ebook.service.ViXTTSService;
 import java.util.Map;
 import java.util.UUID;
@@ -22,11 +23,13 @@ public class ViXTTSResource {
 
     private final Logger log = LoggerFactory.getLogger(ViXTTSResource.class);
     private final ViXTTSService viXTTSService;
+    private final SSEService sseService;
 
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 
-    public ViXTTSResource(ViXTTSService viXTTSService) {
+    public ViXTTSResource(ViXTTSService viXTTSService, SSEService sseService) {
         this.viXTTSService = viXTTSService;
+        this.sseService = sseService;
     }
 
     @PostMapping(value = "/TTS/process-audio", produces = "audio/wav")
@@ -61,14 +64,14 @@ public class ViXTTSResource {
         dto.setSize(request.getSize());
 
         new Thread(() -> {
-            //            viXTTSService.processTextToSpeechWithSSE(
+            //            sseService.processTextToSpeechWithSSE(
             //                request.getContent(),
             //                request.getLanguage(),
             //                dto,
             //                emitter
             //            );
 
-            viXTTSService.testSendDummyAudioUrls(request.getContent(), request.getLanguage(), dto, emitter);
+            sseService.testSendDummyAudioUrls(request.getContent(), request.getLanguage(), dto, emitter);
             emitters.remove(streamId); // Clean up
         }).start();
 
