@@ -33,6 +33,13 @@ function FileContent() {
   const [fontSize, setFontSize] = useState('medium');
   const [fontFamily, setFontFamily] = useState('serif');
 
+  // SSE streaming states
+  const [audioQueue, setAudioQueue] = useState<string[]>([]);
+  const [currentAudioIndex, setCurrentAudioIndex] = useState(0);
+  const [isStreamingAudio, setIsStreamingAudio] = useState(false);
+  const [audioBlobs, setAudioBlobs] = useState<Map<string, string>>(new Map());
+  const audioRef = useRef<HTMLAudioElement>(null);
+
   const defaultVoice: UserRecord = {
     id: '',
     userId: 'nữ lưu loát',
@@ -168,7 +175,7 @@ function FileContent() {
     setIsVoiceModalOpen(false);
     setTtsButtonActive(false);
 
-    streamTextToSpeech(voice);
+    streamTextToSpeechSSE(voice);
   };
 
   const handleModalClose = () => {
@@ -232,6 +239,23 @@ function FileContent() {
     setFontFamily(savedFontFamily);
   }, []);
 
+  // Debug state changes
+  useEffect(() => {
+    console.log('State change - loadingAudio:', loadingAudio);
+  }, [loadingAudio]);
+
+  useEffect(() => {
+    console.log('State change - audioUrl:', audioUrl);
+  }, [audioUrl]);
+
+  useEffect(() => {
+    console.log('State change - audioQueue:', audioQueue);
+  }, [audioQueue]);
+
+  useEffect(() => {
+    console.log('State change - isStreamingAudio:', isStreamingAudio);
+  }, [isStreamingAudio]);
+
   // Save preferences to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('reading-font-size', fontSize);
@@ -270,6 +294,294 @@ function FileContent() {
       fetchRawContent();
     }
   }, [fileType, fileId]);
+
+  const streamTextToSpeechSSE = async (voice: UserRecord) => {
+    console.log('Starting SSE streaming...');
+    setLoadingAudio(true);
+    setIsStreamingAudio(true);
+    setAudioQueue([]);
+    setCurrentAudioIndex(0);
+    setAudioBlobs(new Map());
+    setAudioUrl(''); // Clear existing audio
+
+    // Also clear the audio element source
+    if (audioRef.current) {
+      audioRef.current.src = '';
+      audioRef.current.load();
+    }
+
+    try {
+      const token = getXsrfToken();
+
+      if (!token) {
+        console.error('XSRF token is missing');
+        toast.error('Failed to process audio: XSRF token is missing');
+        setLoadingAudio(false);
+        setIsStreamingAudio(false);
+        return;
+      }
+
+      const requestBody = {
+        content: rawContent,
+        language: language,
+        path: voice.path,
+        recordUrl: voice.recordUrl,
+        originalName: voice.originalName,
+        size: voice.size,
+      };
+
+      const response = await fetch('http://localhost:9000/api/TTS/stream', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-XSRF-TOKEN': token,
+          Accept: 'text/event-stream',
+          'Cache-Control': 'no-cache',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('Failed to get response reader');
+      }
+
+      let buffer = '';
+      let currentEventType = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          setIsStreamingAudio(false);
+          setLoadingAudio(false);
+          break;
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        console.log('Buffer after decode:', JSON.stringify(buffer));
+
+        const lines = buffer.split('\n');
+        console.log(
+          'Split lines:',
+          lines.map(line => JSON.stringify(line)),
+        );
+
+        // Keep the last incomplete line in buffer
+        buffer = lines.pop() || '';
+        console.log('Processing lines, keeping buffer:', JSON.stringify(buffer));
+
+        for (const line of lines) {
+          console.log('Processing SSE line:', JSON.stringify(line));
+
+          // Handle event name (no space after colon)
+          if (line.startsWith('event:')) {
+            currentEventType = line.substring(6).trim();
+            console.log('Set event type to:', currentEventType);
+            continue;
+          }
+
+          if (line.startsWith('data:')) {
+            const data = line.substring(5).trim();
+            console.log('Processing data:', JSON.stringify(data), 'with event type:', currentEventType);
+
+            if (data === '[DONE]') {
+              setIsStreamingAudio(false);
+              setLoadingAudio(false);
+              console.log('SSE streaming completed');
+              continue;
+            }
+
+            if (data === '') {
+              // Keep-alive ping, ignore
+              console.log('Ignoring empty data line');
+              continue;
+            }
+
+            try {
+              // Handle based on event type
+              if (currentEventType === 'audio') {
+                // This is an audio URL
+                if (data && (data.startsWith('http') || data.startsWith('/'))) {
+                  console.log('Received audio URL:', data);
+                  setAudioQueue(prev => {
+                    const newQueue = [...prev, data];
+                    console.log('Audio queue updated:', newQueue);
+                    // If this is the first URL, start playback immediately
+                    if (newQueue.length === 1) {
+                      console.log('Starting playback of first audio');
+                      loadAndPlayAudio(data, 0);
+                    }
+                    return newQueue;
+                  });
+                }
+              } else if (currentEventType === 'error') {
+                // This is an error message
+                console.error('Backend audio generation error:', data);
+                toast.error('Lỗi tạo âm thanh: ' + data);
+                setIsStreamingAudio(false);
+                setLoadingAudio(false);
+              } else {
+                // Fallback for data without event type (shouldn't happen with proper SSE)
+                console.log('Received data without event type:', data);
+                if (data && (data.startsWith('http') || data.startsWith('/'))) {
+                  console.log('Treating as audio URL (fallback):', data);
+                  setAudioQueue(prev => {
+                    const newQueue = [...prev, data];
+                    if (newQueue.length === 1) {
+                      loadAndPlayAudio(data, 0);
+                    }
+                    return newQueue;
+                  });
+                }
+              }
+
+              // Don't reset event type here - it should persist until next event line
+            } catch (parseError) {
+              console.warn('Error parsing SSE data:', parseError, 'Data:', data);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error with SSE streaming:', error);
+      toast.error(`Failed to stream audio: ${error.message}`);
+      setIsStreamingAudio(false);
+      setLoadingAudio(false);
+    }
+  };
+
+  const loadAndPlayAudio = async (audioUrl: string, index: number) => {
+    try {
+      console.log('Loading audio URL:', audioUrl, 'at index:', index);
+
+      // Check if we already have this audio blob cached
+      if (audioBlobs.has(audioUrl)) {
+        const cachedBlobUrl = audioBlobs.get(audioUrl)!;
+        console.log('Using cached blob URL:', cachedBlobUrl);
+        setAudioUrl(cachedBlobUrl);
+        setCurrentAudioIndex(index);
+        return;
+      }
+
+      // Fetch the audio blob
+      console.log('Fetching audio from:', audioUrl);
+      const response = await fetch(audioUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch audio: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      console.log('Created blob URL:', blobUrl, 'for audio URL:', audioUrl);
+
+      // Cache the blob URL
+      setAudioBlobs(prev => {
+        const newMap = new Map(prev).set(audioUrl, blobUrl);
+        console.log('Updated audioBlobs map, size:', newMap.size);
+        return newMap;
+      });
+
+      // Set as current audio
+      console.log('Setting audioUrl to:', blobUrl);
+      setAudioUrl(blobUrl);
+      setCurrentAudioIndex(index);
+
+      // Remove loading state if this is the first audio
+      if (index === 0) {
+        console.log('Setting loadingAudio to false');
+        setLoadingAudio(false);
+      }
+    } catch (error) {
+      console.error('Error loading audio:', error);
+      toast.error(`Failed to load audio segment: ${error.message}`);
+
+      // Try to play next audio if available
+      if (index + 1 < audioQueue.length) {
+        loadAndPlayAudio(audioQueue[index + 1], index + 1);
+      }
+    }
+  };
+
+  const handleAudioEnded = () => {
+    const nextIndex = currentAudioIndex + 1;
+
+    if (nextIndex < audioQueue.length) {
+      // Load and play next audio
+      loadAndPlayAudio(audioQueue[nextIndex], nextIndex);
+    } else if (!isStreamingAudio) {
+      // All audio finished and streaming is complete
+      console.log('All audio playback completed');
+    }
+    // If streaming is still ongoing, we'll wait for more URLs to arrive
+  };
+
+  // Cleanup blob URLs on component unmount or when audio queue changes
+  useEffect(() => {
+    return () => {
+      audioBlobs.forEach(blobUrl => {
+        URL.revokeObjectURL(blobUrl);
+      });
+    };
+  }, [audioBlobs]);
+
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      // Stop audio if playing
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+
+      // Cleanup all blob URLs
+      audioBlobs.forEach(blobUrl => {
+        URL.revokeObjectURL(blobUrl);
+      });
+    };
+  }, []);
+
+  const handlePreviousAudio = () => {
+    const prevIndex = currentAudioIndex - 1;
+    if (prevIndex >= 0 && audioQueue.length > 0) {
+      loadAndPlayAudio(audioQueue[prevIndex], prevIndex);
+    }
+  };
+
+  const handleNextAudio = () => {
+    const nextIndex = currentAudioIndex + 1;
+    if (nextIndex < audioQueue.length) {
+      loadAndPlayAudio(audioQueue[nextIndex], nextIndex);
+    }
+  };
+
+  const handleStopAudio = () => {
+    // Stop current audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+
+    // Clear audio state
+    setAudioUrl('');
+    setAudioQueue([]);
+    setCurrentAudioIndex(0);
+    setIsStreamingAudio(false);
+    setLoadingAudio(false);
+
+    // Cleanup blob URLs
+    audioBlobs.forEach(blobUrl => {
+      URL.revokeObjectURL(blobUrl);
+    });
+    setAudioBlobs(new Map());
+
+    toast.success('Đã dừng phát âm thanh');
+  };
 
   return (
     <div className="file-content">
@@ -364,14 +676,53 @@ function FileContent() {
           <h2>
             {bookName} - {chapterName}
           </h2>
-          {fileType === 'docx' && // Only show the button for docx files
-            (loadingAudio ? (
-              <Spinner />
-            ) : audioUrl ? (
-              <audio controls src={audioUrl} />
-            ) : (
-              <TextToSpeechButton onClick={handleTextToSpeechClick} isActive={ttsButtonActive} />
-            ))}
+          {fileType === 'docx' && ( // Only show the button for docx files
+            <div className="audio-section">
+              {loadingAudio ? (
+                <div className="audio-loading">
+                  <Spinner />
+                  {isStreamingAudio && <p>Đang tải âm thanh...</p>}
+                </div>
+              ) : audioUrl ? (
+                <div className="audio-player">
+                  <div className="audio-controls">
+                    <audio ref={audioRef} controls src={audioUrl} onEnded={handleAudioEnded} />
+                    {audioQueue.length > 1 && (
+                      <div className="audio-navigation">
+                        <button
+                          onClick={handlePreviousAudio}
+                          disabled={currentAudioIndex === 0}
+                          className="audio-nav-btn"
+                          title="Đoạn trước"
+                        >
+                          ⏮
+                        </button>
+                        <button
+                          onClick={handleNextAudio}
+                          disabled={currentAudioIndex >= audioQueue.length - 1}
+                          className="audio-nav-btn"
+                          title="Đoạn tiếp theo"
+                        >
+                          ⏭
+                        </button>
+                      </div>
+                    )}
+                    <button onClick={handleStopAudio} className="audio-stop-btn" title="Dừng phát âm thanh">
+                      ⏹
+                    </button>
+                  </div>
+                  {audioQueue.length > 1 && (
+                    <div className="audio-progress">
+                      Đoạn {currentAudioIndex + 1} / {audioQueue.length}
+                      {isStreamingAudio && ' (Đang tải thêm...)'}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <TextToSpeechButton onClick={handleTextToSpeechClick} isActive={ttsButtonActive} />
+              )}
+            </div>
+          )}
         </div>
         {fileType === 'docx' ? (
           <div className="reading-content" dangerouslySetInnerHTML={{ __html: content }} />

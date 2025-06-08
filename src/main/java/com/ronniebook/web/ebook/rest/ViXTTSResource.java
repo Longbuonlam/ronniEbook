@@ -7,8 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/api")
@@ -38,5 +40,29 @@ public class ViXTTSResource {
         headers.add(HttpHeaders.CONTENT_TYPE, "audio/wav");
 
         return new ResponseEntity<>(audioData, headers, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/TTS/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamAudio(@RequestBody TextToSpeechRequest request) {
+        SseEmitter emitter = new SseEmitter(0L);
+
+        UserRecordDTO dto = new UserRecordDTO();
+        dto.setPath(request.getPath());
+        dto.setRecordUrl(request.getRecordUrl());
+        dto.setOriginalName(request.getOriginalName());
+        dto.setSize(request.getSize());
+
+        new Thread(() -> {
+            //            viXTTSService.processTextToSpeechWithSSE(
+            //                request.getContent(),
+            //                request.getLanguage(),
+            //                dto,
+            //                emitter
+            //            );
+
+            viXTTSService.testSendDummyAudioUrls(request.getContent(), request.getLanguage(), dto, emitter);
+        }).start();
+
+        return emitter;
     }
 }
