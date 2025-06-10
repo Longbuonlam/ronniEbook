@@ -57,6 +57,20 @@ public class ViXTTSResource {
         SseEmitter emitter = new SseEmitter(0L);
         emitters.put(streamId, emitter);
 
+        // Callback để dọn dẹp
+        emitter.onCompletion(() -> {
+            emitters.remove(streamId);
+            log.info("Emitter completed and removed: {}", streamId);
+        });
+        emitter.onTimeout(() -> {
+            emitters.remove(streamId);
+            log.warn("Emitter timed out and removed: {}", streamId);
+        });
+        emitter.onError(e -> {
+            emitters.remove(streamId);
+            log.error("Emitter error and removed: {}", streamId, e);
+        });
+
         UserRecordDTO dto = new UserRecordDTO();
         dto.setPath(request.getPath());
         dto.setRecordUrl(request.getRecordUrl());
@@ -72,7 +86,6 @@ public class ViXTTSResource {
             //            );
 
             sseService.testSendDummyAudioUrls(request.getContent(), request.getLanguage(), dto, emitter);
-            emitters.remove(streamId); // Clean up
         }).start();
 
         return ResponseEntity.ok(streamId);
