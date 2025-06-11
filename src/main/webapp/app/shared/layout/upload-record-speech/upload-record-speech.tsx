@@ -61,7 +61,7 @@ const UploadOrRecordAudioModal = ({
           </button>
         </div>
 
-        <p className="modal-instruction">📄 You can either upload a file or record your voice saying:</p>
+        <p className="modal-instruction">📄 Bạn có thể tải lên một tệp hoặc ghi âm giọng nói của bạn với nội dung sau:</p>
         <blockquote className="modal-quote">
           "Tôi tên là Nguyễn Văn A. Tôi rất vui được gặp bạn hôm nay. Sau đây tôi xin thu âm giọng nói của mình để phục vụ cho đồ án tốt
           nghiệp của tôi."
@@ -73,17 +73,17 @@ const UploadOrRecordAudioModal = ({
               <Upload size={32} />
             </div>
             <div className="upload-text">
-              <p className="upload-heading">Drop Audio Here</p>
-              <p className="upload-separator">- or -</p>
-              <p className="upload-heading">Click to Upload</p>
+              <p className="upload-heading">Kéo và thả tệp âm thanh vào đây</p>
+              <p className="upload-separator">- hoặc -</p>
+              <p className="upload-heading">Nhấn để tải lên</p>
             </div>
             <input type="file" accept="audio/*" onChange={handleFileChange} className="file-input" id="audio-upload" />
             <label htmlFor="audio-upload" className="file-label">
-              Select file
+              Chọn tệp
             </label>
             {file && (
               <div className="selected-file">
-                <p className="file-name">File selected: {file.name}</p>
+                <p className="file-name">Đã chọn tệp: {file.name}</p>
                 <button className="upload-button" onClick={() => file && handleUpload(file)} disabled={uploading}>
                   {uploading ? 'Uploading...' : 'Upload File'}
                 </button>
@@ -100,19 +100,19 @@ const UploadOrRecordAudioModal = ({
                     {status === 'recording' ? (
                       <button className="stop-button" onClick={stopRecording}>
                         <div className="record-indicator recording"></div>
-                        Stop Recording
+                        Dừng ghi âm
                       </button>
                     ) : (
                       <button className="record-button" onClick={startRecording}>
                         <div className="record-indicator"></div>
-                        Record
+                        Ghi âm
                       </button>
                     )}
                     <div className="mic-select">Mặc định - Micrô</div>
                   </div>
 
                   <div className="status-display">
-                    Status: <span className={`status-text ${status === 'recording' ? 'recording' : ''}`}>{status}</span>
+                    Trạng thái: <span className={`status-text ${status === 'recording' ? 'recording' : ''}`}>{status}</span>
                   </div>
 
                   {mediaBlobUrl && (

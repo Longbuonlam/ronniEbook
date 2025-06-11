@@ -153,15 +153,15 @@ function BookDetail() {
         .then(response => {
           if (response.ok) {
             setIsFavourite(false);
-            toast.success('Removed from favourites successfully');
+            toast.success('Đã xóa khỏi mục yêu thích thành công');
           } else {
             console.error('Failed to remove book from favourites');
-            toast.error('Failed to remove from favourites');
+            toast.error('Xóa khỏi mục yêu thích không thành công');
           }
         })
         .catch(error => {
           console.error('Error removing book from favourites:', error);
-          toast.error('Failed to remove from favourites');
+          toast.error('Xóa khỏi mục yêu thích không thành công');
         });
     } else {
       // Add to favourites
@@ -177,15 +177,15 @@ function BookDetail() {
         .then(response => {
           if (response.ok) {
             setIsFavourite(true);
-            toast.success('Added to favourites successfully');
+            toast.success('Đã thêm vào mục yêu thích thành công');
           } else {
             console.error('Failed to add book to favourites');
-            toast.error('Failed to add to favourites');
+            toast.error('Thêm vào mục yêu thích không thành công');
           }
         })
         .catch(error => {
           console.error('Error adding book to favourites:', error);
-          toast.error('Failed to add to favourites');
+          toast.error('Thêm vào mục yêu thích không thành công');
         });
     }
   };
@@ -308,11 +308,11 @@ function BookDetail() {
         console.log('Comment saved:', data);
         toggleCommentModal();
         fetchReviews();
-        toast.success('Comment saved successfully');
+        toast.success('Bình luận đã được lưu thành công');
       })
       .catch(error => {
         console.error('Error saving comment:', error);
-        toast.error('Failed to save comment');
+        toast.error('Lưu bình luận không thành công');
       });
   };
 
@@ -347,11 +347,11 @@ function BookDetail() {
         console.log('Comment edited:', data);
         toggleCommentModal();
         fetchReviews();
-        toast.success('Comment edited successfully');
+        toast.success('Bình luận đã được chỉnh sửa thành công');
       })
       .catch(error => {
         console.error('Error editing comment:', error);
-        toast.error('Failed to edit comment');
+        toast.error('Chỉnh sửa bình luận không thành công');
       });
   };
 
@@ -377,14 +377,14 @@ function BookDetail() {
           if (reviews) {
             setReviews(reviews.filter(review => review.id !== commentId));
           }
-          toast.success('Comment deleted successfully');
+          toast.success('Bình luận đã được xóa thành công');
         } else {
           console.error('Error deleting comment:', response.statusText);
         }
       })
       .catch(error => {
         console.error('Error deleting comment:', error);
-        toast.error('Failed to delete comment');
+        toast.error('Xóa bình luận không thành công');
       });
   };
 
@@ -437,10 +437,10 @@ function BookDetail() {
 
       const result = await response.json();
       console.log('Uploaded audio successfully:', result);
-      toast.success('Audio uploaded successfully!');
+      toast.success('Tải lên âm thanh thành công!');
     } catch (error) {
       console.error('Error uploading audio:', error);
-      toast.error('Failed to upload audio. Please try again.');
+      toast.error('Tải lên âm thanh không thành công. Vui lòng thử lại.');
     }
   };
 
@@ -509,7 +509,7 @@ function BookDetail() {
             </div>
           </>
         ) : (
-          <p>Loading...</p>
+          <p>Đang tải...</p>
         )}
       </div>
       <div className="tab-navigation-div">
@@ -521,7 +521,7 @@ function BookDetail() {
               handleTabClick('related');
             }}
           >
-            Gợi ý tương tự
+            Gợi ý sách tương tự
           </a>
           <a
             className={`tab-link ${activeTab === 'reviews' ? 'active' : ''}`}
@@ -538,9 +538,9 @@ function BookDetail() {
       {showRelatedBook && (
         <div className="related-book-container">
           {isLoading ? (
-            <p>Loading...</p>
+            <p>Đang tải...</p>
           ) : relatedBooks.length === 0 ? (
-            <p>No data is available</p>
+            <p>Không có dữ liệu</p>
           ) : (
             <>
               <div className="related-book-row">
@@ -586,9 +586,9 @@ function BookDetail() {
                             fetchCurrentUserRating();
                           }}
                         >
-                          Edit
+                          Chỉnh sửa
                         </button>
-                        <button onClick={() => handleDeleteClick(review.id)}>Delete</button>
+                        <button onClick={() => handleDeleteClick(review.id)}>Xoá</button>
                       </div>
                     )}
                   </div>
@@ -635,7 +635,7 @@ function BookDetail() {
                   <FontAwesomeIcon icon={faClose} />
                 </button>
                 <button type="submit" className="btn-save">
-                  Save
+                  Lưu
                 </button>
               </div>
             </form>

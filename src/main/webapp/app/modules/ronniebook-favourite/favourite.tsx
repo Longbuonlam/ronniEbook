@@ -101,18 +101,18 @@ function FavouriteBook() {
         if (response.ok) {
           // Remove the book from the current list
           setFavouriteBooks(prevBooks => prevBooks.filter(book => book.id !== bookId));
-          toast.success('Removed from favourites successfully');
+          toast.success('Đã xóa khỏi mục yêu thích thành công');
 
           // Refresh the list to get updated pagination
           fetchFavouriteBooks(favouritePage, searchQuery);
         } else {
           console.error('Failed to remove book from favourites');
-          toast.error('Failed to remove from favourites');
+          toast.error('Xóa khỏi mục yêu thích không thành công');
         }
       })
       .catch(error => {
         console.error('Error removing book from favourites:', error);
-        toast.error('Failed to remove from favourites');
+        toast.error('Xóa khỏi mục yêu thích không thành công');
       });
   };
 

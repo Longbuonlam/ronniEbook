@@ -24,7 +24,7 @@ function UploadFileModal({ isOpen, onClose, onUpload, file }) {
     <div className="upload-modal-overlay">
       <div className="upload-modal-content">
         <div className="upload-modal-header">
-          <span>Upload and attach file</span>
+          <span>Tải lên và đính kèm tệp</span>
           <button className="upload-close-btn" onClick={onClose}>
             <FontAwesomeIcon icon={faClose} />
           </button>
@@ -34,18 +34,18 @@ function UploadFileModal({ isOpen, onClose, onUpload, file }) {
             <input type="file" id="fileInput" onChange={handleFileChange} accept=".docx,.pdf" hidden />
             <label htmlFor="fileInput" className="upload-label">
               <FontAwesomeIcon icon={faUpload} />
-              <p>Click to upload or drag and drop</p>
+              <p>Nhấn để tải lên hoặc kéo thả</p>
               <p className="file-types">DOCX or PDF</p>
             </label>
-            {selectedFile && <p className="selected-file">Selected file: {selectedFile.name}</p>}
+            {selectedFile && <p className="selected-file">Tệp đã chọn: {selectedFile.name}</p>}
           </div>
         </div>
         <div className="upload-modal-actions">
           <button className="upload-btn-cancel" onClick={onClose}>
-            Cancel
+            Hủy bỏ
           </button>
           <button className="upload-btn-confirm" onClick={handleUpload} disabled={!selectedFile}>
-            Upload
+            Tải lên
           </button>
         </div>
       </div>

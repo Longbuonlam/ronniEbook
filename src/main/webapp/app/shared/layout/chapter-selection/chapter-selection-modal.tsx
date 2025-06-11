@@ -11,14 +11,14 @@ function ChapterSelectionModal({ isOpen, onClose, onSelect, chapterCount, chapte
     <div className="chapter-modal-overlay">
       <div className="chapter-modal-content">
         <div className="chapter-modal-header">
-          <span>Select Chapter</span>
+          <span>Chọn Chương</span>
           <button className="chapter-close-btn" onClick={onClose}>
             <FontAwesomeIcon icon={faClose} />
           </button>
         </div>
         <div className="chapter-modal-body">
           {chapterCount === 0 ? (
-            <div className="no-chapters-message">No chapters available.</div>
+            <div className="no-chapters-message">Hiện chưa có chương nào.</div>
           ) : (
             <div className="chapter-grid">
               {[...Array(chapterCount)].map((_, index) => {
@@ -33,7 +33,7 @@ function ChapterSelectionModal({ isOpen, onClose, onSelect, chapterCount, chapte
                     })}
                     onClick={() => onSelect(chapterNumber)}
                   >
-                    Chapter {chapterNumber}
+                    Chương {chapterNumber}
                   </div>
                 );
               })}

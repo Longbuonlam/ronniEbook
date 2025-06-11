@@ -714,7 +714,7 @@ function FileContent() {
             {googleDriveId ? (
               <iframe src={`https://drive.google.com/file/d/${googleDriveId}/preview`} allow="autoplay"></iframe>
             ) : (
-              <p>Error loading preview</p>
+              <p>Lỗi khi tải bản xem trước</p>
             )}
           </div>
         )}

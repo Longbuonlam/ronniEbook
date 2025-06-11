@@ -10,7 +10,7 @@ function ConfirmationModal({ isOpen, onClose, onConfirm, message }) {
     <div className="confirm-modal-overlay">
       <div className="confirm-modal-content">
         <div className="confirm-modal-header">
-          <span>Confirm</span>
+          <span>Xác nhận</span>
           <button className="confirm-close-btn" onClick={onClose}>
             <FontAwesomeIcon icon={faClose} />
           </button>
@@ -20,10 +20,10 @@ function ConfirmationModal({ isOpen, onClose, onConfirm, message }) {
         </div>
         <div className="confirm-modal-actions">
           <button className="confirm-btn-cancel" onClick={onClose}>
-            No, cancel
+            Không, hủy bỏ
           </button>
           <button className="confirm-btn-confirm" onClick={onConfirm}>
-            Yes, I'm sure
+            Vâng, tôi chắc chắn
           </button>
         </div>
       </div>

@@ -335,7 +335,7 @@ function Home() {
         </>
       )}
 
-      <h2>Sách hay dành cho bạn</h2>
+      <h2>Gợi ý cho bạn</h2>
 
       {isLoading ? (
         <div className="loading-state">

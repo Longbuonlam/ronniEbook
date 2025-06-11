@@ -154,7 +154,7 @@ function FileReorderModal({ isOpen, onClose, onSave, initialFiles }: FileReorder
       <div className="popup">
         {/* Popup Header */}
         <div className="popup-header">
-          <h3 className="popup-title">Reorder Files</h3>
+          <h3 className="popup-title">Sắp xếp lại các tệp</h3>
           <button onClick={onClose} className="close-btn">
             &times;
           </button>
@@ -162,7 +162,7 @@ function FileReorderModal({ isOpen, onClose, onSave, initialFiles }: FileReorder
 
         {/* Popup Body */}
         <div className="popup-body">
-          <p>Drag files to reorder or manually change the position numbers.</p>
+          <p>Kéo các tệp để sắp xếp lại hoặc thay đổi số thứ tự theo cách thủ công.</p>
 
           <ul className="file-list">
             {files
@@ -192,10 +192,10 @@ function FileReorderModal({ isOpen, onClose, onSave, initialFiles }: FileReorder
         {/* Popup Footer */}
         <div className="popup-footer">
           <button onClick={handleCancel} className="btn btn-secondary">
-            Cancel
+            Hủy
           </button>
           <button onClick={handleSave} className="btn btn-primary">
-            Save Changes
+            Lưu thay đổi
           </button>
         </div>
       </div>

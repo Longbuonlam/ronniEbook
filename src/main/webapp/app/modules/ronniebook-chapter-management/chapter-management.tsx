@@ -136,11 +136,11 @@ function ChapterManagerment() {
         console.log('Chapter edited:', data);
         toggleModal();
         fetchChapters(Page, searchText);
-        toast.success('Chapter edited successfully');
+        toast.success('Chương đã được chỉnh sửa thành công');
       })
       .catch(error => {
         console.error('Error edit chapter:', error);
-        toast.error('Failed to edit chapter');
+        toast.error('Chỉnh sửa chương không thành công');
       });
   };
 
@@ -176,11 +176,11 @@ function ChapterManagerment() {
         console.log('Chapter saved:', data);
         toggleModal();
         fetchChapters(Page, searchText);
-        toast.success('Chapter saved successfully');
+        toast.success('Chương đã được lưu thành công');
       })
       .catch(error => {
         console.error('Error saving chapter:', error);
-        toast.error('Failed to save chapter');
+        toast.error('Lưu chương không thành công');
       });
   };
 
@@ -203,14 +203,14 @@ function ChapterManagerment() {
       .then(response => {
         if (response.ok) {
           setChapters(Chapters.filter(chapter => chapter.id !== chapterId));
-          toast.success('Chapter deleted successfully');
+          toast.success('Chương đã được xóa thành công');
         } else {
           console.error('Error deleting chapter:', response.statusText);
         }
       })
       .catch(error => {
         console.error('Error deleting chapter:', error);
-        toast.error('Failed to delete chapter');
+        toast.error('Xóa chương không thành công');
       });
   };
 
