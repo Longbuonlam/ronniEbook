@@ -493,7 +493,13 @@ function BookDetail() {
 
                 <div>
                   <strong>Trạng thái</strong>
-                  <p>{book.bookStatus || '—'}</p>
+                  <p>
+                    {book.bookStatus === 'DONE'
+                      ? 'Đã phát hành'
+                      : book.bookStatus === 'IN_PROGRESS'
+                        ? 'Đang phát hành'
+                        : book.bookStatus || '—'}
+                  </p>
                 </div>
 
                 <div>
@@ -503,7 +509,16 @@ function BookDetail() {
 
                 <div>
                   <strong>Ngôn ngữ</strong>
-                  <p> {book.language}</p>
+                  <p>
+                    {' '}
+                    {book.language === 'VIETNAMESE'
+                      ? 'Tiếng Việt'
+                      : book.language === 'ENGLISH'
+                        ? 'Tiếng Anh'
+                        : book.language === 'JAPANESE'
+                          ? 'Tiếng Nhật'
+                          : book.language}
+                  </p>
                 </div>
               </div>
             </div>

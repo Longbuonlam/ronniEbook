@@ -288,13 +288,10 @@ function FileManagerment() {
               <td>{file.fileUrl}</td>
               <td>
                 <div className={`badge status ${file.fileStatus !== 'UPLOAD_FINISH' ? 'UPLOAD_ERROR' : ''}`}>
-                  <span>{file.fileStatus === 'UPLOAD_FINISH' ? 'Upload finish' : 'Upload error'}</span>
+                  <span>{file.fileStatus === 'UPLOAD_FINISH' ? 'Đã tải lên' : 'Lỗi tải lên'}</span>
                 </div>
               </td>
               <td>
-                <button className="file-action-btn">
-                  <FontAwesomeIcon icon={faEdit} />
-                </button>
                 <button className="file-action-btn" style={{ marginLeft: '10px' }} onClick={() => handleDeleteClick(file.id)}>
                   <FontAwesomeIcon icon={faTrash} />
                 </button>

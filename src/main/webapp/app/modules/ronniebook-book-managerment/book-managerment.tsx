@@ -309,20 +309,24 @@ function BookManagerment() {
           ))}
         </tbody>
       </table>
-      <div className="pagination">
+      <div className="book-manage-pagination">
         <span>
           Trang {Page + 1}/{totalPages} - Tổng số sách hiện có: {totalBooks}
         </span>
         <div>
-          <button className="page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
+          <button className="book-manage-page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
             Trang trước
           </button>
           {[...Array(totalPages)].map((_, index) => (
-            <button key={index} className={`page-btn ${Page === index ? 'active' : ''}`} onClick={() => handlePageChange(index)}>
+            <button
+              key={index}
+              className={`book-manage-page-btn ${Page === index ? 'active' : ''}`}
+              onClick={() => handlePageChange(index)}
+            >
               {index + 1}
             </button>
           ))}
-          <button className="page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
+          <button className="book-manage-page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
             Trang sau
           </button>
         </div>
