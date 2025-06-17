@@ -3,7 +3,7 @@ package com.ronniebook.web.ebook.rest;
 import com.ronniebook.web.ebook.domain.dto.TextToSpeechRequest;
 import com.ronniebook.web.ebook.domain.dto.UserRecordDTO;
 import com.ronniebook.web.ebook.service.SSEService;
-import com.ronniebook.web.ebook.service.ViXTTSService;
+import com.ronniebook.web.ebook.service.TextToSpeechService;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,16 +19,16 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/api")
-public class ViXTTSResource {
+public class TextToSpeechResource {
 
-    private final Logger log = LoggerFactory.getLogger(ViXTTSResource.class);
-    private final ViXTTSService viXTTSService;
+    private final Logger log = LoggerFactory.getLogger(TextToSpeechResource.class);
+    private final TextToSpeechService textToSpeechService;
     private final SSEService sseService;
 
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 
-    public ViXTTSResource(ViXTTSService viXTTSService, SSEService sseService) {
-        this.viXTTSService = viXTTSService;
+    public TextToSpeechResource(TextToSpeechService textToSpeechService, SSEService sseService) {
+        this.textToSpeechService = textToSpeechService;
         this.sseService = sseService;
     }
 
@@ -43,7 +43,7 @@ public class ViXTTSResource {
         dto.setSize(request.getSize());
 
         byte[] audioData;
-        audioData = viXTTSService.streamAudio(request.getContent(), request.getLanguage(), request.getRecordUrl(), dto);
+        audioData = textToSpeechService.streamAudio(request.getContent(), request.getLanguage(), request.getRecordUrl(), dto);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "audio/wav");

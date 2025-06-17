@@ -14,13 +14,13 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class ViXTTSService {
+public class TextToSpeechService {
 
-    private final Logger log = LoggerFactory.getLogger(ViXTTSService.class);
+    private final Logger log = LoggerFactory.getLogger(TextToSpeechService.class);
     private final RestTemplate restTemplate;
     private final String PROCESS_AUDIO_URL;
 
-    public ViXTTSService(RestTemplate restTemplate, @Value("${ronniebook-other-services.process_audio_url}") String processAudioUrl) {
+    public TextToSpeechService(RestTemplate restTemplate, @Value("${ronniebook-other-services.process_audio_url}") String processAudioUrl) {
         this.restTemplate = restTemplate;
         this.PROCESS_AUDIO_URL = processAudioUrl;
     }

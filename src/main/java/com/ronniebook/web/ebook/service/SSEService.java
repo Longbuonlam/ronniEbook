@@ -16,10 +16,10 @@ public class SSEService {
 
     private final Logger log = LoggerFactory.getLogger(SSEService.class);
 
-    private final ViXTTSService viXTTSService;
+    private final TextToSpeechService textToSpeechService;
 
-    public SSEService(ViXTTSService viXTTSService) {
-        this.viXTTSService = viXTTSService;
+    public SSEService(TextToSpeechService textToSpeechService) {
+        this.textToSpeechService = textToSpeechService;
     }
 
     private List<String> splitTextBySentences(String text, int sentencesPerChunk) {
@@ -60,7 +60,13 @@ public class SSEService {
 
         for (String chunk : chunks) {
             try {
-                String audioUrl = viXTTSService.generateAudioUrlForChunk(chunk, langCode, normalize, userRecord.getRecordUrl(), userRecord);
+                String audioUrl = textToSpeechService.generateAudioUrlForChunk(
+                    chunk,
+                    langCode,
+                    normalize,
+                    userRecord.getRecordUrl(),
+                    userRecord
+                );
                 if (audioUrl != null && !audioUrl.equals(":")) {
                     emitter.send(SseEmitter.event().name("audio").data(audioUrl));
                 } else {
