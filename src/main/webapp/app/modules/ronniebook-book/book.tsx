@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Book } from '../../shared/model/book.model';
 import './book.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleChevronRight, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faCircleChevronRight, faMagnifyingGlass, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import ConfirmationModal from '../../shared/layout/confirmation/confirmation-modal';
+import toast, { Toaster } from 'react-hot-toast';
 
 function MainBook() {
   const [inProgressBooks, setInProgressBooks] = useState<Book[]>([]);
@@ -16,6 +18,8 @@ function MainBook() {
   const [searchText, setSearchText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const fetchInProgressBooks = (pageNumber = 0, search = '') => {
@@ -89,6 +93,59 @@ function MainBook() {
     navigate(`/app/book/${bookId}`);
   };
 
+  const getXsrfToken = () => {
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    return match ? match[1] : null;
+  };
+
+  const handleDeleteClick = (bookId: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent triggering the book click event
+    setSelectedBookId(bookId);
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedBookId) {
+      handleDeleteInProgress(selectedBookId);
+      setIsConfirmOpen(false);
+    }
+  };
+
+  const handleDeleteInProgress = (bookId: string) => {
+    const token = getXsrfToken();
+
+    if (!token) {
+      console.error('XSRF token is missing');
+      toast.error('Failed to remove from reading list: XSRF token is missing');
+      return;
+    }
+
+    fetch(`http://localhost:9000/api/reading-progress/${bookId}`, {
+      method: 'DELETE',
+      headers: {
+        Accept: '*/*',
+        'X-XSRF-TOKEN': token,
+      },
+    })
+      .then(response => {
+        if (response.ok) {
+          // Remove the book from the current list
+          setInProgressBooks(prevBooks => prevBooks.filter(book => book.id !== bookId));
+          toast.success('Đã xóa khỏi danh sách đang đọc thành công');
+
+          // Refresh the list to get updated pagination
+          fetchInProgressBooks(inProgressPage, searchQuery);
+        } else {
+          console.error('Failed to remove book from reading list');
+          toast.error('Xóa khỏi danh sách đang đọc không thành công');
+        }
+      })
+      .catch(error => {
+        console.error('Error removing book from reading list:', error);
+        toast.error('Xóa khỏi danh sách đang đọc không thành công');
+      });
+  };
+
   return (
     <div className="book-container">
       <div className="search-bar-container">
@@ -137,6 +194,14 @@ function MainBook() {
                   <h3 className="book-title">{book.title}</h3>
                   <p className="book-author">{book.author}</p>
                 </div>
+                <button
+                  className="delete-reading-btn"
+                  onClick={e => handleDeleteClick(book.id, e)}
+                  title="Remove from reading list"
+                  aria-label={`Xóa ${book.title} khỏi danh sách đang đọc`}
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
               </div>
             ))}
           </div>
@@ -209,6 +274,15 @@ function MainBook() {
           </div>
         </>
       )}
+
+      <ConfirmationModal
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message="Bạn có chắc muốn xóa cuốn sách này khỏi danh sách đang đọc không?"
+      />
+
+      <Toaster />
     </div>
   );
 }

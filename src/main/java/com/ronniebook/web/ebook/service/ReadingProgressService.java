@@ -82,9 +82,10 @@ public class ReadingProgressService {
         return bookPage;
     }
 
-    public void delete(String id) {
-        log.debug("Request to delete reading progress : {}", id);
-        ReadingProgress readingProgress = readingProgressRepository.findById(id).orElseThrow();
+    public void delete(String bookId) {
+        String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        log.debug("Request to delete reading progress, userId : {}, bookId : {}", userId, bookId);
+        ReadingProgress readingProgress = readingProgressRepository.findByUserIdAndBookId(userId, bookId);
         readingProgressRepository.delete(readingProgress);
     }
 

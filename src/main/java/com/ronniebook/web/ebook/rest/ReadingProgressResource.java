@@ -52,11 +52,11 @@ public class ReadingProgressResource {
         return readingProgressService.findAllReadingProgressByUserId(pageable, searchText);
     }
 
-    @DeleteMapping("/reading-progress/{id}")
-    public ResponseEntity<Void> deleteReadingProgress(@PathVariable String id) {
-        log.debug("REST request to delete reading progress : {}", id);
-        readingProgressService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id)).build();
+    @DeleteMapping("/reading-progress/{bookId}")
+    public ResponseEntity<Void> deleteReadingProgress(@PathVariable String bookId) {
+        log.debug("REST request to delete reading progress, bookId : {}", bookId);
+        readingProgressService.delete(bookId);
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, bookId)).build();
     }
 
     @GetMapping("/other-books")

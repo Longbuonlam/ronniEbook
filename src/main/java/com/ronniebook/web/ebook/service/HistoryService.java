@@ -30,7 +30,7 @@ public class HistoryService {
     }
 
     public Page<Book> findAll(Pageable pageable, String searchText) {
-        log.debug("Request to get all Favourite Books");
+        log.debug("Request to get all History");
         String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
         List<History> historyList = historyRepository.findByUserId(userId);
         List<String> listBookIds = new ArrayList<>();
@@ -58,7 +58,7 @@ public class HistoryService {
     }
 
     public void delete(String bookId) {
-        log.debug("request to delete read-book, bookId: {}", bookId);
+        log.debug("Request to delete history, bookId: {}", bookId);
         String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
         History history = historyRepository.findByBookIdAndUserId(bookId, userId);
         if (history == null) {
@@ -70,9 +70,14 @@ public class HistoryService {
     public void save(String bookId) {
         log.debug("Request to save history, book {}", bookId);
         String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
-        History history = new History();
-        history.setBookId(bookId);
-        history.setUserId(userId);
-        historyRepository.save(history);
+        History history = historyRepository.findByBookIdAndUserId(bookId, userId);
+        if (history == null) {
+            History newHistory = new History();
+            newHistory.setBookId(bookId);
+            newHistory.setUserId(userId);
+            historyRepository.save(newHistory);
+        } else {
+            historyRepository.save(history);
+        }
     }
 }
