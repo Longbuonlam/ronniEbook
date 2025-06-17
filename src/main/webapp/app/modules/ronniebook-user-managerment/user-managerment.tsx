@@ -165,11 +165,11 @@ function UserManagerment() {
             <tr key={index}>
               <td>{user.login}</td>
               <td>
-                <span className="badge role">
-                  {user.authorities.map(authority =>
-                    authority.name === 'ROLE_ADMIN' ? 'Quản trị viên' : authority.name === 'ROLE_USER' ? 'Người dùng' : authority.name,
-                  )}
-                </span>
+                {user.authorities.map(authority => (
+                  <span className={`badge ${authority.name === 'ROLE_ADMIN' ? 'role-admin' : 'role'}`}>
+                    {authority.name === 'ROLE_ADMIN' ? 'Quản trị viên' : authority.name === 'ROLE_USER' ? 'Người dùng' : authority.name}
+                  </span>
+                ))}
               </td>
               <td>
                 <span className={`badge ${user.activated ? 'status-active' : 'status-inactive'}`}>
