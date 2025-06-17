@@ -10,6 +10,8 @@ function Home() {
   const [releaseBooks, setReleaseBooks] = useState<Book[]>([]);
   const [unreleaseBooks, setUnReleaseBooks] = useState<Book[]>([]);
   const [recommendedBooks, setRecommendedBooks] = useState<Book[]>([]);
+  const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
+  const [currentProverbIndex, setCurrentProverbIndex] = useState(0);
   const [releasePage, setReleasePage] = useState(0);
   const [unreleasePage, setUnReleasePage] = useState(0);
   const [recommendedPage, setRecommendedPage] = useState(0);
@@ -20,6 +22,50 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+
+  // Vietnamese proverbs array
+  const vietnameseProverbs = [
+    {
+      text: 'Học, học nữa, học mãi',
+      author: 'Hồ Chí Minh',
+      meaning: 'Khuyến khích việc học tập không ngừng nghỉ',
+    },
+    {
+      text: 'Đi một ngày đàng, học một sàng khôn',
+      author: 'Tục ngữ Việt Nam',
+      meaning: 'Mỗi hành trình đều mang lại kiến thức mới',
+    },
+    {
+      text: 'Có chí thì nên',
+      author: 'Tục ngữ Việt Nam',
+      meaning: 'Với ý chí quyết tâm, mọi việc đều có thể thành công',
+    },
+    {
+      text: 'Uống nước nhớ nguồn',
+      author: 'Tục ngữ Việt Nam',
+      meaning: 'Luôn ghi nhớ ơn nghĩa của những người đã giúp đỡ',
+    },
+    {
+      text: 'Cần cù bù thông minh',
+      author: 'Tục ngữ Việt Nam',
+      meaning: 'Sự chăm chỉ có thể bù đắp cho thiếu hụt về tài năng',
+    },
+    {
+      text: 'Thương người như thể thương thân',
+      author: 'Tục ngữ Việt Nam',
+      meaning: 'Yêu thương và quan tâm đến người khác như chính bản thân',
+    },
+    {
+      text: 'Giọt nước làm tròn tảng đá',
+      author: 'Tục ngữ Việt Nam',
+      meaning: 'Sự kiên trì có thể vượt qua mọi khó khăn',
+    },
+    {
+      text: 'Gần mực thì đen, gần đèn thì sáng',
+      author: 'Tục ngữ Việt Nam',
+      meaning: 'Môi trường xung quanh ảnh hưởng đến con người',
+    },
+  ];
 
   const fetchReleaseBooks = (pageNumber = 0, search = '') => {
     setIsLoading(true);
@@ -63,11 +109,30 @@ function Home() {
     setIsLoading(false);
   };
 
+  const fetchFeaturedBooks = () => {
+    fetch(`http://localhost:9000/api/recommend-books?page=0&size=8`)
+      .then(response => response.json())
+      .then(data => {
+        setFeaturedBooks(data.content);
+      })
+      .catch(error => console.error('Error fetching featured books:', error));
+  };
+
   useEffect(() => {
     fetchReleaseBooks(0, searchQuery);
     fetchUnRealeseBooks(0, searchQuery);
     fetchRecommendedBooks(0);
+    fetchFeaturedBooks();
   }, [searchQuery]);
+
+  // Proverb rotation effect
+  useEffect(() => {
+    const proverbInterval = setInterval(() => {
+      setCurrentProverbIndex(prevIndex => (prevIndex + 1) % vietnameseProverbs.length);
+    }, 7000); // Change every 7 seconds
+
+    return () => clearInterval(proverbInterval);
+  }, [vietnameseProverbs.length]);
 
   const goToNextReleasePage = () => {
     if (releasePage < totalReleasePages - 1) {
@@ -132,49 +197,84 @@ function Home() {
           onKeyPress={handleSearchKeyPress}
         />
       </div>
+
+      {/* Hero Section with Vietnamese Proverbs */}
+      <div className="hero-section">
+        <div className="hero-content">
+          <div className="hero-text">
+            <h1>Khám phá thế giới sách</h1>
+            <p>Tìm kiếm và đọc những cuốn sách tuyệt vời nhất</p>
+          </div>
+          <div className="proverb-display">
+            <h3>Danh ngôn Việt Nam</h3>
+            <div className="proverb-container">
+              <div className="proverb-card">
+                <div className="proverb-text">"{vietnameseProverbs[currentProverbIndex].text}"</div>
+                <div className="proverb-author">- {vietnameseProverbs[currentProverbIndex].author}</div>
+                <div className="proverb-meaning">{vietnameseProverbs[currentProverbIndex].meaning}</div>
+              </div>
+              <div className="proverb-indicators">
+                {vietnameseProverbs.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`indicator ${index === currentProverbIndex ? 'active' : ''}`}
+                    onClick={() => setCurrentProverbIndex(index)}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <h2>Đã phát hành</h2>
 
       {isLoading ? (
-        <p>Loading...</p>
+        <div className="loading-state">
+          <p>Đang tải...</p>
+        </div>
       ) : releaseBooks.length === 0 ? (
-        <p>Không có dữ liệu</p>
+        <div className="empty-state">
+          <p>Không có dữ liệu</p>
+        </div>
       ) : (
         <>
           <div className="book-row">
             {releaseBooks.map(book => (
-              <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
-                <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
-                <h3>{book.title}</h3>
-                <p>{book.author}</p>
+              <div
+                key={book.id}
+                className="book-card"
+                onClick={() => handleBookClick(book.id)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleBookClick(book.id);
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={`Đọc sách ${book.title} của ${book.author}`}
+              >
+                <div className="book-image-container">
+                  <img src={book.imageUrl || 'default-image.jpg'} alt={`Bìa sách ${book.title}`} className="book-image" />
+                </div>
+                <div className="book-info">
+                  <h3 className="book-title">{book.title}</h3>
+                  <p className="book-author">{book.author}</p>
+                </div>
               </div>
             ))}
           </div>
           <div className="pagination">
-            <span
-              className="left-chevron"
-              onClick={goToPreviousReleasePage}
-              style={{
-                cursor: releasePage === 0 ? 'not-allowed' : 'pointer',
-                opacity: releasePage === 0 ? 0.5 : 1,
-                marginRight: '10px',
-              }}
-            >
+            <button className="pagination-btn prev-btn" onClick={goToPreviousReleasePage} disabled={releasePage === 0}>
               <FontAwesomeIcon icon={faCircleChevronLeft} />
-            </span>
-            <span>
+            </button>
+            <span className="page-info">
               Trang {releasePage + 1} / {totalReleasePages}
             </span>
-            <span
-              className="right-chevron"
-              onClick={goToNextReleasePage}
-              style={{
-                cursor: releasePage === totalReleasePages - 1 ? 'not-allowed' : 'pointer',
-                opacity: releasePage === totalReleasePages - 1 ? 0.5 : 1,
-                marginLeft: '10px',
-              }}
-            >
+            <button className="pagination-btn next-btn" onClick={goToNextReleasePage} disabled={releasePage === totalReleasePages - 1}>
               <FontAwesomeIcon icon={faCircleChevronRight} />
-            </span>
+            </button>
           </div>
         </>
       )}
@@ -182,93 +282,111 @@ function Home() {
       <h2>Đang phát hành</h2>
 
       {isLoading ? (
-        <p>Loading...</p>
+        <div className="loading-state">
+          <p>Đang tải...</p>
+        </div>
       ) : unreleaseBooks.length === 0 ? (
-        <p>Không có dữ liệu</p>
+        <div className="empty-state">
+          <p>Không có dữ liệu</p>
+        </div>
       ) : (
         <>
           <div className="book-row">
             {unreleaseBooks.map(book => (
-              <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
-                <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
-                <h3>{book.title}</h3>
-                <p>{book.author}</p>
+              <div
+                key={book.id}
+                className="book-card"
+                onClick={() => handleBookClick(book.id)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleBookClick(book.id);
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={`Đọc sách ${book.title} của ${book.author}`}
+              >
+                <div className="book-image-container">
+                  <img src={book.imageUrl || 'default-image.jpg'} alt={`Bìa sách ${book.title}`} className="book-image" />
+                </div>
+                <div className="book-info">
+                  <h3 className="book-title">{book.title}</h3>
+                  <p className="book-author">{book.author}</p>
+                </div>
               </div>
             ))}
           </div>
           <div className="pagination">
-            <span
-              className="left-chevron"
-              onClick={gotoPreviousUnreleasePage}
-              style={{
-                cursor: unreleasePage === 0 ? 'not-allowed' : 'pointer',
-                opacity: unreleasePage === 0 ? 0.5 : 1,
-                marginRight: '10px',
-              }}
-            >
+            <button className="pagination-btn prev-btn" onClick={gotoPreviousUnreleasePage} disabled={unreleasePage === 0}>
               <FontAwesomeIcon icon={faCircleChevronLeft} />
-            </span>
-            <span>
+            </button>
+            <span className="page-info">
               Trang {unreleasePage + 1} / {totalUnreleasePages}
             </span>
-            <span
-              className="right-chevron"
+            <button
+              className="pagination-btn next-btn"
               onClick={gotoNextUnreleasePage}
-              style={{
-                cursor: unreleasePage === totalUnreleasePages - 1 ? 'not-allowed' : 'pointer',
-                opacity: unreleasePage === totalUnreleasePages - 1 ? 0.5 : 1,
-                marginLeft: '10px',
-              }}
+              disabled={unreleasePage === totalUnreleasePages - 1}
             >
               <FontAwesomeIcon icon={faCircleChevronRight} />
-            </span>
+            </button>
           </div>
         </>
       )}
 
-      <h2>Sách hay dành cho bạn</h2>
+      <h2>Gợi ý cho bạn</h2>
 
       {isLoading ? (
-        <p>Loading...</p>
+        <div className="loading-state">
+          <p>Đang tải...</p>
+        </div>
       ) : recommendedBooks.length === 0 ? (
-        <p>Không có dữ liệu</p>
+        <div className="empty-state">
+          <p>Không có dữ liệu</p>
+        </div>
       ) : (
         <>
           <div className="book-row">
             {recommendedBooks.map(book => (
-              <div key={book.id} className="book-card" onClick={() => handleBookClick(book.id)} style={{ cursor: 'pointer' }}>
-                <img src={book.imageUrl || 'default-image.jpg'} alt={book.title} />
-                <h3>{book.title}</h3>
-                <p>{book.author}</p>
+              <div
+                key={book.id}
+                className="book-card"
+                onClick={() => handleBookClick(book.id)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleBookClick(book.id);
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={`Đọc sách ${book.title} của ${book.author}`}
+              >
+                <div className="book-image-container">
+                  <img src={book.imageUrl || 'default-image.jpg'} alt={`Bìa sách ${book.title}`} className="book-image" />
+                </div>
+                <div className="book-info">
+                  <h3 className="book-title">{book.title}</h3>
+                  <p className="book-author">{book.author}</p>
+                </div>
               </div>
             ))}
           </div>
           <div className="pagination">
-            <span
-              className="left-chevron"
-              onClick={gotoPreviousRecommendedPage}
-              style={{
-                cursor: recommendedPage === 0 ? 'not-allowed' : 'pointer',
-                opacity: recommendedPage === 0 ? 0.5 : 1,
-                marginRight: '10px',
-              }}
-            >
+            <button className="pagination-btn prev-btn" onClick={gotoPreviousRecommendedPage} disabled={recommendedPage === 0}>
               <FontAwesomeIcon icon={faCircleChevronLeft} />
-            </span>
-            <span>
+            </button>
+            <span className="page-info">
               Trang {recommendedPage + 1} / {totalRecommendedPages}
             </span>
-            <span
-              className="right-chevron"
+            <button
+              className="pagination-btn next-btn"
               onClick={gotoNextRecommendedPage}
-              style={{
-                cursor: recommendedPage === totalRecommendedPages - 1 ? 'not-allowed' : 'pointer',
-                opacity: recommendedPage === totalRecommendedPages - 1 ? 0.5 : 1,
-                marginLeft: '10px',
-              }}
+              disabled={recommendedPage === totalRecommendedPages - 1}
             >
               <FontAwesomeIcon icon={faCircleChevronRight} />
-            </span>
+            </button>
           </div>
         </>
       )}

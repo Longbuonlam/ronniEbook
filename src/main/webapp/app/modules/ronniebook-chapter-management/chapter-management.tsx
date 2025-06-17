@@ -136,11 +136,11 @@ function ChapterManagerment() {
         console.log('Chapter edited:', data);
         toggleModal();
         fetchChapters(Page, searchText);
-        toast.success('Chapter edited successfully');
+        toast.success('Chương đã được chỉnh sửa thành công');
       })
       .catch(error => {
         console.error('Error edit chapter:', error);
-        toast.error('Failed to edit chapter');
+        toast.error('Chỉnh sửa chương không thành công');
       });
   };
 
@@ -176,11 +176,11 @@ function ChapterManagerment() {
         console.log('Chapter saved:', data);
         toggleModal();
         fetchChapters(Page, searchText);
-        toast.success('Chapter saved successfully');
+        toast.success('Chương đã được lưu thành công');
       })
       .catch(error => {
         console.error('Error saving chapter:', error);
-        toast.error('Failed to save chapter');
+        toast.error('Lưu chương không thành công');
       });
   };
 
@@ -203,14 +203,14 @@ function ChapterManagerment() {
       .then(response => {
         if (response.ok) {
           setChapters(Chapters.filter(chapter => chapter.id !== chapterId));
-          toast.success('Chapter deleted successfully');
+          toast.success('Chương đã được xóa thành công');
         } else {
           console.error('Error deleting chapter:', response.statusText);
         }
       })
       .catch(error => {
         console.error('Error deleting chapter:', error);
-        toast.error('Failed to delete chapter');
+        toast.error('Xóa chương không thành công');
       });
   };
 
@@ -276,10 +276,18 @@ function ChapterManagerment() {
                   {chapter.chapterName}
                 </span>
               </td>
-              <td>{chapter.language}</td>
+              <td>
+                {chapter.language === 'VIETNAMESE'
+                  ? 'Tiếng Việt'
+                  : chapter.language === 'ENGLISH'
+                    ? 'Tiếng Anh'
+                    : chapter.language === 'JAPANESE'
+                      ? 'Tiếng Nhật'
+                      : chapter.language}
+              </td>
               <td>
                 <div className={`badge status ${chapter.chapterStatus !== 'DONE' ? 'in-progress' : ''}`}>
-                  <span>{chapter.chapterStatus === 'DONE' ? 'Done' : 'In Progress'}</span>
+                  <span>{chapter.chapterStatus === 'DONE' ? 'Đã hoàn thành' : 'Đang viết'}</span>
                 </div>
               </td>
               <td>
@@ -294,20 +302,24 @@ function ChapterManagerment() {
           ))}
         </tbody>
       </table>
-      <div className="pagination">
+      <div className="chapter-manage-pagination">
         <span>
           Trang {Page + 1}/{totalPages}
         </span>
         <div>
-          <button className="page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
+          <button className="chapter-manage-page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
             Trang trước
           </button>
           {[...Array(totalPages)].map((_, index) => (
-            <button key={index} className={`page-btn ${Page === index ? 'active' : ''}`} onClick={() => handlePageChange(index)}>
+            <button
+              key={index}
+              className={`chapter-manage-page-btn ${Page === index ? 'active' : ''}`}
+              onClick={() => handlePageChange(index)}
+            >
               {index + 1}
             </button>
           ))}
-          <button className="page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
+          <button className="chapter-manage-page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
             Trang sau
           </button>
         </div>
@@ -343,9 +355,9 @@ function ChapterManagerment() {
                 <option value="" disabled selected>
                   Chọn ngôn ngữ
                 </option>
-                <option value="ENGLISH">English</option>
-                <option value="VIETNAMESE">Vietnamese</option>
-                <option value="JAPANESE">Japanese</option>
+                <option value="ENGLISH">Tiếng Anh</option>
+                <option value="VIETNAMESE">Tiếng Việt</option>
+                <option value="JAPANESE">Tiếng Nhật</option>
               </select>
 
               <label htmlFor="chapterStatus">Trạng thái:</label>
@@ -353,8 +365,8 @@ function ChapterManagerment() {
                 <option value="" disabled selected>
                   Chọn trạng thái
                 </option>
-                <option value="DONE">Done</option>
-                <option value="IN_PROGRESS">In Progress</option>
+                <option value="DONE">Đã hoàn thành</option>
+                <option value="IN_PROGRESS">Đang viết</option>
               </select>
 
               <div className="modal-actions">

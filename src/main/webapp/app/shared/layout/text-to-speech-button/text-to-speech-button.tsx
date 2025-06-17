@@ -7,7 +7,7 @@ export default function TextToSpeechButton({ isActive, onClick }: { isActive: bo
     <div className="tts-container">
       <button onClick={onClick} className={`tts-button ${isActive ? 'active' : ''}`}>
         {isActive ? <Volume2 size={20} /> : <VolumeX size={20} />}
-        <span>{isActive ? 'Choosing voice' : 'Hear This Chapter'}</span>
+        <span>{isActive ? 'Chọn giọng đọc' : 'Nghe sách nói'}</span>
       </button>
     </div>
   );

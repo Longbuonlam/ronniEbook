@@ -14,13 +14,13 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class ViXTTSService {
+public class TextToSpeechService {
 
-    private final Logger log = LoggerFactory.getLogger(ViXTTSService.class);
+    private final Logger log = LoggerFactory.getLogger(TextToSpeechService.class);
     private final RestTemplate restTemplate;
     private final String PROCESS_AUDIO_URL;
 
-    public ViXTTSService(RestTemplate restTemplate, @Value("${ronniebook-other-services.process_audio_url}") String processAudioUrl) {
+    public TextToSpeechService(RestTemplate restTemplate, @Value("${ronniebook-other-services.process_audio_url}") String processAudioUrl) {
         this.restTemplate = restTemplate;
         this.PROCESS_AUDIO_URL = processAudioUrl;
     }
@@ -55,11 +55,11 @@ public class ViXTTSService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            String sanitizedPrompt = prompt.replace("\n", " ").replace("\r", " ").replace("_", " ");
-            String shortenPrompt = get30Sentences(sanitizedPrompt);
+            //            String sanitizedPrompt = prompt.replace("\n", " ").replace("\r", " ").replace("_", " ");
+            //            String shortenPrompt = get30Sentences(sanitizedPrompt);
 
             Map<String, Object> requestMap = new HashMap<>();
-            requestMap.put("prompt", shortenPrompt);
+            requestMap.put("prompt", prompt);
             requestMap.put("language", language);
             requestMap.put("normalize_vi_text", normalizeViText);
             requestMap.put("user_record", userRecord);
@@ -92,5 +92,26 @@ public class ViXTTSService {
         }
 
         return result.toString();
+    }
+
+    /**
+     *
+     * New code to process with SSE.
+     *
+     */
+
+    @Cacheable(value = "ronnie-tts", key = "#chunk + '_' + #language + '_' + #recordUrl")
+    public String generateAudioUrlForChunk(
+        String chunk,
+        String language,
+        boolean normalizeViText,
+        String recordUrl,
+        UserRecordDTO userRecord
+    ) {
+        String url = getAudioUrl(chunk, language, normalizeViText, userRecord);
+        if (url != null) {
+            url = url.replace("\"", "");
+        }
+        return url;
     }
 }

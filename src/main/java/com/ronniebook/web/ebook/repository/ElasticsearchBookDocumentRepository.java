@@ -10,6 +10,17 @@ import org.springframework.stereotype.Repository;
 public interface ElasticsearchBookDocumentRepository extends ElasticsearchRepository<ElasticsearchBookDocument, String> {
     List<ElasticsearchBookDocument> findByContentContaining(String keyword);
 
-    @Query("{\"match\": {\"content\": \"?0\"}}")
+    @Query(
+        """
+            {
+                "match": {
+                    "content": {
+                        "query": "?0",
+                        "operator": "and"
+                    }
+                }
+            }
+        """
+    )
     List<ElasticsearchBookDocument> searchByContent(String content);
 }

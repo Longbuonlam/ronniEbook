@@ -143,11 +143,11 @@ function BookManagerment() {
         console.log('Book saved:', data);
         toggleModal();
         fetchBooks(Page, searchText);
-        toast.success('Book saved successfully');
+        toast.success('Sách đã được lưu thành công');
       })
       .catch(error => {
         console.error('Error saving book:', error);
-        toast.error('Failed to save book');
+        toast.error('Lưu sách không thành công');
       });
   };
 
@@ -187,11 +187,11 @@ function BookManagerment() {
         console.log('Book edited:', data);
         toggleModal();
         fetchBooks(Page, searchText);
-        toast.success('Book edited successfully');
+        toast.success('Sách đã được chỉnh sửa thành công');
       })
       .catch(error => {
         console.error('Error editing book:', error);
-        toast.error('Failed to edit book');
+        toast.error('Chỉnh sửa sách không thành công');
       });
   };
 
@@ -214,14 +214,14 @@ function BookManagerment() {
       .then(response => {
         if (response.ok) {
           setBooks(Books.filter(book => book.id !== bookId));
-          toast.success('Book deleted successfully');
+          toast.success('Sách đã được xóa thành công');
         } else {
           console.error('Error deleting book:', response.statusText);
         }
       })
       .catch(error => {
         console.error('Error deleting book:', error);
-        toast.error('Failed to delete book');
+        toast.error('Xóa sách không thành công');
       });
   };
 
@@ -309,20 +309,24 @@ function BookManagerment() {
           ))}
         </tbody>
       </table>
-      <div className="pagination">
+      <div className="book-manage-pagination">
         <span>
           Trang {Page + 1}/{totalPages} - Tổng số sách hiện có: {totalBooks}
         </span>
         <div>
-          <button className="page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
+          <button className="book-manage-page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
             Trang trước
           </button>
           {[...Array(totalPages)].map((_, index) => (
-            <button key={index} className={`page-btn ${Page === index ? 'active' : ''}`} onClick={() => handlePageChange(index)}>
+            <button
+              key={index}
+              className={`book-manage-page-btn ${Page === index ? 'active' : ''}`}
+              onClick={() => handlePageChange(index)}
+            >
               {index + 1}
             </button>
           ))}
-          <button className="page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
+          <button className="book-manage-page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
             Trang sau
           </button>
         </div>

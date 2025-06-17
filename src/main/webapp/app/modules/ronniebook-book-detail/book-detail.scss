@@ -1,8 +1,22 @@
+// Import Google Fonts for better Vietnamese support
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap');
+
+// Ensure proper text rendering for Vietnamese characters
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 .book-detail-container {
   display: flex;
   gap: 2rem;
   padding: 2rem;
   background: #e9ecef; // Adjust the background color as needed
+  font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   // border-radius: 8px;
 
   .book-cover {
@@ -38,10 +52,16 @@
     display: flex;
     flex-direction: column;
     color: #22223b;
+    font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 
     h1 {
       font-size: 2rem;
       margin: 0;
+      font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     .book-meta {
@@ -109,6 +129,9 @@
       font-size: 0.95rem;
       margin: 1rem 0;
       line-height: 1.5;
+      font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     .book-details {
@@ -132,6 +155,9 @@
 .tab-navigation-div {
   display: flex;
   background-color: #e9ecef;
+  font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .tab-navigation {
@@ -150,6 +176,9 @@
   position: relative;
   padding: 10px 5px;
   transition: color 0.2s ease;
+  font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .tab-link:hover {
@@ -186,6 +215,9 @@
   padding: 10px;
   background-color: #e9ecef;
   border-radius: 8px;
+  font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .reviews {
@@ -227,6 +259,9 @@
   font-size: 15px;
   color: #333;
   margin: 0;
+  font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .review-user {
@@ -239,6 +274,9 @@
   font-size: 15px;
   color: #666;
   margin: 0;
+  font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .review-avatar {
@@ -273,6 +311,9 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Modal content box */
@@ -422,6 +463,9 @@
   background-color: #e9ecef;
   color: #000000;
   text-align: center;
+  font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .related-book-row {
@@ -456,11 +500,17 @@
     color: #f5f5f7;
     margin: 5px 0;
     text-align: left;
+    font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   p {
     font-size: 14px;
     color: #b5b5b5; // Slightly lighter color for author text
     text-align: left;
+    font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

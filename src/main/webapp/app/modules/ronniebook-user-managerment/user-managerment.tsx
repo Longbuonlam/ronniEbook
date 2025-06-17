@@ -165,11 +165,15 @@ function UserManagerment() {
             <tr key={index}>
               <td>{user.login}</td>
               <td>
-                <span className="badge role">{user.authorities.map(authority => authority.name)}</span>
+                {user.authorities.map(authority => (
+                  <span className={`badge ${authority.name === 'ROLE_ADMIN' ? 'role-admin' : 'role'}`}>
+                    {authority.name === 'ROLE_ADMIN' ? 'Quản trị viên' : authority.name === 'ROLE_USER' ? 'Người dùng' : authority.name}
+                  </span>
+                ))}
               </td>
               <td>
                 <span className={`badge ${user.activated ? 'status-active' : 'status-inactive'}`}>
-                  {user.activated ? 'Active' : 'Inactive'}
+                  {user.activated ? 'Hoạt động' : 'Không hoạt động'}
                 </span>
               </td>
               <td>
@@ -192,20 +196,24 @@ function UserManagerment() {
           ))}
         </tbody>
       </table>
-      <div className="pagination">
+      <div className="user-manage-pagination">
         <span>
           Trang {Page + 1}/{totalPages} - Tổng số người dùng: {totalUsers}
         </span>
         <div>
-          <button className="page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
+          <button className="user-manage-page-btn" onClick={() => handlePageChange(Page - 1)} disabled={Page === 0}>
             Trang trước
           </button>
           {[...Array(totalPages)].map((_, index) => (
-            <button key={index} className={`page-btn ${Page === index ? 'active' : ''}`} onClick={() => handlePageChange(index)}>
+            <button
+              key={index}
+              className={`user-manage-page-btn ${Page === index ? 'active' : ''}`}
+              onClick={() => handlePageChange(index)}
+            >
               {index + 1}
             </button>
           ))}
-          <button className="page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
+          <button className="user-manage-page-btn" onClick={() => handlePageChange(Page + 1)} disabled={Page === totalPages - 1}>
             Trang sau
           </button>
         </div>
@@ -229,14 +237,14 @@ function UserManagerment() {
 
               <label>Quyền hạn:</label>
               <select id="userRole" value={userRole} onChange={e => setUserRole(e.target.value)} required>
-                <option value="ROLE_ADMIN">ROLE_ADMIN</option>
-                <option value="ROLE_USER">ROLE_USER</option>
+                <option value="ROLE_ADMIN">Quản trị viên</option>
+                <option value="ROLE_USER">Người dùng</option>
               </select>
 
               <label>Trạng thái:</label>
               <select id="userStatus" value={userStatus} onChange={e => setUserStatus(e.target.value)} required>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
+                <option value="Active">Hoạt động</option>
+                <option value="Inactive">Không hoạt động</option>
               </select>
 
               <div className="modal-actions">

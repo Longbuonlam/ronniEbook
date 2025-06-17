@@ -151,11 +151,11 @@ function FileManagerment() {
         console.log('File saved:', data);
         toggleModal();
         fetchFiles(Page, searchText);
-        toast.success('File uploaded successfully');
+        toast.success('Tệp đã được tải lên thành công');
       })
       .catch(error => {
         console.error('Error saving file:', error);
-        toast.error('Failed to save file');
+        toast.error('Lưu tệp không thành công');
       });
   };
 
@@ -178,14 +178,14 @@ function FileManagerment() {
       .then(response => {
         if (response.ok) {
           setFiles(Files.filter(file => file.id !== fileId));
-          toast.success('File deleted successfully');
+          toast.success('Tệp đã được xóa thành công');
         } else {
           console.error('Error deleting file:', response.statusText);
         }
       })
       .catch(error => {
         console.error('Error deleting file:', error);
-        toast.error('Failed to delete file');
+        toast.error('Xóa tệp không thành công');
       });
   };
 
@@ -220,14 +220,14 @@ function FileManagerment() {
     })
       .then(response => {
         if (response.ok) {
-          toast.success('Files reordered successfully');
+          toast.success('Các tệp đã được sắp xếp lại thành công');
         } else {
           console.error('Error reordering files:', response.statusText);
         }
       })
       .catch(error => {
         console.error('Error reordering files:', error);
-        toast.error('Failed to reorder files');
+        toast.error('Sắp xếp lại các tệp không thành công');
       });
   };
 
@@ -288,13 +288,10 @@ function FileManagerment() {
               <td>{file.fileUrl}</td>
               <td>
                 <div className={`badge status ${file.fileStatus !== 'UPLOAD_FINISH' ? 'UPLOAD_ERROR' : ''}`}>
-                  <span>{file.fileStatus === 'UPLOAD_FINISH' ? 'Upload finish' : 'Upload error'}</span>
+                  <span>{file.fileStatus === 'UPLOAD_FINISH' ? 'Đã tải lên' : 'Lỗi tải lên'}</span>
                 </div>
               </td>
               <td>
-                <button className="file-action-btn">
-                  <FontAwesomeIcon icon={faEdit} />
-                </button>
                 <button className="file-action-btn" style={{ marginLeft: '10px' }} onClick={() => handleDeleteClick(file.id)}>
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -326,7 +323,7 @@ function FileManagerment() {
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
-        message="All the information of this file will be deleted. Are you sure you want to continue delete it?"
+        message="Tất cả thông tin của tệp này sẽ bị xóa. Bạn có chắc chắn muốn tiếp tục xóa không?"
       />
 
       <FileReorderModal isOpen={isEditing} onClose={() => setIsEditing(false)} onSave={handleSaveReorderedFiles} initialFiles={Files} />

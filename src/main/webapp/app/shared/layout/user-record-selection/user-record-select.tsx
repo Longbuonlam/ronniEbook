@@ -36,14 +36,14 @@ function VoiceSelectionModal({ isOpen, onClose, onSelect, voices }) {
     <div className="voice-modal-overlay">
       <div className="voice-modal-content">
         <div className="voice-modal-header">
-          <span>Select Voice</span>
+          <span>Chọn giọng đọc</span>
           <button className="voice-close-btn" onClick={onClose}>
             <FontAwesomeIcon icon={faClose} />
           </button>
         </div>
         <div className="voice-modal-body">
           {voices.length === 0 ? (
-            <div className="no-voices-message">No voices available.</div>
+            <div className="no-voices-message">Chưa có giọng đọc khả dụng.</div>
           ) : (
             <div className="voice-grid">
               {voices.map((voice, index) => (
