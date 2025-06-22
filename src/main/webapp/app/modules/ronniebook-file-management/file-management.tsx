@@ -146,7 +146,12 @@ function FileManagerment() {
       },
       body: formData,
     })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text();
+      })
       .then(data => {
         console.log('File saved:', data);
         toggleModal();
@@ -168,7 +173,7 @@ function FileManagerment() {
       return;
     }
 
-    fetch(`http://localhost:9000/api/file/${fileId}`, {
+    fetch(`http://localhost:9000/api/file/delete-file/${fileId}`, {
       method: 'DELETE',
       headers: {
         Accept: '*/*',
@@ -177,7 +182,7 @@ function FileManagerment() {
     })
       .then(response => {
         if (response.ok) {
-          setFiles(Files.filter(file => file.id !== fileId));
+          setFiles(Files.filter(file => file.storageId !== fileId));
           toast.success('Tệp đã được xóa thành công');
         } else {
           console.error('Error deleting file:', response.statusText);
@@ -292,7 +297,7 @@ function FileManagerment() {
                 </div>
               </td>
               <td>
-                <button className="file-action-btn" style={{ marginLeft: '10px' }} onClick={() => handleDeleteClick(file.id)}>
+                <button className="file-action-btn" style={{ marginLeft: '10px' }} onClick={() => handleDeleteClick(file.storageId)}>
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </td>

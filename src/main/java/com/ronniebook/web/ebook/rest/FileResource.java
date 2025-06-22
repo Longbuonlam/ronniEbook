@@ -52,8 +52,8 @@ public class FileResource {
         return ResponseEntity.ok("File uploaded successfully");
     }
 
-    @DeleteMapping("/file/delete-file")
-    public ResponseEntity<?> deleteFile(@RequestParam String fileId) {
+    @DeleteMapping("/file/delete-file/{fileId}")
+    public ResponseEntity<?> deleteFile(@PathVariable String fileId) {
         log.debug("Rest request to delete file from storage, id {}", fileId);
         fileService.deleteFile(fileId);
         return ResponseEntity.noContent().build();
