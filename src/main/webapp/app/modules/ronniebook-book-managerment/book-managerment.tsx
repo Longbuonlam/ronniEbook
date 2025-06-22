@@ -409,6 +409,8 @@ function BookManagerment() {
                     id="imageUrl"
                     type="file"
                     placeholder="Tải lên ảnh bìa"
+                    accept="image/*"
+                    required={!isEditing}
                     onChange={e => {
                       if (e.target.files && e.target.files.length > 0) {
                         setImageFile(e.target.files[0]);
@@ -422,6 +424,7 @@ function BookManagerment() {
                     id="description"
                     placeholder="Nhập mô tả sách"
                     value={description}
+                    required
                     onChange={e => setDescription(e.target.value)}
                   ></textarea>
                 </div>
@@ -431,7 +434,7 @@ function BookManagerment() {
                   <FontAwesomeIcon icon={faClose} />
                 </button>
                 <button type="submit" className="btn-save">
-                  Save
+                  Lưu
                 </button>
               </div>
             </form>
