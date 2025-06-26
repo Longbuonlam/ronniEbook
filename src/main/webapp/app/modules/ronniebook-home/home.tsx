@@ -210,7 +210,7 @@ function Home() {
             <div className="proverb-container">
               <div className="proverb-card">
                 <div className="proverb-text">"{vietnameseProverbs[currentProverbIndex].text}"</div>
-                <div className="proverb-author">- {vietnameseProverbs[currentProverbIndex].author}</div>
+                <div className="proverb-author">- {vietnameseProverbs[currentProverbIndex].author} -</div>
                 <div className="proverb-meaning">{vietnameseProverbs[currentProverbIndex].meaning}</div>
               </div>
               <div className="proverb-indicators">
