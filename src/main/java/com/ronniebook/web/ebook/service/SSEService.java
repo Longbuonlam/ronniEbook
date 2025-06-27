@@ -87,9 +87,9 @@ public class SSEService {
     public void testSendDummyAudioUrls(String fullText, LanguageCode language, UserRecordDTO userRecord, SseEmitter emitter) {
         try {
             List<String> dummyUrls = List.of(
-                "https://thinhlpg-vixtts-demo.hf.space/file=/tmp/gradio/9bd86f03d7271eac5ccedeabe4f75de9898f8a29/output.wav",
-                "https://thinhlpg-vixtts-demo.hf.space/file=/tmp/gradio/e1d7f0e6356341b8a0cfd85262155e4c9a68e9b4/output.wav",
-                "https://thinhlpg-vixtts-demo.hf.space/file=/tmp/gradio/4075e7482e5c5086ae149be047f43a530b2d3dab/output.wav",
+                "https://thinhlpg-vixtts-demo.hf.space/file=/tmp/gradio/9a29aeebfecc7ec9334ab73522185db6221822f5/output.wav",
+                "https://thinhlpg-vixtts-demo.hf.space/file=/tmp/gradio/6052cb938cb2d389066365b82df198f0a9ccd316/output.wav",
+                "https://thinhlpg-vixtts-demo.hf.space/file=/tmp/gradio/76558f1ef7837975f78ef84d59a111ea1257693c/output.wav",
                 ":"
             );
 

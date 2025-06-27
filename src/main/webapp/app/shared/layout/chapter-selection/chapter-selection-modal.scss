@@ -1,3 +1,13 @@
+// Import Google Fonts for better Vietnamese support
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap');
+
+// Ensure proper text rendering for Vietnamese characters
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 .chapter-modal-overlay {
   position: fixed;
   top: 0;
@@ -21,6 +31,10 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 .chapter-modal-header {
@@ -29,10 +43,16 @@
   align-items: center;
   padding: 16px 20px;
   border-bottom: 1px solid #eee;
+  font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 
   span {
     font-size: 1.2rem;
     font-weight: 500;
+    font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   .chapter-close-btn {
@@ -55,6 +75,9 @@
 .chapter-modal-body {
   padding: 20px;
   overflow-y: auto;
+  font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .chapter-grid {
@@ -72,6 +95,9 @@
   transition:
     background-color 0.2s ease,
     transform 0.2s ease;
+  font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 
   &:hover {
     background-color: #e9ecef;
@@ -82,6 +108,9 @@
 .chapter-item-read {
   background-color: #d4edda;
   color: #155724;
+  font-family: 'Inter', 'Noto Sans', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .chapter-item-read:hover {

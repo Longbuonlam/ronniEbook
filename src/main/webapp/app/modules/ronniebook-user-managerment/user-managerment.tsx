@@ -107,10 +107,12 @@ function UserManagerment() {
       activated: userStatus === 'Active' || userStatus === '' ? true : false,
     };
 
-    // Only include authorities if the role has been changed
-    if (userRole !== originalUserRole) {
-      userData.authorities = userRole ? [{ name: userRole }] : null;
-    }
+    userData.authorities = userRole ? [{ name: userRole }] : null;
+
+    // // Only include authorities if the role has been changed
+    // if (userRole !== originalUserRole) {
+    //   userData.authorities = userRole ? [{ name: userRole }] : null;
+    // }
 
     fetch(`http://localhost:9000/api/users/${selectedUserId}`, {
       method: 'PATCH',
