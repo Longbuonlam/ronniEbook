@@ -60,14 +60,14 @@ export const DefaultItems = () => {
   return (
     <ul className="nav__links" id="nav-links">
       <li>
-        <a onClick={() => navigate('/app/home')} className={isHomeActive ? 'active' : ''}>
+        {/* <a onClick={() => navigate('/app/home')} className={isHomeActive ? 'active' : ''}>
           Home
-        </a>
+        </a> */}
       </li>
       <li>
-        <a onClick={() => navigate('/app/about-us')} className={isAboutUsActive ? 'active' : ''}>
+        {/* <a onClick={() => navigate('/app/about-us')} className={isAboutUsActive ? 'active' : ''}>
           About Us
-        </a>
+        </a> */}
       </li>
     </ul>
   );

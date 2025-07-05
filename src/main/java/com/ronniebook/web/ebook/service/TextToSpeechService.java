@@ -113,5 +113,6 @@ public class TextToSpeechService {
             url = url.replace("\"", "");
         }
         return url;
+        //        return "https://thinhlpg-vixtts-demo.hf.space/file=/tmp/gradio/98671cfbc27d2f2c6fa4abd062189114599ccbc5/output.wav";
     }
 }
