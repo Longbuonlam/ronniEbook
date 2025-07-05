@@ -2,15 +2,14 @@ package com.ronniebook.web.ebook.service;
 
 import com.ronniebook.web.ebook.domain.Book;
 import com.ronniebook.web.ebook.domain.ReadingProgress;
+import com.ronniebook.web.ebook.domain.dto.ReadingProgressDTO;
 import com.ronniebook.web.ebook.repository.BookRepository;
 import com.ronniebook.web.ebook.repository.ReadingProgressRepository;
 import com.ronniebook.web.security.SecurityUtils;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -56,9 +55,13 @@ public class ReadingProgressService {
         return readingProgressRepository.save(readingProgress);
     }
 
-    public Page<Book> findAllReadingProgressByUserId(Pageable pageable, String searchText) {
+    public Page<ReadingProgressDTO> findAllReadingProgressByUserId(Pageable pageable, String searchText) {
         String userId = SecurityUtils.getCurrentUserLogin().orElseThrow();
         List<ReadingProgress> readingProgressList = readingProgressRepository.findByUserId(userId);
+        Map<String, ReadingProgress> bookIdToProgress = readingProgressList
+            .stream()
+            .collect(Collectors.toMap(ReadingProgress::getBookId, rp -> rp));
+
         List<String> listBookIds = new ArrayList<>();
         for (ReadingProgress readingProgress : readingProgressList) {
             listBookIds.add(readingProgress.getBookId());
@@ -79,7 +82,23 @@ public class ReadingProgressService {
             searchText = Pattern.quote(searchText);
             bookPage = bookRepository.findByTextWithBookIds(pageable, searchText, listBookIds);
         }
-        return bookPage;
+
+        Page<ReadingProgressDTO> result = bookPage.map(book -> {
+            ReadingProgress progress = bookIdToProgress.get(book.getId());
+
+            int finishedChapter = progress != null ? progress.getFinishedChapterStorageIds().size() : 0;
+
+            return new ReadingProgressDTO(
+                book.getId(),
+                book.getTitle(),
+                book.getAuthor(),
+                book.getImageUrl(),
+                book.getChapterCount(),
+                finishedChapter
+            );
+        });
+
+        return result;
     }
 
     public void delete(String bookId) {
