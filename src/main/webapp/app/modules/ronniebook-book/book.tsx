@@ -8,8 +8,14 @@ import { useNavigate } from 'react-router-dom';
 import ConfirmationModal from '../../shared/layout/confirmation/confirmation-modal';
 import toast, { Toaster } from 'react-hot-toast';
 
+// Extended Book interface to include reading progress properties
+interface BookWithProgress extends Book {
+  finishedChapter?: number;
+  totalChapter?: number;
+}
+
 function MainBook() {
-  const [inProgressBooks, setInProgressBooks] = useState<Book[]>([]);
+  const [inProgressBooks, setInProgressBooks] = useState<BookWithProgress[]>([]);
   const [otherBooks, setOtherBooks] = useState<Book[]>([]);
   const [inProgressPage, setInProgressPage] = useState(0);
   const [otherPage, setOtherPage] = useState(0);
@@ -193,6 +199,19 @@ function MainBook() {
                 <div className="book-info">
                   <h3 className="book-title">{book.title}</h3>
                   <p className="book-author">{book.author}</p>
+                  {book.finishedChapter !== undefined && book.totalChapter !== undefined && (
+                    <div className="book-progress">
+                      <div className="progress-bar">
+                        <div className="progress-bar-fill" style={{ width: `${(book.finishedChapter / book.totalChapter) * 100}%` }}></div>
+                      </div>
+                      <div className="progress-text">
+                        {book.finishedChapter} / {book.totalChapter} chương
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="progress-container">
+                  <div className="progress-bar" style={{ width: `${((book.finishedChapter || 0) / (book.totalChapter || 1)) * 100}%` }} />
                 </div>
                 <button
                   className="delete-reading-btn"

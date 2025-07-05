@@ -2,6 +2,7 @@ package com.ronniebook.web.ebook.rest;
 
 import com.ronniebook.web.ebook.domain.Book;
 import com.ronniebook.web.ebook.domain.ReadingProgress;
+import com.ronniebook.web.ebook.domain.dto.ReadingProgressDTO;
 import com.ronniebook.web.ebook.service.ReadingProgressService;
 import com.ronniebook.web.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
@@ -44,7 +45,7 @@ public class ReadingProgressResource {
     }
 
     @GetMapping("/reading-progress")
-    public Page<Book> getAllReadingProgress(
+    public Page<ReadingProgressDTO> getAllReadingProgress(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
         @RequestParam(required = false) String searchText
     ) {
